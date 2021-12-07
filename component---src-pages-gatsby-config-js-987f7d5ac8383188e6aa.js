@@ -1,0 +1,2 @@
+(self.webpackChunktest=self.webpackChunktest||[]).push([[63],{3589:function(t){t.exports={siteMetadata:{siteUrl:"https://www.yourdomain.tld",title:"test"},plugins:["gatsby-plugin-sass"]}}}]);
+//# sourceMappingURL=component---src-pages-gatsby-config-js-987f7d5ac8383188e6aa.js.map
