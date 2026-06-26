@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import pubs from '../data/publications.json';
-const { all, groupOrder, groupLabels } = pubs;
+const { all, rankOrder } = pubs;
 
 // Topic palette + filter-button order.
 const TAG_META = {
@@ -62,11 +62,11 @@ const cite = (p) => (Array.isArray(p.bibtex) ? p.bibtex.join('\n') : p.bibtex) |
 const equalAuthors = (p) => p.authors.filter((a) => a.star).map((a) => a.name);
 const equalNote = (n) => (n.length === 2 ? `${n[0]} and ${n[1]}` : n.join(', '));
 
-const groups = groupOrder
-  .map((type) => ({ type, label: groupLabels[type], items: all.filter((p) => p.type === type).sort((a, b) => Number(b.year) - Number(a.year)) }))
-  .filter((g) => g.items.length > 0);
+// Strength-ranked order (see rankOrder in publications.json); unlisted papers fall to the end by year.
+const rank = (p) => { const i = rankOrder.indexOf(p.title); return i === -1 ? 9999 : i; };
+const ranked = [...all].sort((a, b) => rank(a) - rank(b) || Number(b.year) - Number(a.year));
 // Show the zoom cue only on the first figure on the page; after that it reads as clickable.
-const firstThumb = groups.flatMap((g) => g.items).find((p) => p.thumb || p.demo || p.video) || null;
+const firstThumb = ranked.find((p) => p.thumb || p.demo || p.video) || null;
 
 const title = 'Publications · Luke Bhan';
 const description = 'Complete, searchable list of Luke Bhan’s publications in scientific machine learning and control: filter by topic, grab the PDF, code, or BibTeX.';
@@ -103,10 +103,8 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
           </div>
         </div>
 
-        {groups.map((g) => (
-          <div class="pub-group" data-group={g.type}>
-            <p class="subhead">{g.label}</p>
-            {g.items.map((p) => (
+        <div class="pub-group">
+            {ranked.map((p) => (
               <article class="pcard" data-tags={(p.tags || []).join('|')} data-text={searchText(p)}>
                 <div class="pthumb" style={`--c:${color(p)}`}>
                   {p.demo
@@ -173,8 +171,7 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
                 </div>
               </article>
             ))}
-          </div>
-        ))}
+        </div>
 
         <p class="noresult" id="noresult" hidden>No papers match. Try a different topic or search.</p>
         <p class="rs-back"><a href="/#top">← Back to home</a></p>

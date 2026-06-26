@@ -270,6 +270,33 @@
     "workshop": "Workshop papers",
     "preprint": "Preprints & under review"
   },
+  "rankOrder": [
+    "Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping",
+    "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
+    "Generalizable Motion Planning via Operator Learning",
+    "Stabilization of Nonlinear Systems with Unknown Delays via Delay-Adaptive Neural Operator Approximate Predictors",
+    "Adaptive Control of Reaction–Diffusion PDEs via Neural Operator-Approximated Gain Kernels",
+    "Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs",
+    "PDE Control Gym: A Benchmark for Data-Driven Boundary Control of Partial Differential Equations",
+    "Lotka–Sharpe Neural Operators for Control of Population PDEs",
+    "Delay-Adaptive Control of Nonlinear Systems with Approximate Neural Operator Predictors",
+    "Predictor-Based Output-Feedback Control of Linear Systems with Time-Varying Input and Measurement Delays via Neural-Approximated Prediction Horizons",
+    "Adaptive Neural-Operator Backstepping Control of a Benchmark Hyperbolic PDE",
+    "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
+    "Gain Scheduling with a Neural Operator for a Transport PDE with Nonlinear Recirculation",
+    "Neural Operators of Backstepping Controller and Observer Gain Functions for Reaction–Diffusion PDEs",
+    "Families of Control-Cost-Parametrized Inverse-Optimal Universal Stabilizers",
+    "Neural Operators for Hyperbolic PDE Backstepping Feedback Laws",
+    "Neural Operators for Hyperbolic PDE Backstepping Kernels",
+    "Operator Learning for Nonlinear Adaptive Control",
+    "Moving-Horizon Estimators for Hyperbolic and Parabolic PDEs in 1-D",
+    "Concurrent Policy Blending and System Identification for Generalized Assistive Control",
+    "Fault Tolerant Control Combining Reinforcement Learning and Model-Based Control",
+    "A Scaled Smart City for Experimental Validation of Connected and Automated Vehicles",
+    "Laser-Driven Petahertz Electron Ratchet Nanobubbles",
+    "Signatures of Atomic Structure in Subfemtosecond Laser-Driven Electron Dynamics in Nanogaps",
+    "Simulation of Photo-Electron Spectrum and Electron Scattering by Dual Time Propagation"
+  ],
   "all": [
     {
       "type": "journal",
