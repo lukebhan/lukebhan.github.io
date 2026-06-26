@@ -13,3 +13,6 @@ npm-debug.log*
 .DS_Store
 .vscode/
 *.swp
+
+# archives
+*.zip
