@@ -5,7 +5,6 @@ import Footer from '../components/Footer.astro';
 import CertFigure from '../components/CertFigure.astro';
 import site from '../data/site.json';
 const { researchPage: rp } = site;
-const scholar = 'https://scholar.google.com/citations?user=T-djo_0AAAAJ&hl=en';
 const title = 'Research · Luke Bhan';
 const description = 'Luke Bhan’s research: scientific machine learning with the structure of control theory, yielding controllers that are both deployable and certifiable, across foundations, robots, and applications.';
 ---
@@ -79,8 +78,6 @@ const description = 'Luke Bhan’s research: scientific machine learning with th
 
         <div class="rs-cta">
           <a href="/publications">All publications →</a>
-          <a href={scholar} target="_blank" rel="noopener">Google Scholar ↗</a>
-          <a href="/cv.pdf" target="_blank" rel="noopener">CV ↗</a>
         </div>
         <p class="rs-back"><a href="/#top">← Back to home</a></p>
       </div>
@@ -216,10 +213,12 @@ const description = 'Luke Bhan’s research: scientific machine learning with th
         tag.className = 'demo-tag ' + (side.state || '');
         tag.textContent = side.label || '';
         cell.appendChild(tag);
-        cell.appendChild(vid(side.src));
+        const v = vid(side.src);
+        v.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+        cell.appendChild(v);
         row.appendChild(cell);
       });
-      row.style.width = '100%';
+      row.style.cssText = 'width:100%;height:100%';
       return row;
     }
     let el;
@@ -263,6 +262,9 @@ const description = 'Luke Bhan’s research: scientific machine learning with th
     titleEl.textContent = cur.title;
     frame.innerHTML = '';
     frame.appendChild(mediaEl(it, it.label || cur.title, true));
+    // A demo is a <div> with no intrinsic size, so the aspect-ratio'd frame would
+    // collapse to zero width. Give it a definite width in that case.
+    frame.style.width = it.type === 'demo' ? '100%' : '';
     setFoot(it);
     countEl.textContent = (cur.i + 1) + ' / ' + cur.items.length;
     const multi = cur.items.length > 1;
