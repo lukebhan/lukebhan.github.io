@@ -275,9 +275,11 @@
     "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
     "Generalizable Motion Planning via Operator Learning",
     "Stabilization of Nonlinear Systems with Unknown Delays via Delay-Adaptive Neural Operator Approximate Predictors",
+    "A Scaled Smart City for Experimental Validation of Connected and Automated Vehicles",
     "Adaptive Control of Reaction–Diffusion PDEs via Neural Operator-Approximated Gain Kernels",
     "Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs",
     "PDE Control Gym: A Benchmark for Data-Driven Boundary Control of Partial Differential Equations",
+    "The Forecast Critic: Leveraging Large Language Models for Poor Forecast Identification",
     "Lotka–Sharpe Neural Operators for Control of Population PDEs",
     "Delay-Adaptive Control of Nonlinear Systems with Approximate Neural Operator Predictors",
     "Predictor-Based Output-Feedback Control of Linear Systems with Time-Varying Input and Measurement Delays via Neural-Approximated Prediction Horizons",
@@ -292,7 +294,6 @@
     "Moving-Horizon Estimators for Hyperbolic and Parabolic PDEs in 1-D",
     "Concurrent Policy Blending and System Identification for Generalized Assistive Control",
     "Fault Tolerant Control Combining Reinforcement Learning and Model-Based Control",
-    "A Scaled Smart City for Experimental Validation of Connected and Automated Vehicles",
     "Laser-Driven Petahertz Electron Ratchet Nanobubbles",
     "Signatures of Atomic Structure in Subfemtosecond Laser-Driven Electron Dynamics in Nanogaps",
     "Simulation of Photo-Electron Spectrum and Electron Scattering by Dual Time Propagation"
@@ -1368,6 +1369,42 @@
       "fig": 2,
       "caption": "Predictor feedback must look ahead by exactly the delay duration, but when a linear system's input and measurement delays vary in time, finding the right prediction horizon requires inverting the delay map online. This work learns that functional inversion with a neural operator, producing the prediction horizon in a single forward pass while keeping the loop provably stable. The top left shows the plant states <em>Z</em><sub>1</sub> and <em>Z</em><sub>2</sub> (solid) and their observer estimates (dashed) driven to zero from output measurements alone, the top right the control input <em>U</em>(<em>t</em>), the bottom left the two time-varying delays <em>D</em><sub>1</sub>(<em>t</em>) and <em>D</em><sub>2</sub>(<em>t</em>) and the learned prediction horizon, and the bottom right the inversion residual, which stays small for prediction depths <em>H</em> = 1 and <em>H</em> = 4.",
       "url": "https://arxiv.org/abs/2603.29117"
+    },
+    {
+      "type": "workshop",
+      "venue": "AAAI Workshops",
+      "year": "2026",
+      "title": "The Forecast Critic: Leveraging Large Language Models for Poor Forecast Identification",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Hanyu Zhang"
+        },
+        {
+          "name": "Andrew Gordon Wilson"
+        },
+        {
+          "name": "Michael W. Mahoney"
+        },
+        {
+          "name": "Chuck Arvin"
+        }
+      ],
+      "tags": [],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2512.12059"
+        }
+      ],
+      "pdf": "/papers/forecast_critic_bhan_2026.pdf",
+      "thumb": "/figures/forecast_critic_figure4.png",
+      "fig": 4,
+      "caption": "Production demand forecasting runs at enormous scale (Amazon forecasts demand for tens of millions of products), far more than analysts can vet by hand, so the few forecasts that truly need a human are easily buried. This work asks whether a large language model can serve as a forecast critic that flags the predictions most likely to be wrong, focusing scarce human attention where it matters most. The figure shows the model given a time-series plot (left) and a prompt listing the holiday dates: reasoning over both (right), it notes that the forecast's promotional spike at t = 9.82 is far larger than the comparable historical spike at t = 1.88, and flags the forecast as unreasonable.",
+      "url": "https://arxiv.org/abs/2512.12059"
     }
   ]
 }

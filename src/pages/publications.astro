@@ -19,6 +19,9 @@ const TAG_META = {
 const tagCounts = {};
 all.forEach((p) => (p.tags || []).forEach((t) => (tagCounts[t] = (tagCounts[t] || 0) + 1)));
 const filterTags = Object.keys(TAG_META).filter((t) => tagCounts[t]);
+// Publication-type filters (journal / conference / workshop), in the order present.
+const TYPE_LABELS = { journal: 'Journal', conference: 'Conference', workshop: 'Workshop' };
+const typeFilters = Object.keys(TYPE_LABELS).filter((t) => all.some((p) => p.type === t));
 
 const color = (p) => TAG_META[(p.tags || [])[0]] || '#5C616B';
 const pdfHref = (p) => {
@@ -95,8 +98,12 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
 
         <div class="pubtools">
           <input id="pubsearch" class="pubsearch" type="search" placeholder="Search title, author, venue…" aria-label="Search publications" autocomplete="off" />
-          <div class="filterbar" id="filterbar" role="group" aria-label="Filter by topic">
-            <button class="fbtn active" data-tag="" type="button">All</button>
+          <div class="filterbar" id="filterbar" role="group" aria-label="Filter publications">
+            <button class="fbtn active" data-filter="" type="button">All</button>
+            {typeFilters.map((t) => (
+              <button class="fbtn fbtn-type" data-type={t} type="button">{TYPE_LABELS[t]}</button>
+            ))}
+            <span class="fbar-sep" aria-hidden="true"></span>
             {filterTags.map((t) => (
               <button class="fbtn" data-tag={t} type="button" style={`--c:${TAG_META[t]}`}>{t}</button>
             ))}
@@ -105,7 +112,7 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
 
         <div class="pub-group">
             {ranked.map((p) => (
-              <article class="pcard" data-tags={(p.tags || []).join('|')} data-text={searchText(p)}>
+              <article class="pcard" data-tags={(p.tags || []).join('|')} data-type={p.type} data-text={searchText(p)}>
                 <div class="pthumb" style={`--c:${color(p)}`}>
                   {p.demo
                     ? <button class="thumb-zoom demo-zoom" type="button" data-demo="1" data-title={p.title} data-fig={p.fig} data-caption={p.caption || ''} data-vl={p.demo.left.src} data-vll={p.demo.left.label} data-vr={p.demo.right.src} data-vrl={p.demo.right.label}>
@@ -203,15 +210,19 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
   const cards = Array.from(document.querySelectorAll('.pcard'));
   const groupsEls = Array.from(document.querySelectorAll('.pub-group'));
   const noresult = document.getElementById('noresult');
-  let activeTag = '';
+  const activeTags = new Set();
+  const activeTypes = new Set();
 
   function apply() {
     const q = (search.value || '').trim().toLowerCase();
     let shown = 0;
     cards.forEach((c) => {
-      const okTag = !activeTag || c.dataset.tags.split('|').includes(activeTag);
+      const tags = c.dataset.tags ? c.dataset.tags.split('|') : [];
+      // AND across every selected filter: a paper must match all chosen tags and types.
+      const okTag = [...activeTags].every((t) => tags.includes(t));
+      const okType = [...activeTypes].every((t) => c.dataset.type === t);
       const okQ = !q || c.dataset.text.includes(q);
-      const vis = okTag && okQ;
+      const vis = okTag && okType && okQ;
       c.hidden = !vis;
       if (vis) shown++;
     });
@@ -231,11 +242,26 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
     if (noresult) noresult.hidden = shown !== 0;
   }
 
+  const allBtn = bar.querySelector('.fbtn[data-filter=""]');
   bar.addEventListener('click', (e) => {
     const b = e.target.closest('.fbtn');
     if (!b) return;
-    activeTag = b.dataset.tag;
-    Array.from(bar.children).forEach((x) => x.classList.toggle('active', x === b));
+    if (b === allBtn) {
+      activeTags.clear();
+      activeTypes.clear();
+    } else if (b.dataset.type) {
+      activeTypes.has(b.dataset.type) ? activeTypes.delete(b.dataset.type) : activeTypes.add(b.dataset.type);
+    } else if (b.dataset.tag) {
+      activeTags.has(b.dataset.tag) ? activeTags.delete(b.dataset.tag) : activeTags.add(b.dataset.tag);
+    }
+    // Reflect state: each button active if selected; "All" active only when nothing is selected.
+    bar.querySelectorAll('.fbtn').forEach((x) => {
+      let on = false;
+      if (x === allBtn) on = activeTags.size === 0 && activeTypes.size === 0;
+      else if (x.dataset.type) on = activeTypes.has(x.dataset.type);
+      else if (x.dataset.tag) on = activeTags.has(x.dataset.tag);
+      x.classList.toggle('active', on);
+    });
     apply();
   });
   search.addEventListener('input', apply);
@@ -333,10 +359,11 @@ const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170
     border: 1px solid var(--hair); border-radius: 999px; background: #fff; transition: all .14s;
   }
   .fbtn .fc { color: var(--muted); font-size: 11px; }
-  .fbtn::before {
+  .fbtn[data-tag]::before {
     content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--c, var(--muted)); display: inline-block;
   }
-  .fbtn[data-tag=""]::before { display: none; }
+  .fbtn-type { color: var(--muted); }
+  .fbar-sep { width: 1px; align-self: stretch; margin: 2px 4px; background: var(--hair); }
   .fbtn.active { background: var(--c, var(--ink)); border-color: var(--c, var(--ink)); color: #fff; }
   .fbtn.active .fc { color: rgba(255,255,255,.8); }
 
