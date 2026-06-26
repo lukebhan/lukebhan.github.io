@@ -450,7 +450,7 @@
         "year": "2026",
         "from": "UC San Diego undergraduate",
         "to": "",
-        "did": "Ran the numerical experiments that validated the predictor.",
+        "did": "Built the robotic-manipulator simulations showing the neural-operator predictor holds accurate tracking even when the state is measured only at sparse, irregular, and noisy times.",
         "paper": {
           "title": "Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs",
           "venue": "IEEE L-CSS",
@@ -462,7 +462,7 @@
         "year": "2025",
         "from": "University of Belgrade undergraduate",
         "to": "M.S. candidate, ETH Zurich",
-        "did": "Led the work under my guidance, developing both the theory and the experiments.",
+        "did": "Led this paper under my mentorship, developing both the theory and the experiments for compensating several distinct input delays at once, demonstrated on a car-like vehicle with different delays on its steering and acceleration.",
         "paper": {
           "title": "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
           "venue": "ACC",
@@ -474,7 +474,7 @@
         "year": "2025",
         "from": "Southern University of Science and Technology undergraduate",
         "to": "Ph.D. candidate, UC San Diego",
-        "did": "Built and tuned the simulation studies behind the results.",
+        "did": "Developed the manipulator experiments for our Best Paper Finalist work, where a learned predictor stabilizes a fast ball-balancing task through a long actuation delay that otherwise destabilizes it.",
         "paper": {
           "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
           "venue": "L4DC",
@@ -487,7 +487,7 @@
         "year": "2024",
         "from": "UC San Diego undergraduate",
         "to": "",
-        "did": "Contributed the neuron-model environment to PDE Control Gym.",
+        "did": "Implemented the neuron-model (Stefan) environment in PDE Control Gym, our open benchmark for data-driven boundary control.",
         "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/neuron-1d.html"
       },
       {
@@ -495,7 +495,7 @@
         "year": "2024",
         "from": "UC San Diego master's student",
         "to": "",
-        "did": "Added the traffic-flow (ARZ) environment to PDE Control Gym.",
+        "did": "Added the ARZ traffic-flow environment to PDE Control Gym, extending the benchmark to congestion-control problems.",
         "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/Trafficarz1d.html"
       },
       {
@@ -503,7 +503,7 @@
         "year": "2024",
         "from": "UC San Diego undergraduate",
         "to": "",
-        "did": "Built the glioblastoma tumor-growth environment for PDE Control Gym.",
+        "did": "Built the glioblastoma tumor-growth environment for PDE Control Gym, bringing a medical boundary-control problem into the benchmark.",
         "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/braintumor-1d.html"
       },
       {
@@ -511,7 +511,7 @@
         "year": "2023",
         "from": "UC San Diego undergraduate",
         "to": "Ph.D. candidate, University of Wisconsin",
-        "did": "Investigated the dynamics of neural ODEs and presented a literature review on learning-based control to our group."
+        "did": "Investigated the dynamics of neural ODEs and delivered a literature review on learning-based control to our research group."
       }
     ]
   },
