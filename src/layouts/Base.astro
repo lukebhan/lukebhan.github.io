@@ -49,5 +49,25 @@ const ogImage = new URL('/og.png', site).href;
   <body>
     <div class="ribbon"></div>
     <slot />
+    <script is:inline>
+      // iOS pauses autoplaying videos when the tab is backgrounded and does not
+      // resume them on return. Re-play muted autoplay videos when the page becomes
+      // visible again (honoring reduced-motion).
+      (function () {
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        function resume() {
+          if (reduce) return;
+          document.querySelectorAll('video[autoplay]').forEach(function (v) {
+            if (v.paused && v.muted) {
+              var p = v.play();
+              if (p && p.catch) p.catch(function () {});
+            }
+          });
+        }
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) resume(); });
+        window.addEventListener('pageshow', resume);
+        window.addEventListener('focus', resume);
+      })();
+    </script>
   </body>
 </html>
