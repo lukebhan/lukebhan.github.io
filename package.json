@@ -12,6 +12,6 @@
   },
   "devDependencies": {
     "@astrojs/sitemap": "^1.4.0",
-    "sitemap": "^7.1.1"
+    "sitemap": "^9.0.1"
   }
 }
