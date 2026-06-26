@@ -53,6 +53,7 @@ function bibtex(p) {
   const eprint = arx ? arx.href.split('/abs/')[1] : null;
   let kind = 'article', venueLine = `  journal = {${p.venue}},`;
   if (p.type === 'conference') { kind = 'inproceedings'; venueLine = `  booktitle = {Proceedings of the ${p.venue}},`; }
+  if (p.type === 'workshop') { kind = 'inproceedings'; venueLine = `  booktitle = {${p.venue}},`; }
   if (p.type === 'preprint') { kind = 'misc'; venueLine = `  note = {Preprint, submitted to ${p.venue}},`; }
   const lines = [`@${kind}{${bibKey.get(p)},`, `  author = {${authors}},`, venueLine, `  title = {{${p.title}}},`, `  year = {${p.year}}${eprint ? ',' : ''}`];
   if (eprint) lines.push(`  eprint = {${eprint}},`, `  archivePrefix = {arXiv}`);

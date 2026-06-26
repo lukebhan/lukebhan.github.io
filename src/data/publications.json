@@ -1372,7 +1372,7 @@
     },
     {
       "type": "workshop",
-      "venue": "AAAI Workshops",
+      "venue": "AAAI: AI for Time Series Workshop (AI4TS)",
       "year": "2026",
       "title": "The Forecast Critic: Leveraging Large Language Models for Poor Forecast Identification",
       "authors": [
