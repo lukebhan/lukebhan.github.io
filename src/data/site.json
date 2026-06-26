@@ -474,7 +474,7 @@
         "year": "2025",
         "from": "Southern University of Science and Technology undergraduate",
         "to": "Ph.D. candidate, UC San Diego",
-        "did": "Developed the manipulator experiments for our Best Paper Finalist work, where a learned predictor stabilizes a fast ball-balancing task through a long actuation delay that otherwise destabilizes it.",
+        "did": "Developed the manipulator experiments for our Best Paper Finalist work, where a learned predictor tracks a target signal under a long actuation delay that would otherwise destabilize the loop.",
         "paper": {
           "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
           "venue": "L4DC",
