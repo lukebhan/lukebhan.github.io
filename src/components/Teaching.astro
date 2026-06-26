@@ -1,0 +1,41 @@
+---
+import t from '../data/teaching.json';
+import site from '../data/site.json';
+const { teachingPage: tp } = site;
+const nLectures = tp.series.lectures.length;
+---
+<section id="teaching">
+  <div class="wrap">
+    <div class="sec-head"><h2>Teaching &amp; service</h2></div>
+    <p class="teach-philos">{tp.philosophy}</p>
+
+    <p class="colhead">Mini lecture series</p>
+    <p class="teach-series">A {nLectures}-lecture introduction to scientific machine learning, recorded from the live classes I help teach within Physics-Informed Machine Learning at UC San Diego.</p>
+    <p class="teach-links">
+      <a href="/teaching">See the lectures →</a>
+      <a href={tp.series.playlist} target="_blank" rel="noopener">Watch on YouTube ↗</a>
+    </p>
+
+    <p class="colhead">Courses &amp; assistantships</p>
+    {t.teaching.map((c) => (
+      <div class="row">
+        <div class="meta">{c.when}</div>
+        <div class="x"><span set:html={c.what}></span> <span class="d2">· {c.detail}</span></div>
+      </div>
+    ))}
+
+    <p class="colhead">Peer review</p>
+    <div class="row"><div class="meta">Journals</div><div class="x"><span class="d2" set:html={t.reviewJournals}></span></div></div>
+    <div class="row"><div class="meta">Conferences</div><div class="x"><span class="d2" set:html={t.reviewConfs}></span></div></div>
+
+    <p class="research-cta"><a href="/teaching">More on teaching →</a></p>
+  </div>
+</section>
+
+<style>
+  .teach-philos { font-size: 17px; line-height: 1.6; color: var(--ink); max-width: 46em; margin: 0 0 8px; }
+  .teach-series { font-size: 15.5px; line-height: 1.55; color: var(--muted); max-width: 46em; margin: 0; }
+  .teach-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 8px 0 0; }
+  .teach-links a { font-family: var(--mono); font-size: 12.5px; color: var(--accent); text-decoration: none; }
+  @media (hover: hover) { .teach-links a:hover { color: var(--ink); } }
+</style>

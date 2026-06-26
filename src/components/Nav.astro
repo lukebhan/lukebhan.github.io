@@ -1,0 +1,14 @@
+---
+import site from '../data/site.json';
+// On subpages, pass base="/" so in-page anchors resolve back to the homepage.
+const { base = '' } = Astro.props;
+const resolve = (h) => (h.startsWith('#') ? `${base}${h}` : h);
+---
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href={`${base}#top`}>Luke <b>Bhan</b></a>
+    <nav class="nav-links" aria-label="Primary">
+      {site.nav.map((n) => <a href={resolve(n.href)}>{n.label}</a>)}
+    </nav>
+  </div>
+</header>

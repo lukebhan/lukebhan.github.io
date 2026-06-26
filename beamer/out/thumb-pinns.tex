@@ -1,0 +1,89 @@
+% ============================================================
+%  Physics-Informed Machine Learning — Mini Lecture Series
+%  Lecture thumbnail (16:9, 1280x720 for YouTube + site)
+%
+%  Engine: XeLaTeX (uses the lukebhan.com fonts).
+%  1. Fill in the "PER-LECTURE" block below.
+%  2. Drop a topic figure in images/ and point \lectureimage at it.
+%  3. Compile + export: see README.md  (XeLaTeX, run TWICE).
+% ============================================================
+\documentclass[aspectratio=169]{beamer}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{etoolbox}
+\usetikzlibrary{calc}
+\setbeamertemplate{navigation symbols}{}
+\usefonttheme{professionalfonts}
+
+% ---- site fonts (lukebhan.com) ----
+\setsansfont{SpaceGrotesk}[Path=./fonts/,Extension=.ttf,UprightFont=*-400,BoldFont=*-700,FontFace={md}{n}{*-500}]
+\newfontfamily\mono{JetBrainsMono}[Path=./fonts/,Extension=.ttf,UprightFont=*-400,BoldFont=*-700]
+\renewcommand{\familydefault}{\sfdefault}
+
+% ---- palette ----
+\definecolor{navy}{HTML}{182B49}   % band
+\definecolor{gold}{HTML}{FFCD00}   % accent
+\definecolor{stone}{HTML}{F7F6F2}  % soft off-white for the figure field
+\definecolor{ink}{HTML}{182B49}
+
+% =================== PER-LECTURE ===================
+\newcommand{\coursename}{Physics-Informed Machine Learning}
+\newcommand{\lecturetitle}{Physics-Informed Neural Nets}
+\newcommand{\lecturesub}{Embedding the PDE residual in the loss}
+\newcommand{\lecturepart}{}     % optional, e.g. Part 1  (leave empty for none)
+\newcommand{\speaker}{Luke Bhan}
+% Topic figure (PDF/PNG/JPG) — the hero of the thumbnail.
+% Leave the file missing to show a placeholder.
+\newcommand{\lectureimage}{images/topic-pinns.pdf}
+% ===================================================
+
+% --- geometry (page is 16cm x 9cm) ---
+\newcommand{\bandh}{3.5}   % height of the navy info band (cm)
+
+\begin{document}
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture, overlay]
+  \coordinate (O) at (current page.south west);   % page origin (bottom-left)
+
+  % ---------- figure field (hero, full width, top) ----------
+  \fill[stone] ($(O)+(0,\bandh)$) rectangle (current page.north east);
+  \begin{scope}
+    \clip ($(O)+(0,\bandh)$) rectangle (current page.north east);
+    \IfFileExists{\lectureimage}{%
+      \node[anchor=center] at ($(O)+(8,{\bandh+0.5*(9-\bandh)})$)
+        {\includegraphics[width=14.6cm,height=4.7cm,keepaspectratio]{\lectureimage}};
+    }{%
+      \node[anchor=center, text=ink!35] at ($(O)+(8,{\bandh+0.5*(9-\bandh)})$)
+        {\fontsize{15}{18}\selectfont topic figure \;\textemdash\; set \texttt{\textbackslash lectureimage}};
+    }
+  \end{scope}
+
+  % ---------- navy info band (bottom) ----------
+  \fill[navy] (O) rectangle ($(O)+(16,\bandh)$);
+  \fill[gold] ($(O)+(0,\bandh)$) rectangle ($(O)+(16,{\bandh+0.1})$);   % gold rule
+
+  % series eyebrow, top-left
+  \node[anchor=north west, text=gold] at ($(O)+(0.82,{\bandh-0.34})$)
+    {\mono\fontsize{9.5}{11}\selectfont \coursename\;\textperiodcentered\;Mini Lecture Series};
+
+  % optional part marker, top-right
+  \ifdefempty{\lecturepart}{}{%
+    \node[anchor=north east, fill=gold, text=navy, rounded corners=2pt, inner xsep=6pt, inner ysep=3pt]
+      at ($(O)+(15.2,{\bandh-0.26})$) {\mono\bfseries\fontsize{8.5}{10}\selectfont \MakeUppercase{\lecturepart}};%
+  }
+
+  % big lecture title
+  \node[anchor=base west, text=white] at ($(O)+(0.8,1.42)$)
+    {\bfseries\fontsize{27}{29}\selectfont \lecturetitle};
+
+  % subtitle
+  \node[anchor=base west, text=white!72] at ($(O)+(0.82,0.78)$)
+    {\fontseries{md}\selectfont\fontsize{13}{16}\selectfont \lecturesub};
+
+  % speaker, bottom
+  \node[anchor=base west, text=gold] at ($(O)+(0.82,0.28)$)
+    {\mono\fontsize{9.5}{11}\selectfont \speaker};
+\end{tikzpicture}
+\end{frame}
+\end{document}

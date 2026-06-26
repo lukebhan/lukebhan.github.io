@@ -1,0 +1,8 @@
+{
+  "teaching": [
+    { "when": "2025, 2026", "what": "Co-Instructor, <b>Physics-Informed Machine Learning</b>, UC San Diego", "detail": "5 lectures on foundation models, neural ODEs, neural operators, and PINNs; designed course homework on augmented neural ODEs, FNOs, and PINNs." },
+    { "when": "2020 \u2013 2021", "what": "Teaching Assistant, Vanderbilt University", "detail": "Numerical Analysis; Probability & Statistics; Intermediate Software Design." }
+  ],
+  "reviewJournals": "Automatica \u00b7 IEEE Transactions on Automatic Control \u00b7 Systems & Control Letters \u00b7 Int'l Journal of Robust & Nonlinear Control \u00b7 IEEE Control Systems Letters \u00b7 IEEE Transactions on Control of Networked Systems.",
+  "reviewConfs": "CDC \u00b7 ACC \u00b7 L4DC \u00b7 AAAI \u00b7 ICLR."
+}

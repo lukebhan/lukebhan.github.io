@@ -1,0 +1,477 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import pubs from '../data/publications.json';
+const { all, groupOrder, groupLabels } = pubs;
+
+// Topic palette + filter-button order.
+const TAG_META = {
+  'Neural operators': '#5a2b8c',
+  'PDE systems': '#1F6F86',
+  'Delay systems': '#C8881E',
+  'Adaptive control': '#157E6B',
+  'Robotics': '#2f5fae',
+  'Biological systems': '#b0436b',
+  'Traffic': '#475569',
+  'Material Science': '#6b7280',
+};
+const tagCounts = {};
+all.forEach((p) => (p.tags || []).forEach((t) => (tagCounts[t] = (tagCounts[t] || 0) + 1)));
+const filterTags = Object.keys(TAG_META).filter((t) => tagCounts[t]);
+
+const color = (p) => TAG_META[(p.tags || [])[0]] || '#5C616B';
+const pdfHref = (p) => {
+  const l = p.links || [];
+  return p.pdf || (l.find((x) => x.label === 'arXiv') || l.find((x) => x.label === 'PDF') || l.find((x) => x.label === 'DOI'))?.href;
+};
+const codeHref = (p) => (p.links || []).find((x) => x.label === 'Code')?.href;
+const searchText = (p) =>
+  [p.title, p.authors.map((a) => a.name).join(' '), p.venue, p.year, (p.tags || []).join(' ')]
+    .join(' ').toLowerCase();
+
+const lastName = (n) => n.trim().split(/\s+/).pop();
+const STOP = new Set(['a', 'an', 'the', 'for', 'of', 'via', 'with', 'and', 'in', 'to', 'on', 'under', 'from']);
+const titleWords = (t, n) =>
+  t.replace(/[^A-Za-z0-9 ]/g, ' ').split(/\s+/).filter((w) => w && !STOP.has(w.toLowerCase())).slice(0, n).join('').toLowerCase();
+
+// Precompute collision-free BibTeX keys (same object refs flow through to the render).
+const bibKey = new Map();
+const seenKeys = new Set();
+for (const p of all) {
+  const base = (lastName(p.authors[0].name) + p.year + titleWords(p.title, 2)).toLowerCase().replace(/[^a-z0-9]/g, '');
+  let k = base, i = 1;
+  while (seenKeys.has(k)) { k = base + 'abcdefgh'[i]; i++; }
+  seenKeys.add(k); bibKey.set(p, k);
+}
+function bibtex(p) {
+  const authors = p.authors.map((a) => a.name).join(' and ');
+  const arx = (p.links || []).find((x) => x.label === 'arXiv');
+  const eprint = arx ? arx.href.split('/abs/')[1] : null;
+  let kind = 'article', venueLine = `  journal = {${p.venue}},`;
+  if (p.type === 'conference') { kind = 'inproceedings'; venueLine = `  booktitle = {Proceedings of the ${p.venue}},`; }
+  if (p.type === 'preprint') { kind = 'misc'; venueLine = `  note = {Preprint, submitted to ${p.venue}},`; }
+  const lines = [`@${kind}{${bibKey.get(p)},`, `  author = {${authors}},`, venueLine, `  title = {{${p.title}}},`, `  year = {${p.year}}${eprint ? ',' : ''}`];
+  if (eprint) lines.push(`  eprint = {${eprint}},`, `  archivePrefix = {arXiv}`);
+  lines.push(`}`);
+  return lines.join('\n');
+}
+// Prefer an explicit, official BibTeX (string or array of lines) when provided.
+const cite = (p) => (Array.isArray(p.bibtex) ? p.bibtex.join('\n') : p.bibtex) || bibtex(p);
+// Equal-contribution authors → small per-card footnote (no inline markers).
+const equalAuthors = (p) => p.authors.filter((a) => a.star).map((a) => a.name);
+const equalNote = (n) => (n.length === 2 ? `${n[0]} and ${n[1]}` : n.join(', '));
+
+const groups = groupOrder
+  .map((type) => ({ type, label: groupLabels[type], items: all.filter((p) => p.type === type).sort((a, b) => Number(b.year) - Number(a.year)) }))
+  .filter((g) => g.items.length > 0);
+// Show the zoom cue only on the first figure on the page; after that it reads as clickable.
+const firstThumb = groups.flatMap((g) => g.items).find((p) => p.thumb || p.demo || p.video) || null;
+
+const title = 'Publications · Luke Bhan';
+const description = 'Complete, searchable list of Luke Bhan’s publications in scientific machine learning and control: filter by topic, grab the PDF, code, or BibTeX.';
+
+// damped-oscillation motif (settles to a baseline): the "stabilization" visual
+const WAVE = '8,115 26,60 44,170 62,85 80,145 98,103 116,127 134,111 152,119 170,114 188,116 206,115 312,115';
+---
+<Base title={title} description={description}>
+  <Nav base="/" />
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <linearGradient id="thfade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"></stop>
+      <stop offset="1" stop-color="#000" stop-opacity="0.42"></stop>
+    </linearGradient>
+  </defs></svg>
+  <main>
+    <section id="publications">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Publications</h2>
+        </div>
+        <p class="pub-intro">
+          Filter by topic or search by title, author, or venue.
+          See also <a href="https://scholar.google.com/citations?user=T-djo_0AAAAJ&hl=en">Google Scholar</a>.
+        </p>
+
+        <div class="pubtools">
+          <input id="pubsearch" class="pubsearch" type="search" placeholder="Search title, author, venue…" aria-label="Search publications" autocomplete="off" />
+          <div class="filterbar" id="filterbar" role="group" aria-label="Filter by topic">
+            <button class="fbtn active" data-tag="" type="button">All</button>
+            {filterTags.map((t) => (
+              <button class="fbtn" data-tag={t} type="button" style={`--c:${TAG_META[t]}`}>{t}</button>
+            ))}
+          </div>
+        </div>
+
+        {groups.map((g) => (
+          <div class="pub-group" data-group={g.type}>
+            <p class="subhead">{g.label}</p>
+            {g.items.map((p) => (
+              <article class="pcard" data-tags={(p.tags || []).join('|')} data-text={searchText(p)}>
+                <div class="pthumb" style={`--c:${color(p)}`}>
+                  {p.demo
+                    ? <button class="thumb-zoom demo-zoom" type="button" data-demo="1" data-title={p.title} data-fig={p.fig} data-caption={p.caption || ''} data-vl={p.demo.left.src} data-vll={p.demo.left.label} data-vr={p.demo.right.src} data-vrl={p.demo.right.label}>
+                        <div class="demo-row">
+                          <div class="demo-cell"><span class={`demo-tag ${p.demo.left.state}`}>{p.demo.left.label}</span><video src={p.demo.left.src} autoplay loop muted playsinline preload="metadata"></video></div>
+                          <div class="demo-cell"><span class={`demo-tag ${p.demo.right.state}`}>{p.demo.right.label}</span><video src={p.demo.right.src} autoplay loop muted playsinline preload="metadata"></video></div>
+                        </div>
+                        <span class="fig-zoom" hidden={p !== firstThumb} aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                            <circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="15.6" y1="15.6" x2="21" y2="21"></line>
+                          </svg>
+                        </span>
+                      </button>
+                    : p.video
+                    ? <button class="thumb-zoom vid-zoom" type="button" data-video={p.video.src} data-title={p.title} data-fig={p.fig} data-caption={p.caption || ''}>
+                        <video src={p.video.src} autoplay loop muted playsinline preload="metadata"></video>
+                        <span class="fig-zoom" hidden={p !== firstThumb} aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                            <circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="15.6" y1="15.6" x2="21" y2="21"></line>
+                          </svg>
+                        </span>
+                      </button>
+                    : p.thumb
+                    ? <button class="thumb-zoom" type="button" data-full={p.thumb} data-title={p.title} data-fig={p.fig} data-caption={p.caption || ''}>
+                        <img src={p.thumb} alt={p.title} loading="lazy" decoding="async" />
+                        <span class="fig-zoom" hidden={p !== firstThumb} aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                            <circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="15.6" y1="15.6" x2="21" y2="21"></line>
+                          </svg>
+                        </span>
+                      </button>
+                    : (
+                      <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                        <rect width="320" height="200" fill="var(--c)"></rect>
+                        <rect width="320" height="200" fill="url(#thfade)"></rect>
+                        <line x1="0" y1="115" x2="320" y2="115" stroke="#fff" stroke-opacity="0.28" stroke-dasharray="3 5"></line>
+                        <polyline points={WAVE} fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                        <text x="16" y="184" fill="#fff" fill-opacity="0.95" font-family="JetBrains Mono, monospace" font-size="15" font-weight="600">{p.venue}</text>
+                        <text x="304" y="184" text-anchor="end" fill="#fff" fill-opacity="0.8" font-family="JetBrains Mono, monospace" font-size="14">{p.year}</text>
+                      </svg>
+                    )}
+                </div>
+                <div class="pbody">
+                  <p class="t">
+                    {p.url ? <a class="tlink" href={p.url}>{p.title}</a> : p.title}
+                    {p.tag && <span class="rtag">{p.tag}</span>}
+                  </p>
+                  <p class="au">{p.authors.map((a, i) => <>{i > 0 ? ', ' : ''}<span class={a.me ? 'me' : ''}>{a.name}</span>{a.star && <sup class="eqstar">*</sup>}</>)}</p>
+                  <p class="venue">{p.venue} · {p.year}</p>
+                  {p.authors.some((a) => a.star) && <p class="eqnote"><sup class="eqstar">*</sup> Equal contribution</p>}
+                  <ul class="ptags">
+                    {(p.tags || []).map((t) => <li style={`--c:${TAG_META[t] || '#5C616B'}`}>{t}</li>)}
+                  </ul>
+                  <div class="pacts">
+                    {pdfHref(p) && <a class="pbtn" href={pdfHref(p)}>PDF</a>}
+                    {codeHref(p) && <a class="pbtn" href={codeHref(p)}>GitHub</a>}
+                    <button class="pbtn cite-btn" type="button">Cite</button>
+                  </div>
+                  <div class="pbib" hidden>
+                    <button class="copybib" type="button">Copy</button>
+                    <pre>{cite(p)}</pre>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ))}
+
+        <p class="noresult" id="noresult" hidden>No papers match. Try a different topic or search.</p>
+        <p class="rs-back"><a href="/#top">← Back to home</a></p>
+      </div>
+    </section>
+
+    <div class="lightbox" id="lightbox" hidden>
+      <figure class="lb-card">
+        <button class="lb-close" id="lbClose" type="button" aria-label="Close">×</button>
+        <div class="lb-imgwrap" id="lbImgwrap"><img id="lbImg" src="" alt="" /></div>
+        <div class="lb-videowrap" id="lbVideo" hidden>
+          <div class="demo-cell"><span class="demo-tag off" id="lbVLL"></span><video id="lbVL" loop muted playsinline></video></div>
+          <div class="demo-cell"><span class="demo-tag on" id="lbVRL"></span><video id="lbVR" loop muted playsinline></video></div>
+        </div>
+        <div class="lb-singlewrap" id="lbSingle" hidden><video id="lbVS" loop muted playsinline controls></video></div>
+        <figcaption class="lb-cap">
+          <p class="lb-title" id="lbTitle"></p>
+          <div class="lb-text" id="lbCap"></div>
+        </figcaption>
+      </figure>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  const search = document.getElementById('pubsearch');
+  const bar = document.getElementById('filterbar');
+  const cards = Array.from(document.querySelectorAll('.pcard'));
+  const groupsEls = Array.from(document.querySelectorAll('.pub-group'));
+  const noresult = document.getElementById('noresult');
+  let activeTag = '';
+
+  function apply() {
+    const q = (search.value || '').trim().toLowerCase();
+    let shown = 0;
+    cards.forEach((c) => {
+      const okTag = !activeTag || c.dataset.tags.split('|').includes(activeTag);
+      const okQ = !q || c.dataset.text.includes(q);
+      const vis = okTag && okQ;
+      c.hidden = !vis;
+      if (vis) shown++;
+    });
+    groupsEls.forEach((g) => {
+      const vis = Array.from(g.querySelectorAll('.pcard')).filter((c) => !c.hidden).length;
+      g.hidden = vis === 0;
+    });
+    // Show the zoom cue only on the first *visible* figure.
+    let zoomAssigned = false;
+    cards.forEach((c) => {
+      const z = c.querySelector('.fig-zoom');
+      if (!z) return;
+      const showZoom = !c.hidden && !zoomAssigned;
+      z.hidden = !showZoom;
+      if (showZoom) zoomAssigned = true;
+    });
+    if (noresult) noresult.hidden = shown !== 0;
+  }
+
+  bar.addEventListener('click', (e) => {
+    const b = e.target.closest('.fbtn');
+    if (!b) return;
+    activeTag = b.dataset.tag;
+    Array.from(bar.children).forEach((x) => x.classList.toggle('active', x === b));
+    apply();
+  });
+  search.addEventListener('input', apply);
+
+  // deep link: /publications?q=Title pre-fills the search and filters to it
+  const q0 = new URLSearchParams(location.search).get('q');
+  if (q0) { search.value = q0; apply(); }
+
+  document.querySelectorAll('.cite-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const panel = btn.closest('.pbody').querySelector('.pbib');
+      panel.hidden = !panel.hidden;
+      btn.classList.toggle('open', !panel.hidden);
+    });
+  });
+  document.querySelectorAll('.copybib').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const pre = b.nextElementSibling;
+      try { await navigator.clipboard.writeText(pre.textContent); b.textContent = 'Copied ✓'; }
+      catch (e) { b.textContent = 'Copy failed'; }
+      setTimeout(() => (b.textContent = 'Copy'), 1500);
+    });
+  });
+
+  // Figure lightbox: click a thumbnail to view it large with a caption.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.pthumb video').forEach((v) => { v.removeAttribute('autoplay'); v.pause(); });
+  }
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbImgwrap = document.getElementById('lbImgwrap');
+  const lbVideo = document.getElementById('lbVideo');
+  const lbSingle = document.getElementById('lbSingle');
+  const lbVL = document.getElementById('lbVL');
+  const lbVR = document.getElementById('lbVR');
+  const lbVS = document.getElementById('lbVS');
+  const lbVLL = document.getElementById('lbVLL');
+  const lbVRL = document.getElementById('lbVRL');
+  const lbCap = document.getElementById('lbCap');
+  const lbTitle = document.getElementById('lbTitle');
+  const setHead = (title, cap, fig) => {
+    let figLabel = '';
+    if (fig) {
+      const word = /[-,–]/.test(fig) ? 'Figures' : 'Figure';
+      figLabel = ' <span class="lb-fignum">(' + word + ' ' + fig.replace(/-/g, '–') + ')</span>';
+    }
+    lbTitle.innerHTML = title ? title + figLabel : ''; lbTitle.hidden = !title;
+    lbCap.innerHTML = cap || ''; lbCap.hidden = !cap;
+  };
+  const show = (which) => { lbImgwrap.hidden = which !== 'img'; lbVideo.hidden = which !== 'demo'; lbSingle.hidden = which !== 'single'; };
+  const reveal = () => { lb.hidden = false; document.body.style.overflow = 'hidden'; };
+  const openLb = (src, title, cap, fig) => {
+    show('img'); lbImg.src = src; lbImg.alt = title || '';
+    setHead(title, cap, fig); reveal();
+  };
+  const openDemo = (b) => {
+    show('demo');
+    lbVL.src = b.dataset.vl; lbVLL.textContent = b.dataset.vll || '';
+    lbVR.src = b.dataset.vr; lbVRL.textContent = b.dataset.vrl || '';
+    lbVL.play && lbVL.play(); lbVR.play && lbVR.play();
+    setHead(b.dataset.title, b.dataset.caption, b.dataset.fig); reveal();
+  };
+  const openVideo = (b) => {
+    show('single'); lbVS.src = b.dataset.video; lbVS.play && lbVS.play();
+    setHead(b.dataset.title, b.dataset.caption, b.dataset.fig); reveal();
+  };
+  const closeLb = () => {
+    lb.hidden = true; lbImg.removeAttribute('src');
+    [lbVL, lbVR, lbVS].forEach((v) => { v.pause && v.pause(); v.removeAttribute('src'); v.load && v.load(); });
+    document.body.style.overflow = '';
+  };
+  document.querySelectorAll('.thumb-zoom').forEach((b) => {
+    b.addEventListener('click', () => (b.dataset.demo ? openDemo(b) : b.dataset.video ? openVideo(b) : openLb(b.dataset.full, b.dataset.title, b.dataset.caption, b.dataset.fig)));
+  });
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lb.hidden) closeLb(); });
+</script>
+
+<style>
+  .pub-intro { font-size: 15.5px; color: var(--muted); line-height: 1.55; margin: 0 0 18px; max-width: 48em; }
+
+  /* toolbar */
+  .pubtools { margin: 0 0 28px; }
+  .pubsearch {
+    width: 100%; font-family: var(--serif); font-size: 16px; color: var(--ink);
+    padding: 12px 16px; border: 1px solid var(--hair); border-radius: 12px; background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .pubsearch:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(21,126,107,.12); }
+  .filterbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .fbtn {
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px;
+    border: 1px solid var(--hair); border-radius: 999px; background: #fff; transition: all .14s;
+  }
+  .fbtn .fc { color: var(--muted); font-size: 11px; }
+  .fbtn::before {
+    content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--c, var(--muted)); display: inline-block;
+  }
+  .fbtn[data-tag=""]::before { display: none; }
+  .fbtn.active { background: var(--c, var(--ink)); border-color: var(--c, var(--ink)); color: #fff; }
+  .fbtn.active .fc { color: rgba(255,255,255,.8); }
+
+  /* cards */
+  .pub-group { margin-top: 30px; }
+  .pub-group:first-of-type { margin-top: 8px; }
+  .subhead .gcount {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    border: 1px solid var(--hair); border-radius: 999px; padding: 1px 7px; margin-left: 6px;
+  }
+  .pcard {
+    display: grid; grid-template-columns: 160px 1fr; gap: 20px;
+    padding: 18px 0; border-top: 1px solid var(--hair); align-items: start;
+  }
+  /* a display rule on .pcard overrides the UA [hidden] rule, restore it so JS filtering hides cards */
+  .pcard[hidden], .pub-group[hidden] { display: none; }
+  .pthumb {
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--hair);
+    aspect-ratio: 16 / 10; background: var(--c);
+  }
+  .pthumb svg, .pthumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .thumb-zoom { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #fff; cursor: zoom-in; }
+  .pthumb .thumb-zoom img { object-fit: contain; }
+  .fig-zoom {
+    position: absolute; bottom: 7px; right: 7px; z-index: 2;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    color: #fff; background: rgba(21, 23, 28, .6); border-radius: 5px; transition: background .14s;
+  }
+  .fig-zoom[hidden] { display: none; }
+
+  /* figure lightbox, warm card: image left, caption right */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 1000; padding: 4vmin;
+    background: rgba(36, 28, 26, .5);
+    backdrop-filter: blur(7px) saturate(115%);
+    -webkit-backdrop-filter: blur(7px) saturate(115%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox[hidden] { display: none; }
+  .lb-card {
+    position: relative; margin: 0; display: flex; align-items: stretch;
+    max-width: min(1040px, 92vw); max-height: 84vh; overflow: hidden;
+    background: var(--paper); border: 1px solid var(--hair); border-radius: 14px;
+    box-shadow: 0 40px 100px -30px rgba(0, 0, 0, .5);
+  }
+  .lb-imgwrap {
+    flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center;
+    background: #fff; padding: 24px;
+  }
+  .lb-imgwrap img { display: block; max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; }
+  .lb-imgwrap[hidden], .lb-videowrap[hidden] { display: none; }
+  .lb-videowrap {
+    flex: 1 1 auto; min-width: 0; align-items: center;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #fff; padding: 18px;
+  }
+  .lb-videowrap .demo-cell { position: relative; min-width: 0; }
+  .lb-videowrap video { display: block; width: 100%; height: auto; max-height: 70vh; background: #0e1320; }
+  .thumb-zoom.demo-zoom { display: flex; align-items: center; }
+  .thumb-zoom.demo-zoom .demo-row { width: 100%; }
+  .lb-singlewrap { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; background: #0e1320; padding: 12px; }
+  .lb-singlewrap[hidden] { display: none; }
+  .lb-singlewrap video { display: block; max-width: 100%; max-height: 74vh; width: auto; height: auto; }
+  .thumb-zoom.vid-zoom { background: #0e1320; }
+  .thumb-zoom.vid-zoom video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .lb-cap {
+    flex: 0 0 345px; align-self: stretch; overflow-y: auto;
+    background: var(--paper); border-left: 1px solid var(--hair);
+    padding: 26px 26px; color: var(--ink);
+  }
+  .lb-title {
+    font-family: var(--display); font-weight: 600; font-size: 15px; line-height: 1.25; color: var(--ink);
+    margin: 0 0 14px; padding-bottom: 13px; border-bottom: 1px solid var(--hair);
+  }
+  .lb-title .lb-fignum { font-weight: 400; color: var(--muted); }
+  .lb-text { font-family: var(--serif); font-size: 14.5px; line-height: 1.62; color: var(--ink); }
+  .lb-close {
+    position: absolute; top: 10px; right: 12px; z-index: 3; cursor: pointer;
+    width: 34px; height: 34px; border: 0; border-radius: 50%;
+    background: rgba(21, 23, 28, .08); color: var(--ink); font-size: 22px; line-height: 1;
+  }
+  @media (max-width: 640px) {
+    .lb-card { flex-direction: column; max-height: 88vh; }
+    .lb-imgwrap { padding: 16px; }
+    .lb-imgwrap img { max-height: 48vh; }
+    .lb-cap { flex: 0 0 auto; border-left: 0; border-top: 1px solid var(--hair); padding: 18px; max-height: 34vh; }
+  }
+  .pbody { min-width: 0; }
+  .pbody .t { font-family: var(--display); font-weight: 600; font-size: 17px; line-height: 1.3; margin: 0; }
+  .pbody .au { font-size: 14.5px; color: var(--muted); margin: 5px 0 0; }
+  .pbody .au .me { color: var(--ink); font-weight: 600; border-bottom: 2px solid var(--amber); }
+  .tlink { color: var(--ink); text-decoration: none; }
+  .eqnote { font-size: 12.5px; font-style: italic; color: var(--muted); margin: 7px 0 0; }
+  .pbody .venue { font-family: var(--mono); font-size: 12px; color: var(--teal); margin: 6px 0 0; }
+  .ptags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 10px 0 0; }
+  .ptags li {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .02em; color: var(--c);
+    border: 1px solid color-mix(in srgb, var(--c) 35%, var(--hair)); border-radius: 999px; padding: 3px 9px;
+    background: color-mix(in srgb, var(--c) 8%, #fff);
+  }
+  .pacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .pbtn {
+    font-family: var(--mono); font-size: 12px; color: var(--ink); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+    border: 1px solid var(--hair); border-radius: 8px; background: var(--paper); transition: all .14s;
+  }
+  .pbtn span { font-size: 11px; opacity: .7; }
+  .cite-btn.open { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .pbib { position: relative; margin-top: 10px; }
+  .pbib pre {
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.5; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--hair); border-radius: 8px;
+    padding: 14px 14px 14px; margin: 0; overflow-x: auto; white-space: pre;
+  }
+  .copybib {
+    position: absolute; top: 8px; right: 8px; z-index: 2; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; color: var(--ink);
+    border: 1px solid var(--hair); border-radius: 6px; background: #fff; padding: 4px 9px;
+  }
+  .noresult { color: var(--muted); font-size: 15px; margin: 26px 0; }
+  .rs-back { font-family: var(--mono); font-size: 13px; margin: 30px 0 8px; }
+
+  @media (max-width: 560px) {
+    .pcard { grid-template-columns: 1fr; gap: 12px; }
+    .pthumb { aspect-ratio: 16 / 7; }
+  }
+  @media (hover:hover) {
+    .fbtn:hover { border-color: var(--c, var(--accent)); }
+    .pbtn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+    .copybib:hover { border-color: var(--accent); color: var(--accent); }
+    .tlink:hover { color: var(--accent); text-decoration: underline; }
+    .pthumb:has(.thumb-zoom):hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(21, 126, 107, .28); }
+    .pthumb:has(.thumb-zoom):hover .fig-zoom { background: var(--accent); }
+    .lb-close:hover { background: rgba(21, 23, 28, .16); }
+  }
+</style>

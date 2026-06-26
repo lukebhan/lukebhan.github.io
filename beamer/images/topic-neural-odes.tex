@@ -1,0 +1,69 @@
+\documentclass[border=8pt]{standalone}
+\input{images/_figpre}
+\begin{document}
+\begin{tikzpicture}[line cap=round]
+  % left: discrete layers refining into a continuum
+  \foreach \x/\op in {0/52, 0.5/60, 0.92/69, 1.27/79, 1.54/89, 1.74/100}{
+    \fill[navy!\op] (\x,0.62) rectangle (\x+0.07,1.92);
+  }
+  \fill[navy, rounded corners=1pt] (1.95,0.62) rectangle (2.42,1.92);  % the continuum
+  \node[lab, align=center] at (1.2,0.18) {discrete $\to$ continuous};
+  \draw[flow, gold] (2.6,1.15) -- (3.4,1.15);
+
+  % right: vector field with its integral curve (the trajectory IS a field line)
+  \begin{scope}[shift={(3.55,-0.45)}]
+    \path[card] (-0.15,-0.2) rectangle (7.15,3.35);
+    % --- vector field (arrows tangent to the flow) ---
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (0.543,0.519) -- (0.857,0.581);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (0.545,1.189) -- (0.855,1.111);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (0.569,1.842) -- (0.831,1.658);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (0.595,2.471) -- (0.805,2.229);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (0.615,3.086) -- (0.785,2.814);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.250,0.493) -- (1.550,0.607);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.240,1.161) -- (1.560,1.139);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.258,1.824) -- (1.542,1.676);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.285,2.461) -- (1.515,2.239);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.308,3.081) -- (1.492,2.819);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.972,0.454) -- (2.228,0.646);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.947,1.104) -- (2.253,1.196);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.942,1.774) -- (2.258,1.726);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.963,2.433) -- (2.237,2.267);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (1.990,3.066) -- (2.210,2.834);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (2.701,0.424) -- (2.899,0.676);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (2.676,1.049) -- (2.924,1.251);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (2.650,1.695) -- (2.950,1.805);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (2.641,2.363) -- (2.959,2.337);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (2.659,3.025) -- (2.941,2.875);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (3.417,0.413) -- (3.583,0.687);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (3.398,1.027) -- (3.602,1.273);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (3.372,1.654) -- (3.628,1.846);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (3.347,2.304) -- (3.653,2.396);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (3.342,2.974) -- (3.658,2.926);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.120,0.412) -- (4.280,0.688);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.101,1.024) -- (4.299,1.276);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.076,1.648) -- (4.324,1.852);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.050,2.294) -- (4.350,2.406);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.040,2.962) -- (4.360,2.938);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.818,0.413) -- (4.982,0.687);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.798,1.026) -- (5.002,1.274);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.773,1.653) -- (5.027,1.847);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.747,2.302) -- (5.053,2.398);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (4.741,2.971) -- (5.059,2.929);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (5.516,0.414) -- (5.684,0.686);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (5.496,1.029) -- (5.704,1.271);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (5.470,1.657) -- (5.730,1.843);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (5.445,2.309) -- (5.755,2.391);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (5.443,2.979) -- (5.757,2.921);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (6.215,0.415) -- (6.385,0.685);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (6.195,1.030) -- (6.405,1.270);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (6.168,1.659) -- (6.432,1.841);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (6.144,2.312) -- (6.456,2.388);
+    \draw[teal!60,-{Stealth[length=2.6pt]},line width=0.5pt] (6.143,2.983) -- (6.457,2.917);
+    % --- integral curve (trajectory) ---
+    \draw[gold,line width=1.8pt] (0.350,0.686) -- (0.470,0.693) -- (0.590,0.700) -- (0.710,0.709) -- (0.830,0.720) -- (0.950,0.732) -- (1.070,0.746) -- (1.190,0.763) -- (1.310,0.782) -- (1.430,0.805) -- (1.550,0.831) -- (1.670,0.860) -- (1.790,0.894) -- (1.910,0.932) -- (2.030,0.975) -- (2.150,1.024) -- (2.270,1.078) -- (2.390,1.137) -- (2.510,1.201) -- (2.630,1.271) -- (2.750,1.345) -- (2.870,1.423) -- (2.990,1.504) -- (3.110,1.587) -- (3.230,1.671) -- (3.350,1.755) -- (3.470,1.837) -- (3.590,1.916) -- (3.710,1.993) -- (3.830,2.064) -- (3.950,2.132) -- (4.070,2.193) -- (4.190,2.250) -- (4.310,2.301) -- (4.430,2.347) -- (4.550,2.388) -- (4.670,2.424) -- (4.790,2.455) -- (4.910,2.483) -- (5.030,2.507) -- (5.150,2.528) -- (5.270,2.545) -- (5.390,2.561) -- (5.510,2.574) -- (5.630,2.586) -- (5.750,2.595) -- (5.870,2.604) -- (5.990,2.611) -- (6.110,2.617) -- (6.230,2.622) -- (6.350,2.626) -- (6.470,2.630) -- (6.590,2.633);
+    \fill[navy] (0.350,0.686) circle (2.3pt);
+    \fill[navy] (6.650,2.634) circle (2.3pt);
+    \node[navy, font=\sffamily\bfseries\fontsize{10}{11}\selectfont] at (3.3,3.05) {$\dot z = f_\theta(z,t)$};
+  \end{scope}
+\end{tikzpicture}
+\end{document}

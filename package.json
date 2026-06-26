@@ -1,0 +1,17 @@
+{
+  "name": "luke-bhan-site",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^2.4.5"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^1.4.0",
+    "sitemap": "^7.1.1"
+  }
+}

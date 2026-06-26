@@ -1,0 +1,50 @@
+---
+import exp from '../data/experience.json';
+---
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><h2>About</h2></div>
+    <div class="about-grid">
+      <div class="about">
+        <p>I'm a doctoral candidate at UC San Diego in <b>Intelligent Systems, Robotics &amp; Control</b> (ECE), advised by <a href="https://yyshi.eng.ucsd.edu/">Yuanyuan Shi</a> with mentorship from <a href="http://flyingv.ucsd.edu/">Miroslav Krstić</a>. My PhD is supported by the <a href="https://www.krellinst.org/csgf/">DOE Computational Science Graduate Fellowship</a>.</p>
+        <p>My goal is a single, rigorous toolkit (operator learning with formal control-theoretic guarantees) that transfers across domains rather than being rebuilt for each one. The same methods that stabilize a partial differential equation 1000&times; faster than classical solvers also plan robot motion that generalizes across environments, and steer biological and traffic systems in real time. I work on problems where <b>guarantees are not optional</b>.</p>
+        <p>Before UCSD I studied physics, applied math, and computer science at Vanderbilt University in an accelerated BS/MS program, advised by <a href="https://engineering.vanderbilt.edu/bio/gautam-biswas">Gautam Biswas</a> and <a href="https://as.vanderbilt.edu/physics-astronomy/bio/kalman-varga/">K&aacute;lm&aacute;n Varga</a>.</p>
+        <p class="research-cta"><a href="/about">More about me →</a></p>
+      </div>
+
+      <aside class="exp-aside">
+        <p class="colhead">Industry &amp; national-lab internships</p>
+        <ul class="exp-list">
+          {exp.map((e) => (
+            <li class="exp-item">
+              {(e.icon || e.logo) && <img class="exp-ico" src={e.icon || e.logo} alt={`${e.org} logo`} loading="lazy" decoding="async" />}
+              <div class="exp-body">
+                <div class="exp-head"><span class="exp-org">{e.org}</span><span class="exp-yr">{e.year}</span></div>
+                <div class="exp-topic">{e.topic}</div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+  .about .research-cta { margin-top: 30px; }
+  .exp-list { list-style: none; margin: 12px 0 0; padding: 0; }
+  .exp-item { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-top: 1px solid var(--hair); }
+  .exp-item:first-child { border-top: 0; padding-top: 0; }
+  .exp-ico { flex: none; width: 26px; height: 26px; object-fit: contain; object-position: center; }
+  .exp-body { flex: 1; min-width: 0; }
+  .exp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .exp-org { font-weight: 600; font-size: 14.5px; color: var(--ink); }
+  .exp-yr { font-family: var(--mono); font-size: 11.5px; color: var(--muted); flex: none; }
+  .exp-topic { font-family: var(--mono); font-size: 11.5px; letter-spacing: .02em; color: var(--teal); margin-top: 3px; }
+
+  @media (min-width: 760px) {
+    .about-grid { grid-template-columns: 1.55fr 0.8fr; gap: 48px; align-items: start; }
+    .about-grid .about { max-width: none; }
+  }
+</style>

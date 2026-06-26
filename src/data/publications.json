@@ -1,0 +1,1345 @@
+{
+  "selected": [
+    {
+      "venue": "IEEE TAC",
+      "year": "2024",
+      "title": "Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2302.14265"
+        },
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1109/TAC.2023.3347499"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsForGainKernels"
+        }
+      ]
+    },
+    {
+      "venue": "ICLR",
+      "year": "2025",
+      "title": "Generalizable Motion Planning via Operator Learning",
+      "authors": [
+        {
+          "name": "Sharath Matada",
+          "star": true
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Nikolay Atanasov"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2410.17547"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/ExistentialRobotics/PNO"
+        }
+      ]
+    },
+    {
+      "venue": "L4DC",
+      "year": "2025",
+      "tag": "Best Paper Finalist",
+      "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Peijia Qin",
+          "star": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2411.18964"
+        },
+        {
+          "label": "PMLR",
+          "href": "https://proceedings.mlr.press/v283/bhan25a.html"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorPredictorFeedback"
+        }
+      ]
+    },
+    {
+      "venue": "Automatica",
+      "year": "2025",
+      "title": "Adaptive Neural-Operator Backstepping Control of a Benchmark Hyperbolic PDE",
+      "authors": [
+        {
+          "name": "Maxence Lamarque"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2401.07862"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorAdaptiveControl"
+        }
+      ]
+    },
+    {
+      "venue": "IEEE TAC",
+      "year": "2025",
+      "title": "Gain Scheduling with a Neural Operator for a Transport PDE with Nonlinear Recirculation",
+      "authors": [
+        {
+          "name": "Maxence Lamarque"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Rafael Vázquez"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2401.02511"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorApproximatedGainScheduling"
+        }
+      ]
+    },
+    {
+      "venue": "L4DC",
+      "year": "2024",
+      "title": "PDE Control Gym: A Benchmark for Data-Driven Boundary Control of Partial Differential Equations",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Yuexin Bian",
+          "star": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "links": [
+        {
+          "label": "PDF",
+          "href": "https://lukebhan.com/PDE_Control_Gym_A_Benchmark_for_Data_Driven_Boundary_Control_of_Partial_Differential_Equations_Bhan_2024.pdf"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/PDEControlGym"
+        },
+        {
+          "label": "Docs",
+          "href": "https://pdecontrolgym.readthedocs.io/"
+        }
+      ]
+    }
+  ],
+  "recent": [
+    {
+      "venue": "ACC",
+      "year": "2026",
+      "tag": "to appear",
+      "title": "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
+      "authors": [
+        {
+          "name": "Filip Bajraktari"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2509.17131"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/FilipBajraktari/Multi-Input-Predictor-Feedback-Control"
+        }
+      ]
+    },
+    {
+      "venue": "IEEE CDC",
+      "year": "2025",
+      "title": "Delay-Adaptive Control of Nonlinear Systems with Approximate Neural Operator Predictors",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2508.20367"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/Neural-Operator-Delay-Adaptive-Predictor-Feedback"
+        }
+      ]
+    }
+  ],
+  "fullListNote": "These are highlights. For a full list of papers, including highlight figures, short details about their main contributions, and links, see the publications link above. For a comprehensive record, see Google Scholar.",
+  "groupOrder": [
+    "journal",
+    "conference",
+    "workshop",
+    "preprint"
+  ],
+  "groupLabels": {
+    "journal": "Journal articles",
+    "conference": "Conference papers",
+    "workshop": "Workshop papers",
+    "preprint": "Preprints & under review"
+  },
+  "all": [
+    {
+      "type": "journal",
+      "venue": "Automatica",
+      "year": "2026",
+      "tag": "provisionally accepted",
+      "title": "Stabilization of Nonlinear Systems with Unknown Delays via Delay-Adaptive Neural Operator Approximate Predictors",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems",
+        "Adaptive control",
+        "Biological systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2509.26443"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/Neural-Operator-Delay-Adaptive-Predictor-Feedback"
+        }
+      ],
+      "url": "https://arxiv.org/abs/2509.26443",
+      "bibtex": [
+        "@misc{bhan2025stabilizationnonlinearsystemsunknown,",
+        "  author={Luke Bhan and Miroslav Krstic and Yuanyuan Shi},",
+        "  title={Stabilization of nonlinear systems with unknown delays via delay-adaptive neural operator approximate predictors},",
+        "  year={2025},",
+        "  eprint={2509.26443},",
+        "  archivePrefix={arXiv},",
+        "  primaryClass={eess.SY},",
+        "  url={https://arxiv.org/abs/2509.26443}",
+        "}"
+      ],
+      "pdf": "/papers/stabilization_adaptive_delay_paper_automatica.pdf",
+      "thumb": "/figures/Stabilization_of_Nonlinear_Systems_with_Unknown_Delays_via_Delay_Adaptive_Neural_Operator_Approximate_Predictors_Figure_2.png",
+      "fig": 2,
+      "caption": "Controlling a bioreactor is complicated by an input delay whose length is unknown, so the controller must compensate the delay and identify its value at the same time. This work learns the delay-compensating predictor with a neural operator and adapts the delay estimate online while guaranteeing stability. The example is a chemostat in which biomass <em>Z</em>(<em>t</em>) and substrate <em>S</em>(<em>t</em>) are driven to their setpoints (top row), with the control input <em>U</em>(<em>t</em>), the dilution rate, at bottom left and the adapting delay estimate at bottom right. The black curve is the exact numerical predictor, green is the neural-operator predictor, and blue omits delay adaptation and fails to settle."
+    },
+    {
+      "type": "journal",
+      "venue": "IEEE Control Systems Letters",
+      "year": "2026",
+      "title": "Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Peter Quawas"
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems",
+        "Robotics"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1109/LCSYS.2026.3698435"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorPredictorsForSampledMeasurements"
+        }
+      ],
+      "url": "https://ieeexplore.ieee.org/document/11541192/",
+      "bibtex": [
+        "@ARTICLE{11541192,",
+        "  author={Bhan, Luke and Quawas, Peter and Krstic, Miroslav and Shi, Yuanyuan},",
+        "  journal={IEEE Control Systems Letters},",
+        "  title={Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs},",
+        "  year={2026},",
+        "  volume={10},",
+        "  pages={475-480},",
+        "  doi={10.1109/LCSYS.2026.3698435}}"
+      ],
+      "pdf": "/papers/sampling_horizon_paper.pdf",
+      "thumb": "/figures/Sampling_Horizon_Neural_Operator_Predictors_for_Nonlinear_Control_Under_Delayed_Inputs_Figure_2.png",
+      "fig": 2,
+      "caption": "Many systems must be controlled through an input delay while the state is observed only at sparse, irregular, noisy sampling times rather than continuously. This work trains a neural operator to serve as the delay-compensating predictor directly from such sampled measurements, reconstructing the future state without continuous feedback. Results are shown for a robotic manipulator with a 0.2 second input delay. Panel (a) shows Joint 5 tracking, (b) the measurement schedules (the numerical baseline and Case 2 use random intervals in [0.02, 0.1] s while Case 1 uses a fixed 0.05 s, all with Gaussian noise), (c) a moving average of the <em>L</em><sup>2</sup> tracking error, and (d) the prediction error over the first second."
+    },
+    {
+      "type": "journal",
+      "venue": "Automatica",
+      "year": "2025",
+      "title": "Adaptive Neural-Operator Backstepping Control of a Benchmark Hyperbolic PDE",
+      "authors": [
+        {
+          "name": "Maxence Lamarque"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Adaptive control",
+        "Traffic"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2401.07862"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorAdaptiveControl"
+        }
+      ],
+      "url": "https://doi.org/10.1016/j.automatica.2025.112329",
+      "bibtex": [
+        "@article{LAMARQUE2025112329,",
+        "  author={Maxence Lamarque and Luke Bhan and Yuanyuan Shi and Miroslav Krstic},",
+        "  journal={Automatica},",
+        "  title={Adaptive neural-operator backstepping control of a benchmark hyperbolic PDE},",
+        "  year={2025},",
+        "  volume={177},",
+        "  pages={112329},",
+        "  doi={10.1016/j.automatica.2025.112329},",
+        "  url={https://www.sciencedirect.com/science/article/pii/S0005109825002225},",
+        "  issn={0005-1098},",
+        "  keywords={Partial differential equations, Adaptive control, Deep learning, Lyapunov stability}",
+        "}"
+      ],
+      "pdf": "/papers/Adaptive_Neural_Operator_Backstepping_Control_of_a_Benchmark_Hyperbolic_PDE_Lamarque_2024.pdf",
+      "thumb": "/figures/Adaptive_Neural_Operator_Backstepping_Control_of_a_Benchmark_Hyperbolic_PDE_Figure_1.png",
+      "fig": 1,
+      "caption": "Controlling a PDE from its boundary becomes much harder when the plant coefficients are unknown, since the stabilizing gain kernel must be recomputed from a costly PDE solve each time the estimate changes. This work approximates that gain-kernel mapping with a neural operator, letting adaptive boundary control of PDEs run in real time. The top row shows two unstable hyperbolic PDEs and the bottom row shows the same systems stabilized once the neural-operator adaptive controller is applied."
+    },
+    {
+      "type": "journal",
+      "venue": "IEEE TAC",
+      "year": "2025",
+      "title": "Gain Scheduling with a Neural Operator for a Transport PDE with Nonlinear Recirculation",
+      "authors": [
+        {
+          "name": "Maxence Lamarque"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Rafael Vázquez"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2401.02511"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorApproximatedGainScheduling"
+        }
+      ],
+      "url": "https://ieeexplore.ieee.org/document/10918744",
+      "bibtex": [
+        "@ARTICLE{10918744,",
+        "  author={Lamarque, Maxence and Bhan, Luke and Vazquez, Rafael and Krstic, Miroslav},",
+        "  journal={IEEE Transactions on Automatic Control},",
+        "  title={Gain Scheduling With a Neural Operator for a Transport PDE With Nonlinear Recirculation},",
+        "  year={2025},",
+        "  volume={70},",
+        "  number={8},",
+        "  pages={5616-5623},",
+        "  doi={10.1109/TAC.2025.3549700}}"
+      ],
+      "pdf": "/papers/Gain_Scheduling_with_a_Neural_Operator_for_a_Transport_PDE_with_Nonlinear_Recirculation_Lamarque_2024.pdf",
+      "thumb": "/figures/Gain_Scheduling_with_a_Neural_Operator_for_a_Transport_PDE_with_Nonlinear_Recirculation_Figure_1.png",
+      "fig": 1,
+      "caption": "Boundary control of a <b>nonlinear</b> transport PDE requires re-solving the control gains as the operating point moves, which is too slow to do online. This work learns the gain-scheduling map with a neural operator, delivering real-time boundary control of the nonlinear plant. The top row shows two unstable hyperbolic PDEs and the bottom row shows stabilization once the neural-operator gain-scheduled controller is applied."
+    },
+    {
+      "type": "journal",
+      "venue": "Systems & Control Letters",
+      "year": "2025",
+      "title": "Adaptive Control of Reaction–Diffusion PDEs via Neural Operator-Approximated Gain Kernels",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Adaptive control",
+        "Biological systems"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1016/j.sysconle.2024.105968"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorParabolicAdaptiveControl"
+        }
+      ],
+      "url": "https://doi.org/10.1016/j.sysconle.2024.105968",
+      "bibtex": [
+        "@article{BHAN2025105968,",
+        "  author={Luke Bhan and Yuanyuan Shi and Miroslav Krstic},",
+        "  journal={Systems & Control Letters},",
+        "  title={Adaptive control of reaction–diffusion PDEs via neural operator-approximated gain kernels},",
+        "  year={2025},",
+        "  volume={195},",
+        "  pages={105968},",
+        "  doi={10.1016/j.sysconle.2024.105968},",
+        "  url={https://www.sciencedirect.com/science/article/pii/S0167691124002561},",
+        "  issn={0167-6911},",
+        "  keywords={Reaction–diffusion systems, PDE backstepping, Neural operators, Adaptive control, Learning-based control}",
+        "}"
+      ],
+      "pdf": "/papers/Adaptive_Control_of_Reaction_Diffusion_PDEs_via_Neural_Operator_Approximated_Gain_Kernels_Bhan_2024.pdf",
+      "thumb": "/figures/Adaptive_Control_of_Reaction_Diffusion_PDEs_via_Neural_Operator_Approximated_Gain_Kernels_Figure_1.png",
+      "fig": "1-3",
+      "caption": "Adaptive boundary control of a reaction-diffusion (parabolic) PDE with unknown coefficients needs its two-dimensional gain kernel recomputed online, which is computationally prohibitive. This work learns that 2D kernel mapping with a neural operator so it updates instantly as the plant estimate changes. The top left shows an unstable parabolic PDE and the bottom left shows it stabilized under the neural-operator adaptive controller. The top right shows the estimated plant functional converging to its true value in blue, and the bottom right compares the initial estimate (orange), final estimate (green), and true functional (blue)."
+    },
+    {
+      "type": "journal",
+      "venue": "Automatica",
+      "year": "2024",
+      "title": "Neural Operators of Backstepping Controller and Observer Gain Functions for Reaction–Diffusion PDEs",
+      "authors": [
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Biological systems"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1016/j.automatica.2024.111649"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsForAdvectionDiffusionControl"
+        }
+      ],
+      "url": "https://doi.org/10.1016/j.automatica.2024.111649",
+      "bibtex": [
+        "@article{KRSTIC2024111649,",
+        "  author={Miroslav Krstic and Luke Bhan and Yuanyuan Shi},",
+        "  journal={Automatica},",
+        "  title={Neural operators of backstepping controller and observer gain functions for reaction–diffusion PDEs},",
+        "  year={2024},",
+        "  volume={164},",
+        "  pages={111649},",
+        "  doi={10.1016/j.automatica.2024.111649},",
+        "  url={https://www.sciencedirect.com/science/article/pii/S0005109824001420},",
+        "  issn={0005-1098}",
+        "}"
+      ],
+      "pdf": "/papers/Neural_Operators_of_Backstepping_Controller_and_Observer_Gain_Functions_for_Reaction_Diffusion_PDEs_Krstic_2024.pdf",
+      "thumb": "/figures/Neural_Operators_of_Backstepping_Controller_and_Observer_Gain_Functions_for_Reaction_Diffusion_PDEs_Figure_6.png",
+      "fig": 6,
+      "caption": "Designing backstepping controllers and observers for reaction-diffusion PDEs requires solving a separate gain PDE for every new plant, which is slow. This work shows a neural operator can produce both the controller and observer gain functions while provably preserving stability and convergence, and far faster than solving those gain PDEs. A limit-cycle reaction-diffusion plant is shown alongside the neural-operator-learned observer with initial state <em>u</em>(<em>x</em>, 0) = 20. Fed only a Neumann boundary measurement, the observer reconstructs the full state and converges exponentially fast."
+    },
+    {
+      "type": "journal",
+      "venue": "IEEE TAC",
+      "year": "2024",
+      "title": "Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Traffic"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2302.14265"
+        },
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1109/TAC.2023.3347499"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsForGainKernels"
+        }
+      ],
+      "url": "https://ieeexplore.ieee.org/document/10374221",
+      "bibtex": [
+        "@ARTICLE{10374221,",
+        "  author={Bhan, Luke and Shi, Yuanyuan and Krstic, Miroslav},",
+        "  journal={IEEE Transactions on Automatic Control},",
+        "  title={Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping},",
+        "  year={2024},",
+        "  volume={69},",
+        "  number={8},",
+        "  pages={5310-5325},",
+        "  doi={10.1109/TAC.2023.3347499}}"
+      ],
+      "pdf": "/papers/Neural_Operators_for_Bypassing_Gain_and_Control_Computations_in_PDE_Backstepping_Bhan_2023.pdf",
+      "thumb": "/figures/Neural_Operators_for_Bypassing_Gain_and_Control_Computations_in_PDE_Backstepping_Figure_1.png",
+      "fig": 1,
+      "caption": "PDE backstepping stabilizes a system by solving a kernel PDE for its control gains, an expensive computation that must be redone for each new plant. This was the first work to bring neural operators into control with provable guarantees, showing the gain-kernel mapping can be learned and applied directly rather than recomputed online. It preserves closed-loop stability while running orders of magnitude faster, a milestone that much of the subsequent neural-operator control literature builds on. The top row shows the plant functionals (blue) and the learned neural-operator kernel mappings (red) that define the controller. The bottom row shows stabilization of two benchmark hyperbolic PDEs using the learned kernels inside an otherwise model-based backstepping controller."
+    },
+    {
+      "type": "journal",
+      "venue": "Nano Letters",
+      "year": "2022",
+      "title": "Laser-Driven Petahertz Electron Ratchet Nanobubbles",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Cody L. Covington"
+        },
+        {
+          "name": "Kálmán Varga"
+        }
+      ],
+      "tags": [
+        "Material Science"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1021/acs.nanolett.2c01399"
+        }
+      ],
+      "url": "https://pubs.acs.org/doi/10.1021/acs.nanolett.2c01399",
+      "bibtex": [
+        "@article{bhan2022laser,",
+        "  author={Bhan, Luke and Covington, Cody L. and Varga, K{\\'a}lm{\\'a}n},",
+        "  journal={Nano Letters},",
+        "  title={Laser-Driven Petahertz Electron Ratchet Nanobubbles},",
+        "  year={2022},",
+        "  volume={22},",
+        "  number={10},",
+        "  pages={4240--4245},",
+        "  doi={10.1021/acs.nanolett.2c01399}",
+        "}"
+      ],
+      "pdf": "/papers/Laser_Driven_Petahertz_Electron_Ratchet_Nanobubbles_Bhan_2022.pdf",
+      "thumb": "/figures/Laser_Driven_Petahertz_Electron_Ratchet_Nanobubbles_Figure_1.jpeg",
+      "fig": 1,
+      "caption": "Driving electrons in nanoscale materials with ultrafast lasers could enable petahertz-speed electronics, which requires understanding how an asymmetric structure turns an oscillating laser field into a net directional current. This work designs and simulates a graphene electron ratchet, an asymmetric nanobubble with a roughly 1.4 nm gap whose broken symmetry rectifies a femtosecond laser pulse into a directed electron current. Panel (a) shows snapshots of the electron density with flux vectors (arrows are the summed electron flux and the white scale bar is 10 electrons), (b) the excited-state density difference, (c) the driving laser pulse over time, and (d) the total electron flux over time, where the red curve is the system mirrored about the <em>x</em> axis so the gap between curves is the rectified current. Time is in atomic units (1 a.u. is about 0.024 fs)."
+    },
+    {
+      "type": "journal",
+      "venue": "Physical Review B",
+      "year": "2022",
+      "title": "Signatures of Atomic Structure in Subfemtosecond Laser-Driven Electron Dynamics in Nanogaps",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Cody L. Covington"
+        },
+        {
+          "name": "Kálmán Varga"
+        }
+      ],
+      "tags": [
+        "Material Science"
+      ],
+      "links": [
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1103/PhysRevB.105.085416"
+        }
+      ],
+      "url": "https://journals.aps.org/prb/abstract/10.1103/PhysRevB.105.085416",
+      "bibtex": [
+        "@article{PhysRevB.105.085416,",
+        "  author={Bhan, Luke and Covington, Cody and Varga, K\\'alm\\'an},",
+        "  journal={Phys. Rev. B},",
+        "  title={Signatures of atomic structure in subfemtosecond laser-driven electron dynamics in nanogaps},",
+        "  year={2022},",
+        "  volume={105},",
+        "  issue={8},",
+        "  pages={085416},",
+        "  doi={10.1103/PhysRevB.105.085416},",
+        "  url={https://link.aps.org/doi/10.1103/PhysRevB.105.085416},",
+        "  numpages={8},",
+        "  month={Feb},",
+        "  publisher={American Physical Society}",
+        "}"
+      ],
+      "pdf": "/papers/Signatures_Of_Atomic_Structure_In_Subfemtosecond_Laser_Driven_Electron_Dynamics_Bhan_2022.pdf",
+      "thumb": "/figures/Signatures_of_Atomic_Structure_in_Subfemtosecond_Laser_Driven_Electron_Dynamics_in_Nanogaps_Figure_1.jpg",
+      "fig": 1,
+      "caption": "Plasmonic bowtie nanogaps concentrate laser fields to drive electrons on attosecond timescales, a regime relevant to petahertz electronics and sensing, but whether the discrete atomic structure of the metal leaves a measurable imprint was unclear. This work uses real-time density functional theory to show that atomic structure produces distinct signatures in the laser-driven electron dynamics inside the gap. Averaged over the <em>y</em> direction, panel (a) shows the electron density of the full bowtie, (b) the density in the gap, (c) the excited-state density difference in the gap, (d) the electric field in the gap, (e) the current in the gap, and (f) the field enhancement in the gap."
+    },
+    {
+      "type": "journal",
+      "venue": "J. Chemical Physics",
+      "year": "2021",
+      "title": "Simulation of Photo-Electron Spectrum and Electron Scattering by Dual Time Propagation",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Cody L. Covington"
+        },
+        {
+          "name": "Jason Rivas"
+        },
+        {
+          "name": "Kálmán Varga"
+        }
+      ],
+      "tags": [
+        "Material Science"
+      ],
+      "links": [
+        {
+          "label": "PDF",
+          "href": "https://pubs.aip.org/aip/jcp/article-pdf/doi/10.1063/5.0045591/9695069/114110_1_online.pdf"
+        },
+        {
+          "label": "DOI",
+          "href": "https://doi.org/10.1063/5.0045591"
+        }
+      ],
+      "url": "https://pubs.aip.org/aip/jcp/article/154/11/114110/315503/Simulation-of-photo-electron-spectrum-and-electron",
+      "bibtex": [
+        "@article{10.1063/5.0045591,",
+        "  author={Bhan, Luke and Covington, Cody and Rivas, Jason and Varga, Kálmán},",
+        "  journal={The Journal of Chemical Physics},",
+        "  title={Simulation of photo-electron spectrum and electron scattering by dual time propagation},",
+        "  year={2021},",
+        "  volume={154},",
+        "  number={11},",
+        "  pages={114110},",
+        "  doi={10.1063/5.0045591},",
+        "  url={https://doi.org/10.1063/5.0045591},",
+        "  issn={0021-9606},",
+        "  month={03}",
+        "}"
+      ],
+      "pdf": "/papers/Simulation_Of_Photoelectron_Spectrum_and_Electron_Scattering_by_Dual_Time_Propagation_Bhan_2021.pdf",
+      "thumb": "/figures/Simulation_of_Photo_Electron_Spectrum_and_Electron_Scattering_by_Dual_Time_Propagation_Figure_6.jpg",
+      "fig": 6,
+      "caption": "Computing photoelectron spectra and electron scattering from first principles normally demands an impractically large simulation box to capture the outgoing electrons. This work introduces dual time propagation, which splits space into a central region under the full Hamiltonian and an outer region carrying only the kinetic and laser terms joined by a source term, making these spectra tractable to compute. The chiral molecule methyloxirane (C<sub>3</sub>H<sub>6</sub>O) is ionized by circularly polarized light. Panels (a) and (b) show the electron density in momentum space and (c) and (d) the photoelectron spectrum for left-polarized light in (a, c) and right-polarized light in (b, d), where the difference between polarizations reflects the molecule's handedness."
+    },
+    {
+      "type": "conference",
+      "venue": "ACC",
+      "year": "2026",
+      "tag": "to appear",
+      "title": "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
+      "authors": [
+        {
+          "name": "Filip Bajraktari"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems",
+        "Traffic"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2509.17131"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/FilipBajraktari/Multi-Input-Predictor-Feedback-Control"
+        }
+      ],
+      "pdf": "/papers/delay_compensation_multi_input_acc.pdf",
+      "thumb": "/figures/Delay_Compensation_of_Multi_Input_Distinct_Delay_Nonlinear_Systems_via_Neural_Operators_Figure_1.png",
+      "fig": 1,
+      "caption": "Many vehicles and machines receive several control inputs that each arrive after a different time delay, which standard predictor feedback cannot compensate all at once. This work assigns a separate neural-operator predictor to each input so the distinct delays are compensated simultaneously with a stability guarantee. A non-holonomic unicycle, a car-like vehicle with front-wheel drive, is stabilized despite a 0.25 second delay on steering and a 0.6 second delay on acceleration.",
+      "url": "https://arxiv.org/abs/2509.17131"
+    },
+    {
+      "type": "conference",
+      "venue": "IEEE CDC",
+      "year": "2025",
+      "title": "Delay-Adaptive Control of Nonlinear Systems with Approximate Neural Operator Predictors",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems",
+        "Adaptive control"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2508.20367"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/Neural-Operator-Delay-Adaptive-Predictor-Feedback"
+        }
+      ],
+      "pdf": "/papers/delay_adaptive_cdc.pdf",
+      "thumb": "/figures/Delay_Adaptive_Control_of_Nonlinear_Systems_with_Approximate_Neural_Operator_Predictors_Figure_1.png",
+      "caption": "Compensating an input delay in a nonlinear system is hard when the delay is known and harder still when its length is unknown and must be learned during operation. This work pairs a neural-operator predictor with an online delay estimator so the controller compensates and identifies the delay together while guaranteeing stability. A nonlinear bacterium population with interacting proteins <em>x</em><sub>1</sub> and <em>x</em><sub>2</sub> is driven to an unstable equilibrium under an unknown input delay. The black curve is the exact numerical predictor, green and red are neural-operator predictors at varying accuracy, and blue omits the delay-adaptive design. The bottom left shows the control input, the injected <em>x</em><sub>1</sub> protein, and the bottom right shows the delay estimate adapting from an initial guess of 2 toward its true value of 1.",
+      "fig": 1,
+      "url": "https://arxiv.org/abs/2508.20367"
+    },
+    {
+      "type": "conference",
+      "venue": "L4DC",
+      "year": "2025",
+      "tag": "Best Paper Finalist",
+      "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Peijia Qin",
+          "star": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems",
+        "Robotics"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2411.18964"
+        },
+        {
+          "label": "PMLR",
+          "href": "https://proceedings.mlr.press/v283/bhan25a.html"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorPredictorFeedback"
+        }
+      ],
+      "pdf": "/papers/Neural_Operators_For_Predictor_Feedback_Control_of_Nonlinear_Delay_Systems_Bhan_2025.pdf",
+      "demo": {
+        "left": {
+          "src": "/dp_no_predictor.mp4",
+          "label": "no predictor",
+          "state": "off"
+        },
+        "right": {
+          "src": "/dp_with_predictor.mp4",
+          "label": "neural-operator predictor",
+          "state": "on"
+        }
+      },
+      "caption": "Robots performing fast dynamic tasks often act through a communication or actuation delay that destabilizes the loop if left uncompensated. This work learns the delay-compensating predictor with a neural operator and evaluates it in a single forward pass, so the compensator runs in real time while keeping the classical stability guarantee. A manipulator stabilizes a rolling ball through a long input delay. On the left, without the predictor, the delay destabilizes the system and the task fails; on the right, with the neural-operator predictor, the same fast task is completed stably.",
+      "url": "https://proceedings.mlr.press/v283/bhan25a.html"
+    },
+    {
+      "type": "conference",
+      "venue": "ICLR",
+      "year": "2025",
+      "title": "Generalizable Motion Planning via Operator Learning",
+      "authors": [
+        {
+          "name": "Sharath Matada",
+          "star": true
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Nikolay Atanasov"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Robotics"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2410.17547"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/ExistentialRobotics/PNO"
+        }
+      ],
+      "pdf": "/papers/Generalizable_motion_Planning_via_operator_learning_matada_2025.pdf",
+      "thumb": "/figures/Generalizable_Motion_Planning_via_Operator_Learning_Figure_1.jpg",
+      "fig": 1,
+      "caption": "Robot motion planning needs the cost to reach a goal from every location on a map, and recomputing it whenever the map resolution changes is expensive. This work designs a planning neural operator whose structure learns this value function and generalizes to map resolutions far finer than those it trained on. The figure shows maps of New York City with obstacles, where the red dot marks the goal and the contours give the cost to reach it from any location. Trained only on 64×64 maps, the operator produces the value function on 256×256, 512×512, and 1024×1024 maps that were never seen during training.",
+      "url": "https://openreview.net/forum?id=UYcUpiULmT"
+    },
+    {
+      "type": "conference",
+      "venue": "L4DC",
+      "year": "2024",
+      "title": "PDE Control Gym: A Benchmark for Data-Driven Boundary Control of Partial Differential Equations",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Yuexin Bian",
+          "star": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "PDE systems",
+        "Biological systems",
+        "Traffic"
+      ],
+      "links": [
+        {
+          "label": "PDF",
+          "href": "https://lukebhan.com/PDE_Control_Gym_A_Benchmark_for_Data_Driven_Boundary_Control_of_Partial_Differential_Equations_Bhan_2024.pdf"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/PDEControlGym"
+        },
+        {
+          "label": "Docs",
+          "href": "https://pdecontrolgym.readthedocs.io/"
+        }
+      ],
+      "pdf": "/papers/PDE_Control_Gym_A_Benchmark_for_Data_Driven_Boundary_Control_of_Partial_Differential_Equations_Bhan_2024.pdf",
+      "thumb": "/figures/PDE_Control_Gym_A_Benchmark_for_Data_Driven_Boundary_Control_of_Partial_Differential_Equations_Figure_1.jpg",
+      "fig": 2,
+      "caption": "Reinforcement learning for controlling PDEs has lacked a common benchmark, making methods hard to compare across the many kinds of PDE that arise in practice. This work builds the first such benchmark suite, spanning parabolic PDEs, the Navier-Stokes equations, traffic-flow models, a Stefan model of Parkinson's disease, and a glioblastoma tumor-growth model across physics, biology, and medicine. As one example, the figure compares three approaches to learning the boundary controller for a benchmark hyperbolic PDE, namely backstepping (analytical), SAC (offline RL), and PPO (online RL).",
+      "url": "https://proceedings.mlr.press/v242/bhan24a.html"
+    },
+    {
+      "type": "conference",
+      "venue": "ACC",
+      "year": "2024",
+      "title": "Moving-Horizon Estimators for Hyperbolic and Parabolic PDEs in 1-D",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Iasson Karafyllis"
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "James B. Rawlings"
+        }
+      ],
+      "tags": [
+        "PDE systems"
+      ],
+      "links": [],
+      "pdf": "/papers/Moving_Horizon_Estimators_for_Hyperbolic_and_Parabolic_PDEs_in_1D_Bhan_2024.pdf",
+      "thumb": "/figures/Moving_Horizon_Estimators_for_Hyperbolic_and_Parabolic_PDEs_in_1_D_Figure_1.jpg",
+      "fig": 1,
+      "caption": "Reconstructing the full spatial state of a PDE from a single boundary sensor is essential for control, yet standard moving-horizon estimators solve an optimization over a sliding window at every step. This work derives an explicit closed-form moving-horizon estimator for hyperbolic and parabolic PDEs, removing the online optimization. The top row shows the true system driven unstable by a multi-frequency boundary input, the middle row shows the observer estimate over a short sliding window (<em>T</em> = 0.1) that stays accurate despite heavy boundary noise, and the bottom row shows the <em>L</em><sup>2</sup> error, which drops sharply once the observer engages at <em>t</em> = 0.1 (grey dashed line) and keeps decaying.",
+      "url": "https://arxiv.org/abs/2401.02516"
+    },
+    {
+      "type": "conference",
+      "venue": "IEEE CDC",
+      "year": "2023",
+      "title": "Neural Operators for Hyperbolic PDE Backstepping Feedback Laws",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems"
+      ],
+      "links": [
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsForGainKernels"
+        }
+      ],
+      "pdf": "/papers/hyperbolic_feedback_laws_cdc.pdf",
+      "thumb": "/figures/Neural_Operators_for_Hyperbolic_PDE_Backstepping_Feedback_Laws_Figure_3.png",
+      "fig": 3,
+      "caption": "Forming a backstepping boundary controller for a hyperbolic PDE requires solving a kernel PDE online to assemble the feedback law. This work learns the mapping from the plant to the full feedback law with a neural operator, replacing that online solve with a fast forward pass while preserving stability. The top row shows the PDE state under the exact controller, <em>u</em>(<em>x</em>, <em>t</em>), and under the neural-operator feedback law, <em>û</em>(<em>x</em>, <em>t</em>), which are visually indistinguishable. The bottom left shows the two boundary control inputs <em>U</em> and <em>Û</em> nearly coinciding, and the bottom right shows the <em>L</em><sup>2</sup> error in <em>x</em> between the two closed-loop solutions staying small.",
+      "url": "https://ieeexplore.ieee.org/document/10383991"
+    },
+    {
+      "type": "conference",
+      "venue": "IEEE CDC",
+      "year": "2023",
+      "title": "Neural Operators for Hyperbolic PDE Backstepping Kernels",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems"
+      ],
+      "links": [
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsForGainKernels"
+        }
+      ],
+      "pdf": "/papers/hyperbolic_backstepping_kernels_cdc.pdf",
+      "thumb": "/figures/Neural_Operators_for_Hyperbolic_PDE_Backstepping_Kernels_Figure_1.png",
+      "fig": 1,
+      "caption": "PDE backstepping computes its stabilizing gains by solving a kernel PDE that must be redone for every new plant and is too slow to run online. This work shows the kernel mapping can instead be learned by a neural operator and evaluated in a single forward pass while preserving stability. The top row shows the plant functionals (blue) and the learned neural-operator kernel mappings (red) that define the controller, and the bottom row shows stabilization of two benchmark hyperbolic PDEs using the learned kernels inside an otherwise model-based backstepping controller.",
+      "url": "https://ieeexplore.ieee.org/document/10383639"
+    },
+    {
+      "type": "conference",
+      "venue": "L4DC",
+      "year": "2023",
+      "title": "Operator Learning for Nonlinear Adaptive Control",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Yuanyuan Shi"
+        },
+        {
+          "name": "Miroslav Krstić"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Adaptive control"
+      ],
+      "links": [
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/operatorAdaptiveControl"
+        }
+      ],
+      "pdf": "/papers/Operator_Learning_for_Nonlinear_Adaptive_Control_Bhan_2023.pdf",
+      "thumb": "/figures/Operator_Learning_for_Nonlinear_Adaptive_Control_Figure_2.jpg",
+      "fig": 2,
+      "caption": "Adaptive control of a nonlinear system normally relies on a parameter estimator that must be derived by hand for each new model. This work replaces that estimator with a learned operator, so the adaptation law comes from data while the system is still provably stabilized. The example is a wing-rock aircraft model in which <em>φ</em> is the roll angle and <em>p</em> its angular velocity. The top row shows phase portraits (<em>φ</em> on the x-axis, <em>p</em> on the y-axis) under several estimator types, all reaching the target equilibrium at the origin, and the bottom row shows the corresponding control input <em>u</em>(<em>t</em>).",
+      "url": "https://proceedings.mlr.press/v211/bhan23a.html"
+    },
+    {
+      "type": "conference",
+      "venue": "ICRA",
+      "year": "2022",
+      "title": "Concurrent Policy Blending and System Identification for Generalized Assistive Control",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Marcos Quinones-Grueiro"
+        },
+        {
+          "name": "Gautam Biswas"
+        }
+      ],
+      "tags": [
+        "Robotics"
+      ],
+      "links": [
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/assistive-gym"
+        }
+      ],
+      "pdf": "/papers/Concurrent_Policy_Blending_and_System_Identification_for_Generalized_Assistive_Control_Bhan_2022.pdf",
+      "url": "https://ieeexplore.ieee.org/document/9811672",
+      "video": {
+        "src": "/figures/Concurrent_Policy_Blending_and_System_Identification_for_Generalized_Assistive_Control_Figure_2.mp4"
+      },
+      "fig": 2,
+      "caption": "Assistive robots must adapt to each user's particular mix of impairments, which is hard when one control policy has to handle many conditions at once. This work trains a separate base policy for each impairment and learns a meta-policy that blends them on the fly from an observation of the user, generalizing to combinations never seen in training. A wheelchair-mounted Jaco robot scratches an itch at a target location (green marker) on the arm of a simulated human with three combined impairments (reduced strength, restricted joint range, and tremor). The meta-policy reads a 12-dimensional impairment vector and outputs the blending weights (shown top-left) that mix three base policies trained for joint-limit, tremor, and weakness impairments, and the blended action drives both the robot and the human's arm. Reconstructed in Assistive Gym (PyBullet)."
+    },
+    {
+      "type": "conference",
+      "venue": "SysTol",
+      "year": "2021",
+      "title": "Fault Tolerant Control Combining Reinforcement Learning and Model-Based Control",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Marcos Quinones-Grueiro"
+        },
+        {
+          "name": "Gautam Biswas"
+        }
+      ],
+      "tags": [
+        "Robotics"
+      ],
+      "links": [],
+      "pdf": "/papers/Fault_Tolerant_Control_Combining_Reinforcement_Learning_and_Model_Based_Control_Bhan_2021.pdf",
+      "thumb": "/figures/Fault_Tolerant_Control_Combining_Reinforcement_Learning_and_Model_Based_Control_Figure_7.png",
+      "fig": 7,
+      "caption": "When an actuator faults during operation, a controller tuned for the healthy system can fail to keep it stable. This work runs a model-based controller nominally and hands control to a reinforcement-learning controller once a fault is detected, pairing the reliability of the former with the recovery ability of the latter. The figure summarizes the robustness of the hybrid scheme under a single-motor fault (Fault 3) as a box plot, where the box edges mark the first and third quartiles and the circles are outliers.",
+      "url": "https://ieeexplore.ieee.org/document/9595275/"
+    },
+    {
+      "type": "conference",
+      "venue": "IFAC CTS",
+      "year": "2018",
+      "title": "A Scaled Smart City for Experimental Validation of Connected and Automated Vehicles",
+      "authors": [
+        {
+          "name": "Adam Stager"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Andreas Malikopoulos"
+        },
+        {
+          "name": "Liuhui Zhao"
+        }
+      ],
+      "tags": [
+        "Traffic"
+      ],
+      "links": [],
+      "pdf": "/papers/A_Scaled_Smart_City_for_Experimental_Validation_of_Connected_And_Automated_Vehicles_Stager_2018.pdf",
+      "video": {
+        "src": "/figures/A_Scaled_Smart_City_for_Experimental_Validation_of_Connected_and_Automated_Vehicles_clip.mp4"
+      },
+      "caption": "Testing control algorithms for connected and automated vehicles on real roads is costly and hard to repeat. This work builds an entire scaled testbed from scratch, including the track, the vehicles, and the onboard sensing and vehicle-to-vehicle communication, giving a low-cost repeatable platform for validating multi-vehicle control. The clip shows the testbed running a connected and automated vehicle merging algorithm, in which vehicles coordinate over communication to merge through a shared zone without stopping.",
+      "url": "https://doi.org/10.1016/j.ifacol.2018.07.022"
+    },
+    {
+      "type": "preprint",
+      "venue": "Systems & Control Letters",
+      "year": "2026",
+      "tag": "preprint",
+      "title": "Families of Control-Cost-Parametrized Inverse-Optimal Universal Stabilizers",
+      "authors": [
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        }
+      ],
+      "tags": [
+        "Neural operators"
+      ],
+      "links": [],
+      "pdf": "/papers/universal_stabilizers_paper.pdf",
+      "thumb": "/figures/Families_of_Control_Cost_Parametrized_Inverse_Optimal_Universal_Stabilizers_Figure_3.png",
+      "fig": 3,
+      "caption": "An inverse-optimal controller is both stabilizing and optimal for a meaningful cost, but evaluating it exactly requires solving an optimization at every time step. This work constructs a whole family of such controllers parametrized by their control cost and approximates them with a neural operator that runs in a single forward pass. A non-holonomic unicycle starts from (<em>x</em>, <em>y</em>, <em>θ</em>) = (1, 1, π/4), with the green arrow marking the initial heading, under the exact inverse-optimal controller <em>u</em>*, its neural-operator approximation <em>û</em>*, and a nominal controller. The top left shows the closed-loop paths, where <em>u</em>* and <em>û</em>* nearly coincide, the top right the control effort, the bottom left the control Lyapunov function decaying to zero, and the bottom right the accumulated finite-horizon cost, where <em>û</em>* tracks the optimal <em>u</em>* to within a tiny margin.",
+      "url": "https://arxiv.org/abs/2606.09047"
+    },
+    {
+      "type": "preprint",
+      "venue": "IEEE TAC",
+      "year": "2026",
+      "tag": "preprint",
+      "title": "Lotka–Sharpe Neural Operators for Control of Population PDEs",
+      "authors": [
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Iasson Karafyllis"
+        },
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Carina Veil"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems",
+        "Biological systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2604.03892"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralOperatorsLoktaSharpePredatoryPrey"
+        }
+      ],
+      "pdf": "/papers/lotka_sharpe_paper.pdf",
+      "caption": "Steering an age-structured population (here a predator–prey colony) to a target requires control gains computed from its birth, mortality, and growth functionals, which are unknown and must be learned online. We learn the control-design mapping with a neural operator so it can be evaluated instantly each time the estimates update, avoiding the prohibitive cost of re-solving it. The animation shows the population states converging to the target equilibrium as the adaptive neural-operator controller drives the dilution rate.",
+      "url": "https://arxiv.org/abs/2604.03892",
+      "video": {
+        "src": "/predator_prey_neural_operator.mp4"
+      }
+    },
+    {
+      "type": "preprint",
+      "venue": "Systems & Control Letters",
+      "year": "2026",
+      "tag": "preprint",
+      "title": "Predictor-Based Output-Feedback Control of Linear Systems with Time-Varying Input and Measurement Delays via Neural-Approximated Prediction Horizons",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "Delay systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2603.29117"
+        },
+        {
+          "label": "Code",
+          "href": "https://github.com/lukebhan/NeuralApproximatedPredictorHorizons"
+        }
+      ],
+      "pdf": "/papers/predictor_based_neural_approximated_horizons_scl.pdf",
+      "thumb": "/figures/Predictor_Based_Output_Feedback_Control_of_Linear_Systems_with_Time_Varying_Input_and_Measurement_Delays_via_Neural_Approximated_Prediction_Horizons_Figure_2.jpg",
+      "fig": 2,
+      "caption": "Predictor feedback must look ahead by exactly the delay duration, but when a linear system's input and measurement delays vary in time, finding the right prediction horizon requires inverting the delay map online. This work learns that functional inversion with a neural operator, producing the prediction horizon in a single forward pass while keeping the loop provably stable. The top left shows the plant states <em>Z</em><sub>1</sub> and <em>Z</em><sub>2</sub> (solid) and their observer estimates (dashed) driven to zero from output measurements alone, the top right the control input <em>U</em>(<em>t</em>), the bottom left the two time-varying delays <em>D</em><sub>1</sub>(<em>t</em>) and <em>D</em><sub>2</sub>(<em>t</em>) and the learned prediction horizon, and the bottom right the inversion residual, which stays small for prediction depths <em>H</em> = 1 and <em>H</em> = 4.",
+      "url": "https://arxiv.org/abs/2603.29117"
+    }
+  ]
+}

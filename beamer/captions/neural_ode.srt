@@ -1,0 +1,6156 @@
+1
+00:00:00,000 --> 00:00:05,279
+Hi everyone. So I'm I'm Luke going to be
+
+2
+00:00:02,960 --> 00:00:08,160
+teaching the the next few lectures. Most
+
+3
+00:00:05,279 --> 00:00:09,519
+of it's based on on my research. And
+
+4
+00:00:08,160 --> 00:00:11,040
+this is like kind of the exciting part
+
+5
+00:00:09,519 --> 00:00:13,759
+of the class. We're actually going to
+
+6
+00:00:11,040 --> 00:00:15,759
+look at like some physics inspired ideas
+
+7
+00:00:13,759 --> 00:00:19,520
+instead of just like general
+
+8
+00:00:15,759 --> 00:00:22,400
+architectures. So um yeah, just a like
+
+9
+00:00:19,520 --> 00:00:27,160
+quick poll for my interests. How many of
+
+10
+00:00:22,400 --> 00:00:27,160
+you are PhD students?
+
+11
+00:00:27,359 --> 00:00:31,599
+Okay. How many of you are master
+
+12
+00:00:29,840 --> 00:00:33,440
+students?
+
+13
+00:00:31,599 --> 00:00:36,960
+Okay, so like almost everyone. How many
+
+14
+00:00:33,440 --> 00:00:39,200
+of you are students not in ECE?
+
+15
+00:00:36,960 --> 00:00:41,760
+Okay, so a couple. Great. Looks like we
+
+16
+00:00:39,200 --> 00:00:43,360
+have a variety. Yeah, feel free to ask
+
+17
+00:00:41,760 --> 00:00:44,879
+questions throughout the lecture. Kind
+
+18
+00:00:43,360 --> 00:00:47,120
+of just raise your hand. I'll be happy
+
+19
+00:00:44,879 --> 00:00:49,600
+to call on you. Yeah, let's get started.
+
+20
+00:00:47,120 --> 00:00:51,760
+So, a little bit about me.
+
+21
+00:00:49,600 --> 00:00:54,399
+Yeah. So, I'm a fourth year student
+
+22
+00:00:51,760 --> 00:00:57,920
+under Yan and another professor in MAE,
+
+23
+00:00:54,399 --> 00:01:00,719
+Mir Christristitch. My research kind of
+
+24
+00:00:57,920 --> 00:01:03,440
+spans a wide variety of things. ML,
+
+25
+00:01:00,719 --> 00:01:07,640
+applied math, control theory, um,
+
+26
+00:01:03,440 --> 00:01:07,640
+dynamical systems in general.
+
+27
+00:01:09,920 --> 00:01:13,920
+Uh, my undergrad was at a small school
+
+28
+00:01:12,240 --> 00:01:16,720
+in Nashville, Tennessee called
+
+29
+00:01:13,920 --> 00:01:18,479
+Vanderbilt and I did CS and physics
+
+30
+00:01:16,720 --> 00:01:20,960
+there. So, kind of a little bit
+
+31
+00:01:18,479 --> 00:01:23,520
+different going to ECE.
+
+32
+00:01:20,960 --> 00:01:26,400
+I've worked on quite a bit of research
+
+33
+00:01:23,520 --> 00:01:28,080
+directions. So for those not in ECE, I
+
+34
+00:01:26,400 --> 00:01:30,240
+worked a little bit in material science
+
+35
+00:01:28,080 --> 00:01:32,079
+actually on density functional theory.
+
+36
+00:01:30,240 --> 00:01:34,400
+Maybe some of you guys have heard of it.
+
+37
+00:01:32,079 --> 00:01:36,640
+Uh spent some time working in robots and
+
+38
+00:01:34,400 --> 00:01:38,640
+and now I kind of work purely in in
+
+39
+00:01:36,640 --> 00:01:41,280
+applied math.
+
+40
+00:01:38,640 --> 00:01:45,600
+And last year I taught this sort of
+
+41
+00:01:41,280 --> 00:01:47,600
+minieries of lectures EC28. So feel free
+
+42
+00:01:45,600 --> 00:01:49,680
+to give any suggestions. Most of the
+
+43
+00:01:47,600 --> 00:01:53,280
+slides are kind of improved from last
+
+44
+00:01:49,680 --> 00:01:56,640
+year. And outside of work, I spend most
+
+45
+00:01:53,280 --> 00:01:58,799
+of my time with this dog of mine, Irwin.
+
+46
+00:01:56,640 --> 00:02:00,320
+Um, he's kind of quite a different set
+
+47
+00:01:58,799 --> 00:02:04,320
+of breeds. And then I'm also trying to
+
+48
+00:02:00,320 --> 00:02:07,119
+learn hockey. So, yeah.
+
+49
+00:02:04,320 --> 00:02:08,959
+All right. So, up until this point in
+
+50
+00:02:07,119 --> 00:02:11,920
+this class, we kind of looked at
+
+51
+00:02:08,959 --> 00:02:15,200
+supervised learning paradigms that kind
+
+52
+00:02:11,920 --> 00:02:16,560
+of take this this structure, right? And
+
+53
+00:02:15,200 --> 00:02:18,879
+so, the idea is, okay, we're going to
+
+54
+00:02:16,560 --> 00:02:21,360
+collect some data set, let's say n pairs
+
+55
+00:02:18,879 --> 00:02:24,319
+of data. We're going to take each input
+
+56
+00:02:21,360 --> 00:02:27,200
+output pair and our model is going to do
+
+57
+00:02:24,319 --> 00:02:30,160
+a series of nonlinear transformations on
+
+58
+00:02:27,200 --> 00:02:31,120
+any input pair via some matrix or matrix
+
+59
+00:02:30,160 --> 00:02:33,200
+multiplication. And then the
+
+60
+00:02:31,120 --> 00:02:37,120
+nonlinearity comes from the activation
+
+61
+00:02:33,200 --> 00:02:38,879
+functions we saw. And so to kind of
+
+62
+00:02:37,120 --> 00:02:43,040
+learn our models, right, we're going to
+
+63
+00:02:38,879 --> 00:02:44,800
+do back propagation off some L2 loss,
+
+64
+00:02:43,040 --> 00:02:48,239
+right? I think this paradigm should be
+
+65
+00:02:44,800 --> 00:02:50,400
+pretty familiar. um almost all of the
+
+66
+00:02:48,239 --> 00:02:52,319
+models we looked at so far, even the LLM
+
+67
+00:02:50,400 --> 00:02:55,840
+ones, kind of follow this this sort of
+
+68
+00:02:52,319 --> 00:02:58,560
+structure, right? And so today we're
+
+69
+00:02:55,840 --> 00:03:01,519
+kind of going to look at some new types
+
+70
+00:02:58,560 --> 00:03:03,840
+of models that embed physics better
+
+71
+00:03:01,519 --> 00:03:05,920
+instead of just this general matrix
+
+72
+00:03:03,840 --> 00:03:08,000
+multiplication. And I'll kind of explain
+
+73
+00:03:05,920 --> 00:03:10,239
+to you what this sort of means in in a
+
+74
+00:03:08,000 --> 00:03:12,640
+few minutes. But the idea is that this
+
+75
+00:03:10,239 --> 00:03:14,159
+input output matrix multiplication can
+
+76
+00:03:12,640 --> 00:03:16,800
+be
+
+77
+00:03:14,159 --> 00:03:18,640
+can ignore some of the properties or
+
+78
+00:03:16,800 --> 00:03:20,879
+structure of the system that we're
+
+79
+00:03:18,640 --> 00:03:23,200
+missing. And so for example becomes
+
+80
+00:03:20,879 --> 00:03:25,360
+super super expensive to train. I'm sure
+
+81
+00:03:23,200 --> 00:03:27,680
+you guys know the explosion of data
+
+82
+00:03:25,360 --> 00:03:29,840
+centers and the energy grid quite a hot
+
+83
+00:03:27,680 --> 00:03:31,680
+topic right now.
+
+84
+00:03:29,840 --> 00:03:34,560
+And of course with these large matrix
+
+85
+00:03:31,680 --> 00:03:37,680
+multiplications the key kind of idea is
+
+86
+00:03:34,560 --> 00:03:38,799
+this overparameterization right and so
+
+87
+00:03:37,680 --> 00:03:40,400
+the downside of this
+
+88
+00:03:38,799 --> 00:03:42,319
+overparameterization
+
+89
+00:03:40,400 --> 00:03:43,840
+is of course the fact that we lose
+
+90
+00:03:42,319 --> 00:03:45,599
+interpretability.
+
+91
+00:03:43,840 --> 00:03:47,680
+So something like, you know, fitting a
+
+92
+00:03:45,599 --> 00:03:49,440
+tailaylor series is pretty interpretable
+
+93
+00:03:47,680 --> 00:03:51,440
+compared to a machine learning model,
+
+94
+00:03:49,440 --> 00:03:53,200
+but it doesn't work as well, right? And
+
+95
+00:03:51,440 --> 00:03:56,319
+explaining this is a little bit
+
+96
+00:03:53,200 --> 00:03:59,920
+complicated to to be understated. And
+
+97
+00:03:56,319 --> 00:04:02,720
+lastly, it's not really a respectable
+
+98
+00:03:59,920 --> 00:04:05,280
+way of actually how our brains work. And
+
+99
+00:04:02,720 --> 00:04:07,040
+so I'm sure maybe you guys have seen
+
+100
+00:04:05,280 --> 00:04:09,040
+Jeffrey Hinton. How many of you know
+
+101
+00:04:07,040 --> 00:04:11,840
+that name?
+
+102
+00:04:09,040 --> 00:04:13,519
+Okay, so maybe a fourth of the class.
+
+103
+00:04:11,840 --> 00:04:15,680
+Yeah, he was kind of the one who
+
+104
+00:04:13,519 --> 00:04:17,840
+pioneered machine learning at University
+
+105
+00:04:15,680 --> 00:04:20,799
+of Toronto. He just won the Turing Award
+
+106
+00:04:17,840 --> 00:04:22,639
+and also the Nobel Prize. Um, you know,
+
+107
+00:04:20,799 --> 00:04:25,040
+he's famously said that that back
+
+108
+00:04:22,639 --> 00:04:26,639
+propagation is kind of gross. It's not
+
+109
+00:04:25,040 --> 00:04:28,240
+so elegant because it's actually very
+
+110
+00:04:26,639 --> 00:04:30,240
+different than how a neuron would would
+
+111
+00:04:28,240 --> 00:04:32,400
+sort of learn in our brains, right? And
+
+112
+00:04:30,240 --> 00:04:35,280
+so, we want to kind of design models
+
+113
+00:04:32,400 --> 00:04:37,440
+that respect the structure of our object
+
+114
+00:04:35,280 --> 00:04:39,600
+that we're trying to to learn. And we'll
+
+115
+00:04:37,440 --> 00:04:41,199
+talk about the structure in a minute.
+
+116
+00:04:39,600 --> 00:04:42,800
+All right.
+
+117
+00:04:41,199 --> 00:04:45,600
+So
+
+118
+00:04:42,800 --> 00:04:47,759
+let's kind of motivate this sort of
+
+119
+00:04:45,600 --> 00:04:50,080
+structure and and ODEs. All of you I
+
+120
+00:04:47,759 --> 00:04:52,160
+assume are familiar with ODEs. You've
+
+121
+00:04:50,080 --> 00:04:53,520
+seen the review so on and so forth. So
+
+122
+00:04:52,160 --> 00:04:56,320
+I'm not going to spend too much time.
+
+123
+00:04:53,520 --> 00:04:58,080
+But yeah, the idea is that ODEs are a
+
+124
+00:04:56,320 --> 00:04:59,759
+continuous problem, right? We have a
+
+125
+00:04:58,080 --> 00:05:02,400
+derivative and then we'll probably
+
+126
+00:04:59,759 --> 00:05:05,280
+either discretetize later. And so the
+
+127
+00:05:02,400 --> 00:05:07,280
+the question is can we sort of get this
+
+128
+00:05:05,280 --> 00:05:10,080
+continuous structure embedded into our
+
+129
+00:05:07,280 --> 00:05:14,320
+neural network, right? The second thing
+
+130
+00:05:10,080 --> 00:05:17,600
+is that we've spent the last 100 years
+
+131
+00:05:14,320 --> 00:05:19,759
+and multiple DOE grants building these
+
+132
+00:05:17,600 --> 00:05:21,840
+supercomputers all around the world. So,
+
+133
+00:05:19,759 --> 00:05:23,440
+how many of you guys have heard of NURK?
+
+134
+00:05:21,840 --> 00:05:26,000
+Anyone?
+
+135
+00:05:23,440 --> 00:05:28,960
+Nobody. Okay. So, NURK is is the famous
+
+136
+00:05:26,000 --> 00:05:31,520
+cluster kind of run by the DOE. Um, the
+
+137
+00:05:28,960 --> 00:05:33,520
+main supercomputer from the DOE is at
+
+138
+00:05:31,520 --> 00:05:35,759
+Livermore, which is just outside of San
+
+139
+00:05:33,520 --> 00:05:37,520
+Francisco. And basically, these these
+
+140
+00:05:35,759 --> 00:05:39,680
+computers actually are are mainly
+
+141
+00:05:37,520 --> 00:05:41,520
+CPUbased. Believe it or not, they're
+
+142
+00:05:39,680 --> 00:05:43,759
+becoming more GPU based given the change
+
+143
+00:05:41,520 --> 00:05:45,360
+of times. But the reason they were CPUs
+
+144
+00:05:43,759 --> 00:05:49,120
+based is because all the old physics
+
+145
+00:05:45,360 --> 00:05:50,560
+solvers, for example, your SW your OD
+
+146
+00:05:49,120 --> 00:05:52,880
+integrators and these types of things
+
+147
+00:05:50,560 --> 00:05:55,759
+for for quantum dynamics were all
+
+148
+00:05:52,880 --> 00:05:58,800
+actually built on on OD or on CPU
+
+149
+00:05:55,759 --> 00:06:00,800
+architectures, right? And so when the
+
+150
+00:05:58,800 --> 00:06:02,560
+DOE asked the government for funding,
+
+151
+00:06:00,800 --> 00:06:03,680
+they basically had to justify, okay, why
+
+152
+00:06:02,560 --> 00:06:06,639
+do we want to build this large
+
+153
+00:06:03,680 --> 00:06:08,240
+supercomput? And it turns out that if
+
+154
+00:06:06,639 --> 00:06:10,800
+you can say that you're doing nuclear
+
+155
+00:06:08,240 --> 00:06:13,360
+science research, basically simulating
+
+156
+00:06:10,800 --> 00:06:14,800
+some small quantum dynamics, you can get
+
+157
+00:06:13,360 --> 00:06:16,400
+quite a bit of funding, right? Because
+
+158
+00:06:14,800 --> 00:06:19,759
+you can argue that you're preventing
+
+159
+00:06:16,400 --> 00:06:22,319
+nuclear war. And so basically all of our
+
+160
+00:06:19,759 --> 00:06:25,199
+last since the 1960s have been developed
+
+161
+00:06:22,319 --> 00:06:26,479
+these sort of solvers and the modern
+
+162
+00:06:25,199 --> 00:06:28,080
+machine learning architectures that we
+
+163
+00:06:26,479 --> 00:06:31,280
+looked at so far haven't really talked
+
+164
+00:06:28,080 --> 00:06:33,680
+about them too too much. Okay. And
+
+165
+00:06:31,280 --> 00:06:36,160
+lastly, we will do some some modern
+
+166
+00:06:33,680 --> 00:06:37,919
+stuff. So for example, the idea of of
+
+167
+00:06:36,160 --> 00:06:40,960
+normalizing flows are all built on
+
+168
+00:06:37,919 --> 00:06:44,880
+neural ODEs. And anybody heard of
+
+169
+00:06:40,960 --> 00:06:47,039
+normalizing flows anywhere? Got two.
+
+170
+00:06:44,880 --> 00:06:48,880
+Okay, great. Yeah. So these these are
+
+171
+00:06:47,039 --> 00:06:50,880
+essentially the backbone of of
+
+172
+00:06:48,880 --> 00:06:53,360
+neurologies and they're the backbone of
+
+173
+00:06:50,880 --> 00:06:54,639
+things like diffusion which generate in
+
+174
+00:06:53,360 --> 00:06:57,440
+this case this is a giraffe with
+
+175
+00:06:54,639 --> 00:07:01,199
+sunglasses from Sora.
+
+176
+00:06:57,440 --> 00:07:03,280
+All right. So let's kind of give you a
+
+177
+00:07:01,199 --> 00:07:04,720
+little bit of a review of ODEs. Bear
+
+178
+00:07:03,280 --> 00:07:06,960
+with me. I think most of you are
+
+179
+00:07:04,720 --> 00:07:09,199
+familiar but um just for those who
+
+180
+00:07:06,960 --> 00:07:11,440
+aren't an OD is going to have two
+
+181
+00:07:09,199 --> 00:07:13,840
+components. So we're going to use this Z
+
+182
+00:07:11,440 --> 00:07:15,759
+of T to denote the state. Okay. And we
+
+183
+00:07:13,840 --> 00:07:18,080
+say that this is a continuous OD that is
+
+184
+00:07:15,759 --> 00:07:20,400
+its derivative is described by some
+
+185
+00:07:18,080 --> 00:07:22,479
+dynamics function. And we'll assume that
+
+186
+00:07:20,400 --> 00:07:24,400
+this dynamics function is locally lip
+
+187
+00:07:22,479 --> 00:07:27,280
+shits which just means it's it's
+
+188
+00:07:24,400 --> 00:07:29,039
+continuous locally. And typically the
+
+189
+00:07:27,280 --> 00:07:31,440
+way we work with OD's is we have some
+
+190
+00:07:29,039 --> 00:07:34,080
+initial condition and this ODEs describe
+
+191
+00:07:31,440 --> 00:07:36,240
+a flow of a trajectory right so for
+
+192
+00:07:34,080 --> 00:07:38,479
+example you could think of a time series
+
+193
+00:07:36,240 --> 00:07:40,479
+and you're forecasting product demand
+
+194
+00:07:38,479 --> 00:07:42,319
+you might have a current demand estimate
+
+195
+00:07:40,479 --> 00:07:45,120
+and you want to know how that demand is
+
+196
+00:07:42,319 --> 00:07:46,639
+going to flow in the future right and so
+
+197
+00:07:45,120 --> 00:07:48,319
+what would be interesting is okay that
+
+198
+00:07:46,639 --> 00:07:52,319
+flow is described by f maybe we can
+
+199
+00:07:48,319 --> 00:07:54,160
+learn f in some way all right and the
+
+200
+00:07:52,319 --> 00:07:56,560
+main reason kind of these objects are
+
+201
+00:07:54,160 --> 00:07:59,199
+studied is they describe pretty much the
+
+202
+00:07:56,560 --> 00:08:01,440
+language of any of these flows. So,
+
+203
+00:07:59,199 --> 00:08:04,160
+anyone familiar with robot kinematics?
+
+204
+00:08:01,440 --> 00:08:06,319
+They're a second order system. Climate
+
+205
+00:08:04,160 --> 00:08:08,000
+modeling, weathers typically are partial
+
+206
+00:08:06,319 --> 00:08:11,840
+differential equations, which we'll look
+
+207
+00:08:08,000 --> 00:08:13,520
+at in two lectures. Anyone seen the SIR
+
+208
+00:08:11,840 --> 00:08:15,599
+model?
+
+209
+00:08:13,520 --> 00:08:18,400
+No. Okay. It's basically a description
+
+210
+00:08:15,599 --> 00:08:20,240
+of spread of diseases. So when COVID was
+
+211
+00:08:18,400 --> 00:08:23,039
+really really big, people developed
+
+212
+00:08:20,240 --> 00:08:26,000
+quite a bit of SRI models that describe
+
+213
+00:08:23,039 --> 00:08:28,319
+exactly how often we anticipate the
+
+214
+00:08:26,000 --> 00:08:30,960
+vaccine to actually work. So if you see
+
+215
+00:08:28,319 --> 00:08:33,360
+like okay this vaccine should take, you
+
+216
+00:08:30,960 --> 00:08:35,839
+know, 6 months for the world to be fully
+
+217
+00:08:33,360 --> 00:08:39,200
+recovered, it's probably projected from
+
+218
+00:08:35,839 --> 00:08:40,479
+from an OD. And of course the stock
+
+219
+00:08:39,200 --> 00:08:41,839
+market, I think that's kind of
+
+220
+00:08:40,479 --> 00:08:44,560
+self-explanatory. any sort of
+
+221
+00:08:41,839 --> 00:08:47,040
+forecasting problem that we want. And
+
+222
+00:08:44,560 --> 00:08:49,839
+lastly, surprisingly actually acoustics
+
+223
+00:08:47,040 --> 00:08:52,560
+and music show up as ODEs. So there's a
+
+224
+00:08:49,839 --> 00:08:54,640
+famous paper called WaveNet that kind of
+
+225
+00:08:52,560 --> 00:08:57,440
+introduced a backbone for generating
+
+226
+00:08:54,640 --> 00:09:01,120
+music through um matrix multiplication
+
+227
+00:08:57,440 --> 00:09:03,519
+which I find kind of cool, right?
+
+228
+00:09:01,120 --> 00:09:05,279
+All right. So we discussed these ODEs
+
+229
+00:09:03,519 --> 00:09:07,360
+and the dynamics mathematically, but
+
+230
+00:09:05,279 --> 00:09:08,959
+like what is an example? Simplest
+
+231
+00:09:07,360 --> 00:09:11,200
+example I can give you is is the
+
+232
+00:09:08,959 --> 00:09:12,959
+pendulum. So you have some string, you
+
+233
+00:09:11,200 --> 00:09:15,519
+attach a ball to it and you start it
+
+234
+00:09:12,959 --> 00:09:17,440
+from some angle and it swings, right?
+
+235
+00:09:15,519 --> 00:09:20,720
+And typically what I can do with this
+
+236
+00:09:17,440 --> 00:09:23,040
+pendulum is I can map this angle theta
+
+237
+00:09:20,720 --> 00:09:24,560
+across time, right? And I'll get some
+
+238
+00:09:23,040 --> 00:09:26,320
+sort of sinosorta wave where the
+
+239
+00:09:24,560 --> 00:09:30,080
+pendulum eventually swings to the
+
+240
+00:09:26,320 --> 00:09:32,160
+bottom, right? Simple example. Okay? And
+
+241
+00:09:30,080 --> 00:09:34,320
+so what is something kind of important
+
+242
+00:09:32,160 --> 00:09:37,600
+in this structure that maybe you weren't
+
+243
+00:09:34,320 --> 00:09:40,320
+taught in your OD class is that OD's
+
+244
+00:09:37,600 --> 00:09:43,200
+solutions are actually unique. So that
+
+245
+00:09:40,320 --> 00:09:45,279
+is if I start at some position, I know
+
+246
+00:09:43,200 --> 00:09:47,200
+that in the future I will take a
+
+247
+00:09:45,279 --> 00:09:49,360
+trajectory that's completely unique
+
+248
+00:09:47,200 --> 00:09:50,560
+described by those dynamics. And
+
+249
+00:09:49,360 --> 00:09:52,560
+actually we'll see that this structure
+
+250
+00:09:50,560 --> 00:09:55,040
+is actually really important later. So
+
+251
+00:09:52,560 --> 00:09:57,040
+here's an example of why for example we
+
+252
+00:09:55,040 --> 00:09:58,640
+know well you'll see in your homework
+
+253
+00:09:57,040 --> 00:10:00,480
+why OD's aren't unique and you'll
+
+254
+00:09:58,640 --> 00:10:03,040
+actually prove a way to to handle this
+
+255
+00:10:00,480 --> 00:10:06,240
+this question but here let's kind of
+
+256
+00:10:03,040 --> 00:10:09,040
+explain why this is you know the case so
+
+257
+00:10:06,240 --> 00:10:11,600
+imagine I have two ODEs and they start
+
+258
+00:10:09,040 --> 00:10:15,839
+at initial position zero and one and
+
+259
+00:10:11,600 --> 00:10:18,320
+they follow the same dynamics f okay the
+
+260
+00:10:15,839 --> 00:10:21,200
+rule is or this uniqueness basically
+
+261
+00:10:18,320 --> 00:10:24,160
+says that these odes actually can never
+
+262
+00:10:21,200 --> 00:10:26,560
+Ross. Okay. And you can prove this
+
+263
+00:10:24,160 --> 00:10:27,839
+mathematically kind of by the flows. But
+
+264
+00:10:26,560 --> 00:10:30,079
+one of the things that kind of this
+
+265
+00:10:27,839 --> 00:10:31,680
+gives us is some interpretability about
+
+266
+00:10:30,079 --> 00:10:33,519
+our machine learning model. So if we
+
+267
+00:10:31,680 --> 00:10:35,760
+make a machine learning model and it
+
+268
+00:10:33,519 --> 00:10:37,760
+follows the flow of an OD, we'll know
+
+269
+00:10:35,760 --> 00:10:42,800
+that for example trajectories will never
+
+270
+00:10:37,760 --> 00:10:45,360
+cross at the exact same time. All right.
+
+271
+00:10:42,800 --> 00:10:46,880
+And so kind of to bring this all
+
+272
+00:10:45,360 --> 00:10:48,959
+together and give you a little bit more
+
+273
+00:10:46,880 --> 00:10:51,360
+review, we're going to go through
+
+274
+00:10:48,959 --> 00:10:53,440
+basically the simplest case of how OD
+
+275
+00:10:51,360 --> 00:10:56,480
+solvers work that I discussed from the
+
+276
+00:10:53,440 --> 00:11:00,399
+1900s. So I assume you guys have maybe
+
+277
+00:10:56,480 --> 00:11:02,959
+heard of Oilers's method and maybe runa
+
+278
+00:11:00,399 --> 00:11:05,760
+show of hands. Rungakuta.
+
+279
+00:11:02,959 --> 00:11:08,720
+Okay, maybe 10 of you. So this should be
+
+280
+00:11:05,760 --> 00:11:10,880
+actually useful. So numerically how do
+
+281
+00:11:08,720 --> 00:11:12,800
+we sort of represent these objects?
+
+282
+00:11:10,880 --> 00:11:14,640
+Well, it turns out that we're going to
+
+283
+00:11:12,800 --> 00:11:17,279
+basically use some ideas from calculus
+
+284
+00:11:14,640 --> 00:11:21,120
+to derive a scheme to simulate them, for
+
+285
+00:11:17,279 --> 00:11:23,519
+example. Okay. And so here's kind of the
+
+286
+00:11:21,120 --> 00:11:25,360
+the simplest possible way to do this.
+
+287
+00:11:23,519 --> 00:11:27,440
+And there's been a thousand different
+
+288
+00:11:25,360 --> 00:11:29,279
+research directions on it since. So we
+
+289
+00:11:27,440 --> 00:11:30,720
+have this OD and it's in continuous
+
+290
+00:11:29,279 --> 00:11:33,440
+time. Remember, we have some initial
+
+291
+00:11:30,720 --> 00:11:37,519
+condition at time zero. And we're going
+
+292
+00:11:33,440 --> 00:11:40,160
+to approximate this OD with a discrete
+
+293
+00:11:37,519 --> 00:11:41,680
+representation. And what do I mean by
+
+294
+00:11:40,160 --> 00:11:43,360
+discrete representation? Well, you know,
+
+295
+00:11:41,680 --> 00:11:46,399
+we know that computers don't work in
+
+296
+00:11:43,360 --> 00:11:49,440
+continuous time. We need to sort of grid
+
+297
+00:11:46,399 --> 00:11:51,120
+or vectorize each each problem. And so,
+
+298
+00:11:49,440 --> 00:11:54,640
+how do we represent something that's
+
+299
+00:11:51,120 --> 00:11:56,640
+sort of continuous in a discrete time?
+
+300
+00:11:54,640 --> 00:11:59,120
+The simplest method for that is Oilers's
+
+301
+00:11:56,640 --> 00:12:01,760
+method. Okay. And so, how does Oilers's
+
+302
+00:11:59,120 --> 00:12:05,279
+method work? It all starts from a tailor
+
+303
+00:12:01,760 --> 00:12:08,160
+approximation. So imagine that we want
+
+304
+00:12:05,279 --> 00:12:11,839
+to estimate the state Z at some future
+
+305
+00:12:08,160 --> 00:12:14,320
+time step given by delta T and we're
+
+306
+00:12:11,839 --> 00:12:16,079
+going to assume that delta T is pretty
+
+307
+00:12:14,320 --> 00:12:18,480
+small. Okay? And we'll see why in a
+
+308
+00:12:16,079 --> 00:12:20,720
+minute. Then a tailor expansion at delta
+
+309
+00:12:18,480 --> 00:12:22,639
+t will look something like this, right?
+
+310
+00:12:20,720 --> 00:12:24,880
+Z of t plus delta t is equal to the
+
+311
+00:12:22,639 --> 00:12:27,279
+current state times the little time
+
+312
+00:12:24,880 --> 00:12:28,959
+change times the derivative. But the
+
+313
+00:12:27,279 --> 00:12:30,880
+thing about an od is actually we know
+
+314
+00:12:28,959 --> 00:12:34,000
+this derivative, right? By definition,
+
+315
+00:12:30,880 --> 00:12:36,880
+it's f. Okay.
+
+316
+00:12:34,000 --> 00:12:39,360
+And so if some we do some algebra, we
+
+317
+00:12:36,880 --> 00:12:42,240
+can get sort of an estimate of this
+
+318
+00:12:39,360 --> 00:12:44,800
+derivative, right? Essentially what
+
+319
+00:12:42,240 --> 00:12:48,399
+we're doing here is if we subtract Z of
+
+320
+00:12:44,800 --> 00:12:51,360
+T over and we divide by delta T, okay,
+
+321
+00:12:48,399 --> 00:12:54,720
+we get an estimate of this derivative dz
+
+322
+00:12:51,360 --> 00:12:57,279
+and essentially an estimate of F. Okay,
+
+323
+00:12:54,720 --> 00:12:59,760
+and so the question is, okay, in what
+
+324
+00:12:57,279 --> 00:13:01,680
+case are these two actually equal? Well,
+
+325
+00:12:59,760 --> 00:13:04,720
+the case that delta t kind of goes to
+
+326
+00:13:01,680 --> 00:13:06,720
+zero, right? The smaller we get on that
+
+327
+00:13:04,720 --> 00:13:08,399
+limit, you could think of this as like a
+
+328
+00:13:06,720 --> 00:13:10,880
+a limit by the definition of a
+
+329
+00:13:08,399 --> 00:13:13,680
+derivative. And so the smaller delta t
+
+330
+00:13:10,880 --> 00:13:15,200
+goes to zero, typically it's like h in
+
+331
+00:13:13,680 --> 00:13:17,600
+high school, you might have seen it or
+
+332
+00:13:15,200 --> 00:13:20,639
+grade school, then we will approximate
+
+333
+00:13:17,600 --> 00:13:22,959
+dz, right? So this all comes from
+
+334
+00:13:20,639 --> 00:13:24,880
+Taylor's theorem or from the definition
+
+335
+00:13:22,959 --> 00:13:26,800
+of a derivative depending on which way
+
+336
+00:13:24,880 --> 00:13:29,040
+you want to do it. And then we have some
+
+337
+00:13:26,800 --> 00:13:31,440
+error which will bound by delta t ^ squ.
+
+338
+00:13:29,040 --> 00:13:33,839
+And if delta t is really really small,
+
+339
+00:13:31,440 --> 00:13:38,399
+then this error is really really small,
+
+340
+00:13:33,839 --> 00:13:40,079
+right? Okay. Okay. And so how are we
+
+341
+00:13:38,399 --> 00:13:41,519
+going to derive this integration? Well,
+
+342
+00:13:40,079 --> 00:13:43,760
+we said that okay, we have this
+
+343
+00:13:41,519 --> 00:13:46,880
+definition up here and we're going to
+
+344
+00:13:43,760 --> 00:13:49,279
+plug in our continuous representation f.
+
+345
+00:13:46,880 --> 00:13:52,000
+Okay. And so then we can kind of get a
+
+346
+00:13:49,279 --> 00:13:55,000
+dynamics model for the next step. Yes,
+
+347
+00:13:52,000 --> 00:13:55,000
+sir.
+
+348
+00:14:00,959 --> 00:14:07,720
+Sorry, one more time.
+
+349
+00:14:04,720 --> 00:14:07,720
+Yeah.
+
+350
+00:14:17,120 --> 00:14:18,639
+You're saying here?
+
+351
+00:14:18,000 --> 00:14:20,800
+Yeah.
+
+352
+00:14:18,639 --> 00:14:22,399
+Yeah. Yes. Yes. Technically, yes. If you
+
+353
+00:14:20,800 --> 00:14:24,639
+divide it by delta t, yes, it should be
+
+354
+00:14:22,399 --> 00:14:26,880
+o of delta t. then instead of O of delta
+
+355
+00:14:24,639 --> 00:14:29,519
+T squared, I'm kind of giving like a
+
+356
+00:14:26,880 --> 00:14:31,199
+very shorthand derivation. But yes,
+
+357
+00:14:29,519 --> 00:14:33,600
+actually it would be O of delta T
+
+358
+00:14:31,199 --> 00:14:35,760
+because it's a first order.
+
+359
+00:14:33,600 --> 00:14:37,920
+Good point. Good point. And so then
+
+360
+00:14:35,760 --> 00:14:39,120
+okay, from here, right, so this would be
+
+361
+00:14:37,920 --> 00:14:41,519
+what he's saying is that this should be
+
+362
+00:14:39,120 --> 00:14:44,320
+O of delta T because we divided by delta
+
+363
+00:14:41,519 --> 00:14:45,839
+T here for everyone else. Good. And so
+
+364
+00:14:44,320 --> 00:14:48,079
+from here, okay, we plug into our
+
+365
+00:14:45,839 --> 00:14:50,639
+continuous representation and we get an
+
+366
+00:14:48,079 --> 00:14:52,959
+approximation for the future time step t
+
+367
+00:14:50,639 --> 00:14:56,079
+plus delta t given the current time
+
+368
+00:14:52,959 --> 00:14:58,800
+step, the step size and our dynamics
+
+369
+00:14:56,079 --> 00:15:00,959
+function f. Okay? And so then this is
+
+370
+00:14:58,800 --> 00:15:03,279
+perfectly simil simulatable in a
+
+371
+00:15:00,959 --> 00:15:04,959
+computer, right? If I know everything at
+
+372
+00:15:03,279 --> 00:15:07,120
+current time step, I can estimate the
+
+373
+00:15:04,959 --> 00:15:09,199
+future time step. And I can do this over
+
+374
+00:15:07,120 --> 00:15:11,760
+and over and over again. And as long as
+
+375
+00:15:09,199 --> 00:15:14,959
+delta t is small, we'll get a good
+
+376
+00:15:11,760 --> 00:15:17,360
+approximation of our OD. Right? Any
+
+377
+00:15:14,959 --> 00:15:19,839
+questions here? Everyone have an idea of
+
+378
+00:15:17,360 --> 00:15:23,639
+Oilers's method?
+
+379
+00:15:19,839 --> 00:15:23,639
+Great. Okay.
+
+380
+00:15:24,639 --> 00:15:29,920
+Great. And so then why is this important
+
+381
+00:15:27,199 --> 00:15:32,560
+or what is it related to
+
+382
+00:15:29,920 --> 00:15:34,800
+in the past? So I I think some of you
+
+383
+00:15:32,560 --> 00:15:36,560
+may have seen this idea of ResNet
+
+384
+00:15:34,800 --> 00:15:38,480
+before, but let me give you kind of a a
+
+385
+00:15:36,560 --> 00:15:41,199
+recap and a high level idea of the
+
+386
+00:15:38,480 --> 00:15:43,279
+architecture. So the idea of ResNet is
+
+387
+00:15:41,199 --> 00:15:45,600
+actually really simple. It's instead of
+
+388
+00:15:43,279 --> 00:15:48,160
+you know an MLP, what we have is that we
+
+389
+00:15:45,600 --> 00:15:50,880
+basically say from some input, we're
+
+390
+00:15:48,160 --> 00:15:53,279
+going to learn the change essentially an
+
+391
+00:15:50,880 --> 00:15:55,920
+additive change in input. Okay, so we're
+
+392
+00:15:53,279 --> 00:15:57,279
+going to learn this sort of f0. You can
+
+393
+00:15:55,920 --> 00:15:59,440
+think of this as any neural network
+
+394
+00:15:57,279 --> 00:16:01,199
+architecture that you want. transformer,
+
+395
+00:15:59,440 --> 00:16:03,600
+an MLP. Typically, it's just a weight
+
+396
+00:16:01,199 --> 00:16:07,120
+matrix. Okay. And this is sort of
+
+397
+00:16:03,600 --> 00:16:10,800
+learning the residual between Z0 and Z1.
+
+398
+00:16:07,120 --> 00:16:12,480
+And then we pass through a a
+
+399
+00:16:10,800 --> 00:16:14,480
+and then we pass through a nonlinear
+
+400
+00:16:12,480 --> 00:16:16,399
+activation function. Okay? And we're
+
+401
+00:16:14,480 --> 00:16:18,079
+going to do this over and over and over
+
+402
+00:16:16,399 --> 00:16:19,680
+again. So this is sort of a ResNet
+
+403
+00:16:18,079 --> 00:16:21,600
+layer. So you see the difference
+
+404
+00:16:19,680 --> 00:16:24,560
+basically is that we have this residual
+
+405
+00:16:21,600 --> 00:16:26,880
+term, right? So in our previous examples
+
+406
+00:16:24,560 --> 00:16:30,560
+for example in MLP this would have been
+
+407
+00:16:26,880 --> 00:16:33,440
+Z1 equals F of Z0 without the plus Z0
+
+408
+00:16:30,560 --> 00:16:35,120
+right and so this is pretty common uh
+
+409
+00:16:33,440 --> 00:16:37,040
+for example the transformer architecture
+
+410
+00:16:35,120 --> 00:16:39,920
+uses some ideas like this we would have
+
+411
+00:16:37,040 --> 00:16:41,680
+seen uh before and so the cool thing
+
+412
+00:16:39,920 --> 00:16:45,199
+here is that we notice that there's some
+
+413
+00:16:41,680 --> 00:16:47,519
+structure actually similar to an OD that
+
+414
+00:16:45,199 --> 00:16:50,560
+is okay at an OD point right we said Z
+
+415
+00:16:47,519 --> 00:16:54,320
+at T plus delta T is equal to Z at T
+
+416
+00:16:50,560 --> 00:16:56,800
+plus the dynamics X at Z of T, right?
+
+417
+00:16:54,320 --> 00:16:59,440
+And so it turns out actually that one
+
+418
+00:16:56,800 --> 00:17:01,759
+could show that in the case where you
+
+419
+00:16:59,440 --> 00:17:04,079
+take this delta T fixed, you actually
+
+420
+00:17:01,759 --> 00:17:08,240
+get a ResNet architecture with these
+
+421
+00:17:04,079 --> 00:17:10,880
+dynamics F. Okay.
+
+422
+00:17:08,240 --> 00:17:13,919
+And why was this important at the time?
+
+423
+00:17:10,880 --> 00:17:16,559
+Well, about you know uh five or six
+
+424
+00:17:13,919 --> 00:17:19,600
+years ago when neural OD came out, all
+
+425
+00:17:16,559 --> 00:17:21,360
+the rage was actually using ResNet.
+
+426
+00:17:19,600 --> 00:17:24,079
+One of the most famous approximations is
+
+427
+00:17:21,360 --> 00:17:26,400
+is ResNet 50. It was commonly used uh
+
+428
+00:17:24,079 --> 00:17:29,039
+pretty much everywhere.
+
+429
+00:17:26,400 --> 00:17:30,240
+And we'll think of this this ResNet
+
+430
+00:17:29,039 --> 00:17:32,559
+connection a little bit later. We'll
+
+431
+00:17:30,240 --> 00:17:35,919
+come back to this. Okay. But the idea is
+
+432
+00:17:32,559 --> 00:17:38,400
+that again the residual can be learned.
+
+433
+00:17:35,919 --> 00:17:40,640
+Okay. And so the problem with ResNet of
+
+434
+00:17:38,400 --> 00:17:42,880
+course is is you have many layers. So in
+
+435
+00:17:40,640 --> 00:17:45,520
+this case let's say you have 50 layers
+
+436
+00:17:42,880 --> 00:17:47,919
+and we know basically when we have these
+
+437
+00:17:45,520 --> 00:17:50,640
+these large layers especially we saw in
+
+438
+00:17:47,919 --> 00:17:52,720
+RNN's we get this vanishing gradient
+
+439
+00:17:50,640 --> 00:17:56,520
+problem it can be very dangerous
+
+440
+00:17:52,720 --> 00:17:56,520
+actually in in ResNet
+
+441
+00:17:57,440 --> 00:18:03,120
+and so the idea is that instead of for a
+
+442
+00:18:01,120 --> 00:18:05,520
+neural OD instead of learning these
+
+443
+00:18:03,120 --> 00:18:08,720
+individual networks f1 f_sub_2 f_sub_3
+
+444
+00:18:05,520 --> 00:18:11,360
+fn for all 50 layers we're going to
+
+445
+00:18:08,720 --> 00:18:14,880
+learn a single neural network
+
+446
+00:18:11,360 --> 00:18:16,880
+that describes our OD dynamics.
+
+447
+00:18:14,880 --> 00:18:18,480
+Okay.
+
+448
+00:18:16,880 --> 00:18:21,120
+And so the idea is okay, we're going to
+
+449
+00:18:18,480 --> 00:18:24,080
+learn this f hat essentially. And this
+
+450
+00:18:21,120 --> 00:18:27,840
+fhat is just a vector field mapping us
+
+451
+00:18:24,080 --> 00:18:30,720
+to our next step. Okay. And then the
+
+452
+00:18:27,840 --> 00:18:32,799
+output becomes t,
+
+453
+00:18:30,720 --> 00:18:35,280
+you know, for enough steps. Let's say we
+
+454
+00:18:32,799 --> 00:18:37,679
+do capital t steps. We're going to take
+
+455
+00:18:35,280 --> 00:18:39,360
+t movements of this vector field. And so
+
+456
+00:18:37,679 --> 00:18:42,160
+we're going to get some output Z of T
+
+457
+00:18:39,360 --> 00:18:44,240
+for our neural network dynamics. So my
+
+458
+00:18:42,160 --> 00:18:47,200
+first question for you guys is is in
+
+459
+00:18:44,240 --> 00:18:51,400
+this case what is Z of T equivalent to
+
+460
+00:18:47,200 --> 00:18:51,400
+in sort of the ResNet architecture?
+
+461
+00:18:53,280 --> 00:18:56,520
+Any ideas?
+
+462
+00:18:59,440 --> 00:19:02,760
+Any guesses?
+
+463
+00:19:02,960 --> 00:19:08,799
+Yes sir.
+
+464
+00:19:06,080 --> 00:19:10,799
+Yeah. So, so like each time step would
+
+465
+00:19:08,799 --> 00:19:13,120
+be a different layer essentially of the
+
+466
+00:19:10,799 --> 00:19:16,880
+hidden state. And so the final time step
+
+467
+00:19:13,120 --> 00:19:19,520
+would then be equivalent to what?
+
+468
+00:19:16,880 --> 00:19:21,360
+Output. Exactly. Right. And so the idea
+
+469
+00:19:19,520 --> 00:19:24,320
+here is that okay, we've done a
+
+470
+00:19:21,360 --> 00:19:26,400
+continuous representation of resonant.
+
+471
+00:19:24,320 --> 00:19:28,559
+And it turns out okay we talked about
+
+472
+00:19:26,400 --> 00:19:32,160
+the fact that we cannot actually
+
+473
+00:19:28,559 --> 00:19:34,000
+implement this OD, right? And so what
+
+474
+00:19:32,160 --> 00:19:36,720
+could we do instead? Well, if we do
+
+475
+00:19:34,000 --> 00:19:39,120
+let's say an Oilers's method on this OD,
+
+476
+00:19:36,720 --> 00:19:41,360
+we'll directly cover ResNet, recover
+
+477
+00:19:39,120 --> 00:19:44,240
+ResNet, which is kind of a cool little
+
+478
+00:19:41,360 --> 00:19:46,320
+like tidbit, right?
+
+479
+00:19:44,240 --> 00:19:49,280
+Okay.
+
+480
+00:19:46,320 --> 00:19:52,000
+And so what are kind of tricky about
+
+481
+00:19:49,280 --> 00:19:54,080
+this neural OD that we haven't sort of
+
+482
+00:19:52,000 --> 00:19:55,280
+discussed, right? So the idea is okay,
+
+483
+00:19:54,080 --> 00:19:56,880
+we have some OD, we're going to
+
+484
+00:19:55,280 --> 00:19:59,039
+represent the vector field by a machine
+
+485
+00:19:56,880 --> 00:20:01,120
+learning model. Let's say it's an MLP.
+
+486
+00:19:59,039 --> 00:20:03,280
+What what are the problems? Well, the
+
+487
+00:20:01,120 --> 00:20:06,080
+first problem is that we promised some
+
+488
+00:20:03,280 --> 00:20:08,160
+continuous representation and we still
+
+489
+00:20:06,080 --> 00:20:10,400
+need to compute this output by
+
+490
+00:20:08,160 --> 00:20:12,240
+propagating through a neural network.
+
+491
+00:20:10,400 --> 00:20:16,559
+Okay. And we'll see that actually this
+
+492
+00:20:12,240 --> 00:20:18,960
+capitalizes on what we know in our OD
+
+493
+00:20:16,559 --> 00:20:22,320
+solver. Okay. So for example, we can use
+
+494
+00:20:18,960 --> 00:20:24,400
+runaata to solve this problem. The
+
+495
+00:20:22,320 --> 00:20:26,480
+second thing is and this is a little bit
+
+496
+00:20:24,400 --> 00:20:29,840
+complicated. How do we do back
+
+497
+00:20:26,480 --> 00:20:32,559
+propagation? So we get this Z of T at
+
+498
+00:20:29,840 --> 00:20:35,200
+the end of our neural operator or neuro
+
+499
+00:20:32,559 --> 00:20:37,840
+architecture and we get some loss. Let's
+
+500
+00:20:35,200 --> 00:20:39,360
+say it's an L2 mean squared error loss.
+
+501
+00:20:37,840 --> 00:20:40,320
+How do we do back propagation? And it
+
+502
+00:20:39,360 --> 00:20:42,799
+turns out this isn't very
+
+503
+00:20:40,320 --> 00:20:45,520
+straightforward actually.
+
+504
+00:20:42,799 --> 00:20:48,720
+And lastly, is this actually better than
+
+505
+00:20:45,520 --> 00:20:52,960
+a ResNet? Okay.
+
+506
+00:20:48,720 --> 00:20:54,640
+All right. So the like I promised you
+
+507
+00:20:52,960 --> 00:20:59,120
+this ResNet was going to come up because
+
+508
+00:20:54,640 --> 00:21:01,120
+it's akin to Oilers's method. Okay. And
+
+509
+00:20:59,120 --> 00:21:03,679
+the problem with Oilers's method is that
+
+510
+00:21:01,120 --> 00:21:06,320
+it's like our friend mentioned here,
+
+511
+00:21:03,679 --> 00:21:09,919
+it's a first order method. So it has
+
+512
+00:21:06,320 --> 00:21:12,159
+error delta t. But we've done you know
+
+513
+00:21:09,919 --> 00:21:14,159
+50 years of work in OD solvers. For
+
+514
+00:21:12,159 --> 00:21:16,400
+example, a common one you might see in
+
+515
+00:21:14,159 --> 00:21:19,919
+your mat lab or python package is is
+
+516
+00:21:16,400 --> 00:21:23,360
+called doper 5. And basically what this
+
+517
+00:21:19,919 --> 00:21:26,480
+does is it allows us to solve this OD a
+
+518
+00:21:23,360 --> 00:21:28,400
+faster and b with an adaptive time step.
+
+519
+00:21:26,480 --> 00:21:31,520
+So that is delta t is changing at every
+
+520
+00:21:28,400 --> 00:21:34,720
+second and we want to capitalize on this
+
+521
+00:21:31,520 --> 00:21:37,440
+OD architecture right and so how are we
+
+522
+00:21:34,720 --> 00:21:39,679
+going to do that well the idea is is is
+
+523
+00:21:37,440 --> 00:21:41,200
+the following and I I'll explain in a
+
+524
+00:21:39,679 --> 00:21:44,640
+second but just to give you a sense of
+
+525
+00:21:41,200 --> 00:21:47,760
+what I mean by accuracy
+
+526
+00:21:44,640 --> 00:21:50,559
+here's for an example Oilers's method in
+
+527
+00:21:47,760 --> 00:21:53,840
+blue right so that's what we derived and
+
+528
+00:21:50,559 --> 00:21:56,559
+here for example in orange is the exact
+
+529
+00:21:53,840 --> 00:21:58,159
+OD flow and let's say I know this OD
+
+530
+00:21:56,559 --> 00:22:01,280
+flow exactly for example I actually took
+
+531
+00:21:58,159 --> 00:22:03,840
+a pendulum and measured it right
+
+532
+00:22:01,280 --> 00:22:05,840
+and RK2 is a second order method it
+
+533
+00:22:03,840 --> 00:22:07,600
+stands for runa cuta 2 we haven't talked
+
+534
+00:22:05,840 --> 00:22:09,200
+about it but it's available actually in
+
+535
+00:22:07,600 --> 00:22:12,080
+your OD review if you want to take a
+
+536
+00:22:09,200 --> 00:22:14,159
+look and you see that RK2 approximates
+
+537
+00:22:12,080 --> 00:22:17,039
+this much better than Oilers's method
+
+538
+00:22:14,159 --> 00:22:18,480
+and RK4 does it almost perfectly where I
+
+539
+00:22:17,039 --> 00:22:21,440
+can't really notice a difference at this
+
+540
+00:22:18,480 --> 00:22:23,280
+scale okay so here's the point that I'm
+
+541
+00:22:21,440 --> 00:22:25,679
+trying to make is that we don't want to
+
+542
+00:22:23,280 --> 00:22:27,840
+use Oilers's method actually for our
+
+543
+00:22:25,679 --> 00:22:30,080
+solver, but maybe something better. And
+
+544
+00:22:27,840 --> 00:22:33,039
+actually, we want our neural OD to be
+
+545
+00:22:30,080 --> 00:22:34,799
+solver independent. Um, and so we'll
+
+546
+00:22:33,039 --> 00:22:36,799
+talk about what this means in a minute,
+
+547
+00:22:34,799 --> 00:22:38,720
+but that's the idea. And you can see why
+
+548
+00:22:36,799 --> 00:22:41,280
+we would want to use one solver over
+
+549
+00:22:38,720 --> 00:22:43,840
+another.
+
+550
+00:22:41,280 --> 00:22:45,360
+All right. And so how do we do back
+
+551
+00:22:43,840 --> 00:22:47,760
+propagation?
+
+552
+00:22:45,360 --> 00:22:51,600
+So let's consider a standard loss
+
+553
+00:22:47,760 --> 00:22:53,840
+function. Okay. And in this problem,
+
+554
+00:22:51,600 --> 00:22:56,799
+let's assume that we're just trying to
+
+555
+00:22:53,840 --> 00:22:59,520
+handle the output of our target. So for
+
+556
+00:22:56,799 --> 00:23:02,240
+example, imagine we want to we have a
+
+557
+00:22:59,520 --> 00:23:04,400
+pendulum and we drop it. We want to know
+
+558
+00:23:02,240 --> 00:23:07,039
+where that pendulum is at some final
+
+559
+00:23:04,400 --> 00:23:08,720
+time capital T. And let's say we
+
+560
+00:23:07,039 --> 00:23:10,400
+measured that. So those are our labels,
+
+561
+00:23:08,720 --> 00:23:13,280
+right? So we picked an initial condition
+
+562
+00:23:10,400 --> 00:23:15,760
+to drop our pendulum and we marked in
+
+563
+00:23:13,280 --> 00:23:17,760
+our experiment where that final output
+
+564
+00:23:15,760 --> 00:23:19,280
+time is. Okay? And so we want to learn
+
+565
+00:23:17,760 --> 00:23:20,640
+these dynamics of our pendulum. So we
+
+566
+00:23:19,280 --> 00:23:23,039
+gather a bunch of these input output
+
+567
+00:23:20,640 --> 00:23:26,159
+pairs and we could consider an L2 loss
+
+568
+00:23:23,039 --> 00:23:28,720
+of these pairs.
+
+569
+00:23:26,159 --> 00:23:31,360
+And so how are we going to back
+
+570
+00:23:28,720 --> 00:23:33,840
+propagate through a neural OD design?
+
+571
+00:23:31,360 --> 00:23:35,679
+Right? This is actually not so simple
+
+572
+00:23:33,840 --> 00:23:37,200
+and we'll see why in a second. So
+
+573
+00:23:35,679 --> 00:23:38,559
+naturally what you would do is you would
+
+574
+00:23:37,200 --> 00:23:39,840
+say okay I'm going to take the
+
+575
+00:23:38,559 --> 00:23:41,840
+derivative of the loss function with
+
+576
+00:23:39,840 --> 00:23:44,480
+respect to the weights. Remember our
+
+577
+00:23:41,840 --> 00:23:45,840
+weights are our dynamics function. And
+
+578
+00:23:44,480 --> 00:23:48,480
+it turns out that we're going to have to
+
+579
+00:23:45,840 --> 00:23:50,000
+expand this with the chain rule, right?
+
+580
+00:23:48,480 --> 00:23:51,840
+And so when we expand this with the
+
+581
+00:23:50,000 --> 00:23:54,640
+chain rule, we're going to expand it
+
+582
+00:23:51,840 --> 00:23:58,400
+with respect to the final time Z of T Z
+
+583
+00:23:54,640 --> 00:24:01,840
+of T with respect to the weights.
+
+584
+00:23:58,400 --> 00:24:04,880
+And so the problem with this is that
+
+585
+00:24:01,840 --> 00:24:06,320
+let's assume for example and I will be
+
+586
+00:24:04,880 --> 00:24:08,640
+solver independent later, but let's
+
+587
+00:24:06,320 --> 00:24:11,679
+assume that we used Oilers's method.
+
+588
+00:24:08,640 --> 00:24:13,120
+Well, if we get Z of T using Oilers's
+
+589
+00:24:11,679 --> 00:24:16,720
+method, we know that relied on the
+
+590
+00:24:13,120 --> 00:24:18,640
+previous step plus that step size plus
+
+591
+00:24:16,720 --> 00:24:21,200
+our dynamics function evaluated at that
+
+592
+00:24:18,640 --> 00:24:24,240
+previous step, right? And we actually
+
+593
+00:24:21,200 --> 00:24:27,360
+have to go all the way back to Z0, which
+
+594
+00:24:24,240 --> 00:24:29,440
+was our input. Okay? And so, let me ask
+
+595
+00:24:27,360 --> 00:24:31,520
+you, if you have to take the gradient
+
+596
+00:24:29,440 --> 00:24:33,360
+with respect to Z of T with theta, and
+
+597
+00:24:31,520 --> 00:24:36,720
+remember F is parameterized by theta.
+
+598
+00:24:33,360 --> 00:24:38,640
+That's what we want to learn. Uh how
+
+599
+00:24:36,720 --> 00:24:40,159
+easy is it to take this gradient? It's
+
+600
+00:24:38,640 --> 00:24:41,520
+not so easy, right? Because I have to
+
+601
+00:24:40,159 --> 00:24:43,840
+take the gradient here. I'm going to get
+
+602
+00:24:41,520 --> 00:24:44,960
+a multivariable chain rule. Then I also
+
+603
+00:24:43,840 --> 00:24:46,960
+have to take the gradient with the
+
+604
+00:24:44,960 --> 00:24:48,960
+previous step. Again, I get another
+
+605
+00:24:46,960 --> 00:24:50,240
+chain rule and so on and so forth. And
+
+606
+00:24:48,960 --> 00:24:56,159
+so you can see how this could be
+
+607
+00:24:50,240 --> 00:24:57,840
+numerically a nightmare to uh to take.
+
+608
+00:24:56,159 --> 00:25:01,000
+Any questions here? Give it a little bit
+
+609
+00:24:57,840 --> 00:25:01,000
+of a second.
+
+610
+00:25:01,360 --> 00:25:05,440
+Okay, great. So we have to take this
+
+611
+00:25:03,279 --> 00:25:07,120
+chain rule and and you can see it's it's
+
+612
+00:25:05,440 --> 00:25:10,159
+tricky and so how can we think about
+
+613
+00:25:07,120 --> 00:25:12,880
+this? Well the problem is that we need
+
+614
+00:25:10,159 --> 00:25:16,640
+to compute this this expensive dz of t d
+
+615
+00:25:12,880 --> 00:25:18,480
+theta. Okay and when we plug it into our
+
+616
+00:25:16,640 --> 00:25:20,960
+discretization right we get something
+
+617
+00:25:18,480 --> 00:25:24,159
+that looks like this where we're taking
+
+618
+00:25:20,960 --> 00:25:26,159
+it both with the previous time step and
+
+619
+00:25:24,159 --> 00:25:27,919
+our function. And of course, like I
+
+620
+00:25:26,159 --> 00:25:29,840
+mentioned, we have this chain rule.
+
+621
+00:25:27,919 --> 00:25:31,200
+That's that's pretty gross actually,
+
+622
+00:25:29,840 --> 00:25:33,520
+right? Because here we're going to have
+
+623
+00:25:31,200 --> 00:25:35,360
+to take it with respect to the weights
+
+624
+00:25:33,520 --> 00:25:37,120
+and here we have to take it with respect
+
+625
+00:25:35,360 --> 00:25:39,600
+to sorry here with respect to the
+
+626
+00:25:37,120 --> 00:25:43,840
+weights and here with respect to the
+
+627
+00:25:39,600 --> 00:25:46,840
+previous step again. Yes.
+
+628
+00:25:43,840 --> 00:25:46,840
+Yeah.
+
+629
+00:25:47,279 --> 00:25:51,159
+The graph. Oh yeah.
+
+630
+00:25:52,640 --> 00:25:58,000
+So this is okay. So you could think of
+
+631
+00:25:54,720 --> 00:26:01,120
+this very simply as a pendulum. S oft is
+
+632
+00:25:58,000 --> 00:26:03,520
+the angle of the pendulum.
+
+633
+00:26:01,120 --> 00:26:05,120
+Okay, it's it's just an example, but
+
+634
+00:26:03,520 --> 00:26:06,799
+that's how you could think of it. So
+
+635
+00:26:05,120 --> 00:26:10,440
+basically this is saying how the angle
+
+636
+00:26:06,799 --> 00:26:10,440
+changes over time.
+
+637
+00:26:10,480 --> 00:26:13,720
+Make sense?
+
+638
+00:26:16,640 --> 00:26:22,520
+Go ahead.
+
+639
+00:26:19,520 --> 00:26:22,520
+Sorry.
+
+640
+00:26:25,360 --> 00:26:28,880
+Yeah. Okay. So, it's not actually a
+
+641
+00:26:27,360 --> 00:26:30,559
+pendulum simulated here. I was just
+
+642
+00:26:28,880 --> 00:26:32,320
+giving you an example of you could think
+
+643
+00:26:30,559 --> 00:26:34,799
+of it as the trajectory. So, this would
+
+644
+00:26:32,320 --> 00:26:37,120
+be the state s of t is equivalent to the
+
+645
+00:26:34,799 --> 00:26:40,360
+state z of t in my previous notation if
+
+646
+00:26:37,120 --> 00:26:40,360
+that makes
+
+647
+00:26:43,360 --> 00:26:47,200
+the difference. Yeah. So, like you would
+
+648
+00:26:45,039 --> 00:26:48,640
+plot the absolute error for example is
+
+649
+00:26:47,200 --> 00:26:53,200
+is what you would look at. Yeah. Yeah.
+
+650
+00:26:48,640 --> 00:26:55,200
+Good question. Yeah. Um yeah so here for
+
+651
+00:26:53,200 --> 00:26:57,279
+example this trajectory is is just some
+
+652
+00:26:55,200 --> 00:26:59,440
+stable point it's it's not an actual
+
+653
+00:26:57,279 --> 00:27:01,679
+physical system
+
+654
+00:26:59,440 --> 00:27:03,840
+but the key is that okay like we could
+
+655
+00:27:01,679 --> 00:27:06,240
+see that when we use oiler we're going
+
+656
+00:27:03,840 --> 00:27:08,080
+to get a large error compared to a
+
+657
+00:27:06,240 --> 00:27:10,240
+better numerical solver it's kind of the
+
+658
+00:27:08,080 --> 00:27:12,159
+idea so I'm trying to tell you that
+
+659
+00:27:10,240 --> 00:27:14,480
+oiler although it's nice and we can
+
+660
+00:27:12,159 --> 00:27:17,120
+expand it in pretty clean way it's not
+
+661
+00:27:14,480 --> 00:27:19,039
+so useful
+
+662
+00:27:17,120 --> 00:27:21,360
+unless you choose delta t very small
+
+663
+00:27:19,039 --> 00:27:23,120
+Okay.
+
+664
+00:27:21,360 --> 00:27:26,000
+Okay. Does everyone follow the maths
+
+665
+00:27:23,120 --> 00:27:29,919
+though so far?
+
+666
+00:27:26,000 --> 00:27:32,080
+Great. Okay. So, well, so we get this
+
+667
+00:27:29,919 --> 00:27:34,240
+this multivariable derivative. It
+
+668
+00:27:32,080 --> 00:27:35,600
+depends on two functions. And then we
+
+669
+00:27:34,240 --> 00:27:38,240
+would have to take the derivative with
+
+670
+00:27:35,600 --> 00:27:41,120
+respect to Z of T as well, right? And so
+
+671
+00:27:38,240 --> 00:27:43,440
+that can be super expensive. And so how
+
+672
+00:27:41,120 --> 00:27:48,559
+can we sort of think about handling
+
+673
+00:27:43,440 --> 00:27:52,559
+this? Um it turns out that
+
+674
+00:27:48,559 --> 00:27:55,279
+for this simple case it is not so easy.
+
+675
+00:27:52,559 --> 00:27:58,640
+Okay. And remember we have this goal of
+
+676
+00:27:55,279 --> 00:28:00,640
+being solver independent. And you can
+
+677
+00:27:58,640 --> 00:28:01,679
+believe me that the runa cuta methods
+
+678
+00:28:00,640 --> 00:28:03,279
+are going to be a little bit more
+
+679
+00:28:01,679 --> 00:28:07,840
+complicated than oilers's method for
+
+680
+00:28:03,279 --> 00:28:09,440
+example right and so what we're going to
+
+681
+00:28:07,840 --> 00:28:13,200
+introduce is kind of an interesting
+
+682
+00:28:09,440 --> 00:28:16,480
+paper developed in 2018 by by Ricky Chen
+
+683
+00:28:13,200 --> 00:28:18,080
+and his co-authors and this paper is
+
+684
+00:28:16,480 --> 00:28:21,760
+going to tell you how to compute these
+
+685
+00:28:18,080 --> 00:28:25,120
+gradients in a good way. Okay.
+
+686
+00:28:21,760 --> 00:28:28,880
+All right. So the idea of this is not
+
+687
+00:28:25,120 --> 00:28:28,880
+new. Yes. Go ahead.
+
+688
+00:28:43,600 --> 00:28:46,600
+Okay.
+
+689
+00:28:46,960 --> 00:28:51,200
+So, let me ask you this. Okay. If t is
+
+690
+00:28:49,679 --> 00:28:52,880
+large,
+
+691
+00:28:51,200 --> 00:28:56,720
+okay, we're going to have a lot more
+
+692
+00:28:52,880 --> 00:28:59,919
+computation, right? And
+
+693
+00:28:56,720 --> 00:29:02,399
+Let's see. Do you agree that the oilers
+
+694
+00:28:59,919 --> 00:29:04,880
+method is a simple method?
+
+695
+00:29:02,399 --> 00:29:06,399
+Yeah,
+
+696
+00:29:04,880 --> 00:29:08,320
+it scales with the depth of the neural
+
+697
+00:29:06,399 --> 00:29:10,480
+network for but but not the neural
+
+698
+00:29:08,320 --> 00:29:13,279
+network actually. It scales with the
+
+699
+00:29:10,480 --> 00:29:15,919
+depth of t because our neural network is
+
+700
+00:29:13,279 --> 00:29:18,720
+actually just one matrix multiplication
+
+701
+00:29:15,919 --> 00:29:20,880
+we could think for example, right? And
+
+702
+00:29:18,720 --> 00:29:22,000
+so it kind of scales with the depth of t
+
+703
+00:29:20,880 --> 00:29:23,679
+which you can think of as like the
+
+704
+00:29:22,000 --> 00:29:25,760
+length of the reset, the number of
+
+705
+00:29:23,679 --> 00:29:28,559
+layers in a resnet, right? And so as t
+
+706
+00:29:25,760 --> 00:29:30,799
+blows up actually you're going to have
+
+707
+00:29:28,559 --> 00:29:33,919
+to compute all the recursive gradients
+
+708
+00:29:30,799 --> 00:29:36,480
+below t. Right? Second thing is that we
+
+709
+00:29:33,919 --> 00:29:38,159
+need to use a small step size. So you
+
+710
+00:29:36,480 --> 00:29:42,080
+can assume delta t is really really
+
+711
+00:29:38,159 --> 00:29:45,360
+small right. So if t is five delta t is
+
+712
+00:29:42,080 --> 00:29:48,320
+0.01 which are reasonable numbers right
+
+713
+00:29:45,360 --> 00:29:50,320
+that's 500 different recursive calls for
+
+714
+00:29:48,320 --> 00:29:53,279
+one forward pass and one backwards
+
+715
+00:29:50,320 --> 00:29:55,760
+gradient. Then we batch this up and you
+
+716
+00:29:53,279 --> 00:29:58,799
+can imagine it it gets expensive. Do you
+
+717
+00:29:55,760 --> 00:30:01,120
+agree? Yeah. And then remember this was
+
+718
+00:29:58,799 --> 00:30:03,679
+for Oilers's method the simplest case.
+
+719
+00:30:01,120 --> 00:30:08,080
+So for example runa are you familiar
+
+720
+00:30:03,679 --> 00:30:10,799
+with it or runa for example
+
+721
+00:30:08,080 --> 00:30:12,399
+we'll do an expansion not just on the
+
+722
+00:30:10,799 --> 00:30:13,679
+first tailaylor series let's say but say
+
+723
+00:30:12,399 --> 00:30:15,520
+a second order tailaylor series
+
+724
+00:30:13,679 --> 00:30:17,279
+expansion. So then we'll have a second
+
+725
+00:30:15,520 --> 00:30:21,200
+term here that might be a function of
+
+726
+00:30:17,279 --> 00:30:23,039
+delta t ^ squ right it's a little bit
+
+727
+00:30:21,200 --> 00:30:25,360
+more than that actually I'm even
+
+728
+00:30:23,039 --> 00:30:29,279
+underelling it but you can see how it
+
+729
+00:30:25,360 --> 00:30:32,480
+will blow up with time and we want to
+
+730
+00:30:29,279 --> 00:30:34,080
+eventually what we want to do is is be
+
+731
+00:30:32,480 --> 00:30:35,440
+solver independent which we'll see is
+
+732
+00:30:34,080 --> 00:30:38,720
+actually kind of a unique property that
+
+733
+00:30:35,440 --> 00:30:43,000
+comes up from this ad method. So
+
+734
+00:30:38,720 --> 00:30:43,000
+in 30 minutes, let's revisit.
+
+735
+00:30:43,120 --> 00:30:46,440
+Other questions?
+
+736
+00:30:46,640 --> 00:30:50,679
+Great. Okay.
+
+737
+00:30:50,799 --> 00:30:59,679
+Okay. So I'm going to introduce
+
+738
+00:30:55,120 --> 00:31:01,760
+this new state theta of t. Okay. And
+
+739
+00:30:59,679 --> 00:31:04,640
+it's going to represent my weights of my
+
+740
+00:31:01,760 --> 00:31:07,919
+neural network function f. And it of
+
+741
+00:31:04,640 --> 00:31:09,200
+course theta of t is constant, right?
+
+742
+00:31:07,919 --> 00:31:12,159
+Because our weights are are are not
+
+743
+00:31:09,200 --> 00:31:14,320
+going to change throughout our our time.
+
+744
+00:31:12,159 --> 00:31:16,960
+And so what I do is then I make this
+
+745
+00:31:14,320 --> 00:31:18,399
+what's called an augmented od. And we'll
+
+746
+00:31:16,960 --> 00:31:21,679
+see a little bit more about this later.
+
+747
+00:31:18,399 --> 00:31:23,520
+But we have some time derivative. And
+
+748
+00:31:21,679 --> 00:31:27,279
+for example, theta sorry should be zero
+
+749
+00:31:23,520 --> 00:31:29,039
+here on the right. Okay. And so what I'm
+
+750
+00:31:27,279 --> 00:31:31,840
+going to do is I'm going to define a
+
+751
+00:31:29,039 --> 00:31:35,039
+function that represents the gradients
+
+752
+00:31:31,840 --> 00:31:37,519
+of this OD with respect to my loss
+
+753
+00:31:35,039 --> 00:31:40,480
+function throughout time.
+
+754
+00:31:37,519 --> 00:31:41,919
+Okay. So I define this function A. It's
+
+755
+00:31:40,480 --> 00:31:44,320
+going to be called the adjint which
+
+756
+00:31:41,919 --> 00:31:46,480
+we'll see. And I define it as the
+
+757
+00:31:44,320 --> 00:31:48,399
+gradient with respect to Z of T and the
+
+758
+00:31:46,480 --> 00:31:50,240
+gradient with respect to theta of T. And
+
+759
+00:31:48,399 --> 00:31:52,960
+remember theta of T is just a dummy
+
+760
+00:31:50,240 --> 00:31:56,320
+variable that equals theta. Okay, let me
+
+761
+00:31:52,960 --> 00:31:58,159
+clarify. This should be zero.
+
+762
+00:31:56,320 --> 00:32:01,279
+Okay.
+
+763
+00:31:58,159 --> 00:32:04,799
+Okay. And so the key is that okay if I
+
+764
+00:32:01,279 --> 00:32:06,799
+know this adjint state at every time
+
+765
+00:32:04,799 --> 00:32:09,200
+then I know actually how to compute my
+
+766
+00:32:06,799 --> 00:32:11,360
+gradients in a pretty easy way. Do you
+
+767
+00:32:09,200 --> 00:32:12,880
+guys agree with that?
+
+768
+00:32:11,360 --> 00:32:15,519
+Because we saw that the gradients
+
+769
+00:32:12,880 --> 00:32:17,360
+required this sort of expansion over all
+
+770
+00:32:15,519 --> 00:32:19,200
+of time and we had to do it recursively.
+
+771
+00:32:17,360 --> 00:32:20,960
+So if I know this adjoint state for all
+
+772
+00:32:19,200 --> 00:32:23,840
+of time then I know my gradient
+
+773
+00:32:20,960 --> 00:32:27,039
+calculation.
+
+774
+00:32:23,840 --> 00:32:29,360
+And so what is the idea here? Well, the
+
+775
+00:32:27,039 --> 00:32:31,679
+idea is that this gradient
+
+776
+00:32:29,360 --> 00:32:36,320
+as a time can be rewritten by
+
+777
+00:32:31,679 --> 00:32:38,799
+differentiating as an OD itself. Okay.
+
+778
+00:32:36,320 --> 00:32:41,440
+And two things are easy to compute in
+
+779
+00:32:38,799 --> 00:32:43,279
+this gradient. The first thing is that
+
+780
+00:32:41,440 --> 00:32:45,200
+we'll see how to actually get this D of
+
+781
+00:32:43,279 --> 00:32:48,559
+t in a second. I'll derive it for you.
+
+782
+00:32:45,200 --> 00:32:52,640
+But before that, the initial conditions
+
+783
+00:32:48,559 --> 00:32:54,399
+are not easy to know at time zero. Do we
+
+784
+00:32:52,640 --> 00:32:57,279
+agree with this? Because at time zero
+
+785
+00:32:54,399 --> 00:33:00,559
+then I would need to know the derivative
+
+786
+00:32:57,279 --> 00:33:03,440
+of dz of0 and that requires my whole
+
+787
+00:33:00,559 --> 00:33:05,760
+recursive chain.
+
+788
+00:33:03,440 --> 00:33:09,440
+But instead what I do know is actually
+
+789
+00:33:05,760 --> 00:33:11,200
+the value of the state at time t.
+
+790
+00:33:09,440 --> 00:33:15,760
+Why do I know the value of the t state
+
+791
+00:33:11,200 --> 00:33:17,519
+at time t? Well because I know what z
+
+792
+00:33:15,760 --> 00:33:19,120
+oft is. Right? So it's just the
+
+793
+00:33:17,519 --> 00:33:22,159
+derivative with respect to my L2 loss
+
+794
+00:33:19,120 --> 00:33:24,559
+function of my output.
+
+795
+00:33:22,159 --> 00:33:25,919
+So it's very easy to know what a of t is
+
+796
+00:33:24,559 --> 00:33:28,240
+and that's what we're going to treat as
+
+797
+00:33:25,919 --> 00:33:29,440
+our initial condition. And actually to
+
+798
+00:33:28,240 --> 00:33:32,320
+get our gradients, we're going to
+
+799
+00:33:29,440 --> 00:33:33,840
+integrate this OD backwards in time.
+
+800
+00:33:32,320 --> 00:33:36,080
+Okay? And we'll see a little bit of a
+
+801
+00:33:33,840 --> 00:33:38,880
+diagram in a second.
+
+802
+00:33:36,080 --> 00:33:41,360
+Okay? And so how did we get this sort of
+
+803
+00:33:38,880 --> 00:33:44,720
+OD? Well, we differentiated up here.
+
+804
+00:33:41,360 --> 00:33:47,840
+Okay? And so how do we do this?
+
+805
+00:33:44,720 --> 00:33:52,159
+We'll just do it for a of t in the
+
+806
+00:33:47,840 --> 00:33:54,880
+simplest possible case. Okay. And so
+
+807
+00:33:52,159 --> 00:33:57,679
+here what we have is the gradient with
+
+808
+00:33:54,880 --> 00:34:01,440
+respect to the loss function. Okay. With
+
+809
+00:33:57,679 --> 00:34:03,600
+respect to z of t.
+
+810
+00:34:01,440 --> 00:34:05,200
+And the first thing we're going to do is
+
+811
+00:34:03,600 --> 00:34:07,840
+we're going to make this identity via
+
+812
+00:34:05,200 --> 00:34:09,919
+tailaylor's theorem. Okay. And we saw
+
+813
+00:34:07,840 --> 00:34:12,480
+again from Taylor's theorem that if we
+
+814
+00:34:09,919 --> 00:34:14,320
+add some small epsilon, we get the
+
+815
+00:34:12,480 --> 00:34:17,200
+difference between z of t plus epsilon z
+
+816
+00:34:14,320 --> 00:34:19,679
+of t * epsilon times our derivative
+
+817
+00:34:17,200 --> 00:34:23,040
+which we plug in for our dynamics plus
+
+818
+00:34:19,679 --> 00:34:26,399
+some order epsilon squ.
+
+819
+00:34:23,040 --> 00:34:29,440
+Okay, follow so far. So this is just a
+
+820
+00:34:26,399 --> 00:34:30,960
+tailor order expansion of z. Okay, we
+
+821
+00:34:29,440 --> 00:34:33,919
+saw this for example in our oilers's
+
+822
+00:34:30,960 --> 00:34:35,200
+method as well. Okay. And so what I'm
+
+823
+00:34:33,919 --> 00:34:37,679
+going to do is I'm going to first give
+
+824
+00:34:35,200 --> 00:34:38,800
+you an identity by differentiating this.
+
+825
+00:34:37,679 --> 00:34:41,119
+And we're going to see where this comes
+
+826
+00:34:38,800 --> 00:34:42,720
+into play in a second. Okay. So I take
+
+827
+00:34:41,119 --> 00:34:44,639
+the derivative of this with respect to Z
+
+828
+00:34:42,720 --> 00:34:46,240
+of T.
+
+829
+00:34:44,639 --> 00:34:49,599
+Plugging in over here, I'm going to get
+
+830
+00:34:46,240 --> 00:34:51,359
+the identity function or matrix, sorry,
+
+831
+00:34:49,599 --> 00:34:54,879
+plus the derivative with F with respect
+
+832
+00:34:51,359 --> 00:34:56,879
+to Z of T partial derivative.
+
+833
+00:34:54,879 --> 00:34:58,079
+So we build this identity. Okay, I
+
+834
+00:34:56,879 --> 00:35:01,119
+haven't told you why we're doing this
+
+835
+00:34:58,079 --> 00:35:03,680
+yet, but let's just say we did this.
+
+836
+00:35:01,119 --> 00:35:06,320
+Then why is this going to matter? Well,
+
+837
+00:35:03,680 --> 00:35:08,079
+if I expand this derivative of the
+
+838
+00:35:06,320 --> 00:35:10,240
+state, the adjint state, which remember
+
+839
+00:35:08,079 --> 00:35:13,359
+is our gradient of our loss function
+
+840
+00:35:10,240 --> 00:35:15,520
+with respect to Z of T, what do I get?
+
+841
+00:35:13,359 --> 00:35:19,280
+Well, I can use the chain rule. The
+
+842
+00:35:15,520 --> 00:35:23,200
+chain rule says that DL / DZ plus
+
+843
+00:35:19,280 --> 00:35:25,440
+epsilon times the epsilon augmented
+
+844
+00:35:23,200 --> 00:35:26,640
+state divided by DZT. And then what am I
+
+845
+00:35:25,440 --> 00:35:28,480
+going to do? I'm going to plug in,
+
+846
+00:35:26,640 --> 00:35:31,359
+right?
+
+847
+00:35:28,480 --> 00:35:33,119
+And so if I plug in I get two things.
+
+848
+00:35:31,359 --> 00:35:35,359
+The first thing is that okay I plug in
+
+849
+00:35:33,119 --> 00:35:38,480
+this to the second term get I plus
+
+850
+00:35:35,359 --> 00:35:41,920
+epsilon time the derivative of f plus
+
+851
+00:35:38,480 --> 00:35:44,720
+some o of epsilon squar o of epsilon squ
+
+852
+00:35:41,920 --> 00:35:48,480
+and the second thing I get is actually
+
+853
+00:35:44,720 --> 00:35:51,440
+this function here by definition is just
+
+854
+00:35:48,480 --> 00:35:56,599
+a at t plus epsilon.
+
+855
+00:35:51,440 --> 00:35:56,599
+Okay any questions make sense?
+
+856
+00:35:58,800 --> 00:36:03,440
+Okay. And so then we get okay something
+
+857
+00:36:01,280 --> 00:36:05,440
+for a of t plus epsilon times the
+
+858
+00:36:03,440 --> 00:36:08,640
+identity plus the second term on the
+
+859
+00:36:05,440 --> 00:36:10,720
+dynamics. All right. And it turns out
+
+860
+00:36:08,640 --> 00:36:13,119
+what we can do
+
+861
+00:36:10,720 --> 00:36:15,599
+is if we expand this multiplication
+
+862
+00:36:13,119 --> 00:36:17,839
+right we're going to get t plus epsilon
+
+863
+00:36:15,599 --> 00:36:20,320
+plus a of t plus epsilon times this
+
+864
+00:36:17,839 --> 00:36:23,040
+quantity.
+
+865
+00:36:20,320 --> 00:36:25,200
+And if we subtract for example a of t
+
+866
+00:36:23,040 --> 00:36:27,680
+plus epsilon on both sides. switch the
+
+867
+00:36:25,200 --> 00:36:31,560
+order. You can trust me that you'll get
+
+868
+00:36:27,680 --> 00:36:31,560
+something that looks like this.
+
+869
+00:36:33,200 --> 00:36:38,400
+And from here the question is okay
+
+870
+00:36:36,240 --> 00:36:41,200
+for example is what does this thing on
+
+871
+00:36:38,400 --> 00:36:44,359
+the look left look like as epsilon goes
+
+872
+00:36:41,200 --> 00:36:44,359
+to zero?
+
+873
+00:36:46,560 --> 00:36:49,880
+Any ideas?
+
+874
+00:36:55,359 --> 00:37:00,720
+It's the small difference between a of t
+
+875
+00:36:57,920 --> 00:37:04,079
+plus epsilon and a of t. Right? So if I
+
+876
+00:37:00,720 --> 00:37:07,040
+divide by epsilon for example, I'll get
+
+877
+00:37:04,079 --> 00:37:10,160
+this differential over epsilon. This
+
+878
+00:37:07,040 --> 00:37:15,320
+epsilon will disappear. Okay? And I'll
+
+879
+00:37:10,160 --> 00:37:15,320
+get something that looks like da dt.
+
+880
+00:37:16,720 --> 00:37:19,920
+And so then this is actually the
+
+881
+00:37:18,079 --> 00:37:21,920
+quantity the exact quantity. Sorry, I'm
+
+882
+00:37:19,920 --> 00:37:23,680
+missing an a of t here because when we
+
+883
+00:37:21,920 --> 00:37:25,440
+expanded it, we had a of t on both
+
+884
+00:37:23,680 --> 00:37:26,800
+sides.
+
+885
+00:37:25,440 --> 00:37:28,400
+We'll get something that looks like
+
+886
+00:37:26,800 --> 00:37:32,640
+this. And this is actually our exact
+
+887
+00:37:28,400 --> 00:37:34,400
+quantity that we used to describe our od
+
+888
+00:37:32,640 --> 00:37:36,800
+state.
+
+889
+00:37:34,400 --> 00:37:39,200
+So if I go back,
+
+890
+00:37:36,800 --> 00:37:41,200
+I promised you it looks something like a
+
+891
+00:37:39,200 --> 00:37:46,119
+of t times the derivative of the
+
+892
+00:37:41,200 --> 00:37:46,119
+dynamics with respect to z of t.
+
+893
+00:37:48,400 --> 00:37:54,320
+Does everyone follow how we got the the
+
+894
+00:37:50,560 --> 00:37:57,320
+different or derivation of the OD state?
+
+895
+00:37:54,320 --> 00:37:57,320
+Yeah.
+
+896
+00:38:06,079 --> 00:38:11,040
+No, no. Okay. So,
+
+897
+00:38:08,400 --> 00:38:14,000
+if you divide both by epsilon on the
+
+898
+00:38:11,040 --> 00:38:16,800
+left here, you'll get the d uh a of t
+
+899
+00:38:14,000 --> 00:38:19,440
+plus epsilon minus a of t over epsilon.
+
+900
+00:38:16,800 --> 00:38:21,440
+Okay. Then we take the limit as epsilon
+
+901
+00:38:19,440 --> 00:38:24,160
+goes to zero. That's the definition of
+
+902
+00:38:21,440 --> 00:38:27,760
+the derivative. So then you get the da
+
+903
+00:38:24,160 --> 00:38:28,880
+of t over dt. We agree this epsilon is
+
+904
+00:38:27,760 --> 00:38:31,440
+going to cancel when I divide by
+
+905
+00:38:28,880 --> 00:38:33,599
+epsilon. Okay. There should be an a of t
+
+906
+00:38:31,440 --> 00:38:36,079
+here that multiplies and a of t plus
+
+907
+00:38:33,599 --> 00:38:40,520
+epsilon.
+
+908
+00:38:36,079 --> 00:38:40,520
+Yeah. It's yeah. So so
+
+909
+00:38:40,720 --> 00:38:46,000
+right. But then when I take the limit as
+
+910
+00:38:42,640 --> 00:38:49,839
+epsilon goes to zero, it becomes a of t.
+
+911
+00:38:46,000 --> 00:38:51,520
+Let me draw it out. So
+
+912
+00:38:49,839 --> 00:38:55,920
+can you guys see if I write on this or
+
+913
+00:38:51,520 --> 00:39:00,480
+no? If I write big. So we get a of t
+
+914
+00:38:55,920 --> 00:39:02,240
+plus epsilon minus a of t equals minus
+
+915
+00:39:00,480 --> 00:39:07,599
+epsilon
+
+916
+00:39:02,240 --> 00:39:10,480
+a of t plus epsilon time df dz.
+
+917
+00:39:07,599 --> 00:39:14,400
+So this is what's missing.
+
+918
+00:39:10,480 --> 00:39:16,640
+Do you see? Okay. I divide by epsilon.
+
+919
+00:39:14,400 --> 00:39:18,800
+divide by epsilon
+
+920
+00:39:16,640 --> 00:39:23,760
+then I take the limit. So limit epsilon
+
+921
+00:39:18,800 --> 00:39:28,480
+to zero a of t plus epsilon minus a of t
+
+922
+00:39:23,760 --> 00:39:33,599
+over epsilon equals a of t plus epsilon
+
+923
+00:39:28,480 --> 00:39:35,520
+limit epsilon is zero dfdz.
+
+924
+00:39:33,599 --> 00:39:38,079
+Okay, ignoring let's let's assume things
+
+925
+00:39:35,520 --> 00:39:39,359
+are scalers ignoring the the mric. From
+
+926
+00:39:38,079 --> 00:39:42,320
+here this is the definition of the
+
+927
+00:39:39,359 --> 00:39:45,200
+derivative. From here epsilon's going to
+
+928
+00:39:42,320 --> 00:39:47,920
+go to zero. we get a of t.
+
+929
+00:39:45,200 --> 00:39:51,040
+We agree? Yeah. And so then you get the
+
+930
+00:39:47,920 --> 00:39:54,720
+final expression there. So it's Yeah.
+
+931
+00:39:51,040 --> 00:39:57,920
+Okay. Okay. The same exact idea can be
+
+932
+00:39:54,720 --> 00:40:00,720
+done for a of theta dt.
+
+933
+00:39:57,920 --> 00:40:04,880
+Okay. Same exact derivation. I don't
+
+934
+00:40:00,720 --> 00:40:07,520
+show it for for that reason. Okay.
+
+935
+00:40:04,880 --> 00:40:10,560
+Okay. And so then here's the whole idea
+
+936
+00:40:07,520 --> 00:40:13,599
+of the of the process. So I have this OD
+
+937
+00:40:10,560 --> 00:40:15,760
+state for the forward pass, right? We go
+
+938
+00:40:13,599 --> 00:40:17,599
+from an initial condition, we pass it
+
+939
+00:40:15,760 --> 00:40:19,920
+through our OD solver with our neural
+
+940
+00:40:17,599 --> 00:40:23,119
+network and we get some output dynamics
+
+941
+00:40:19,920 --> 00:40:25,280
+Z of capital T
+
+942
+00:40:23,119 --> 00:40:27,440
+and the adjoint state which represents
+
+943
+00:40:25,280 --> 00:40:31,359
+our gradients with our cost function
+
+944
+00:40:27,440 --> 00:40:33,599
+gets solved backwards in time. Okay, so
+
+945
+00:40:31,359 --> 00:40:36,240
+I promised you that I knew what the
+
+946
+00:40:33,599 --> 00:40:37,680
+adjoint state was at capital T, right?
+
+947
+00:40:36,240 --> 00:40:40,160
+because that's the gradient of the loss
+
+948
+00:40:37,680 --> 00:40:43,119
+function with respect to Z of capital T
+
+949
+00:40:40,160 --> 00:40:45,599
+which is just our output. Okay. And I
+
+950
+00:40:43,119 --> 00:40:48,480
+derive the dynamics for the state which
+
+951
+00:40:45,599 --> 00:40:51,680
+we saw over here. Okay. So what I can
+
+952
+00:40:48,480 --> 00:40:54,240
+actually do is to get the gradients for
+
+953
+00:40:51,680 --> 00:40:56,480
+my state for my entire neural
+
+954
+00:40:54,240 --> 00:41:00,319
+architecture is I can actually solve
+
+955
+00:40:56,480 --> 00:41:04,000
+this OD backwards in time using my OD
+
+956
+00:41:00,319 --> 00:41:05,920
+solver to get a set of gradients and
+
+957
+00:41:04,000 --> 00:41:09,800
+then I can use those gradients to update
+
+958
+00:41:05,920 --> 00:41:09,800
+my dynamics fs
+
+959
+00:41:10,640 --> 00:41:16,960
+idea and the key for the backwards idea
+
+960
+00:41:13,920 --> 00:41:19,839
+is that both of these can are sort of
+
+961
+00:41:16,960 --> 00:41:22,240
+solver independent, right? I choose my
+
+962
+00:41:19,839 --> 00:41:25,440
+OD solver. I solve my dynamics forward
+
+963
+00:41:22,240 --> 00:41:29,920
+in time. I use that same OD solver to
+
+964
+00:41:25,440 --> 00:41:31,520
+get my dynamics backwards in time. Okay?
+
+965
+00:41:29,920 --> 00:41:33,520
+And so then the key here is that okay,
+
+966
+00:41:31,520 --> 00:41:36,880
+if I'm solving instead of having to do
+
+967
+00:41:33,520 --> 00:41:38,880
+that recursive calculation by hand, I
+
+968
+00:41:36,880 --> 00:41:43,680
+can essentially just plug two different
+
+969
+00:41:38,880 --> 00:41:45,680
+dynamical systems into my OD solver.
+
+970
+00:41:43,680 --> 00:41:48,560
+Okay, so here's kind of some selling
+
+971
+00:41:45,680 --> 00:41:50,720
+points for this adjoint method. Back to
+
+972
+00:41:48,560 --> 00:41:54,640
+your question. So the one thing that's
+
+973
+00:41:50,720 --> 00:41:57,920
+really nice is that we don't need this
+
+974
+00:41:54,640 --> 00:42:01,599
+entire trajectory in memory at each time
+
+975
+00:41:57,920 --> 00:42:04,160
+step. Okay, we can calculate our new
+
+976
+00:42:01,599 --> 00:42:06,720
+step out of our OD solve based on our
+
+977
+00:42:04,160 --> 00:42:08,319
+backwards trajectory. Okay, so we don't
+
+978
+00:42:06,720 --> 00:42:10,400
+need all the recursive time steps.
+
+979
+00:42:08,319 --> 00:42:13,200
+Basically, we only need it at each time.
+
+980
+00:42:10,400 --> 00:42:15,280
+Does that make sense?
+
+981
+00:42:13,200 --> 00:42:17,119
+The second thing is that like I promised
+
+982
+00:42:15,280 --> 00:42:19,680
+you this is completely solver
+
+983
+00:42:17,119 --> 00:42:22,720
+independent. Okay, I'm just have to
+
+984
+00:42:19,680 --> 00:42:24,880
+solve two ODS to get my architecture.
+
+985
+00:42:22,720 --> 00:42:26,640
+And so the great thing is that we can
+
+986
+00:42:24,880 --> 00:42:29,200
+capitalize on any solver that you want.
+
+987
+00:42:26,640 --> 00:42:31,520
+So instead of you know pigeon holing
+
+988
+00:42:29,200 --> 00:42:33,440
+ourselves to this oilers's method which
+
+989
+00:42:31,520 --> 00:42:36,800
+is you know first order method it has o
+
+990
+00:42:33,440 --> 00:42:39,040
+of delta t o of delta t error in this
+
+991
+00:42:36,800 --> 00:42:40,960
+case we actually don't need to do that
+
+992
+00:42:39,040 --> 00:42:44,440
+right we can use for an example an
+
+993
+00:42:40,960 --> 00:42:44,440
+adaptive solver
+
+994
+00:42:45,359 --> 00:42:50,440
+anyone have any disadvantages to this
+
+995
+00:42:47,440 --> 00:42:50,440
+design
+
+996
+00:42:52,640 --> 00:42:56,520
+it's a perfect design.
+
+997
+00:43:02,480 --> 00:43:08,640
+What could be the problem with using OD
+
+998
+00:43:04,880 --> 00:43:10,319
+solvers both forward and backward
+
+999
+00:43:08,640 --> 00:43:13,280
+instead of perfectly recursively
+
+1000
+00:43:10,319 --> 00:43:15,200
+calculating?
+
+1001
+00:43:13,280 --> 00:43:18,920
+Any ideas?
+
+1002
+00:43:15,200 --> 00:43:18,920
+Error. Yep.
+
+1003
+00:43:41,520 --> 00:43:44,520
+Yep.
+
+1004
+00:43:45,599 --> 00:43:49,440
+Yes. So, you're saying basically, let me
+
+1005
+00:43:47,680 --> 00:43:51,200
+let me clarify what you're saying. So
+
+1006
+00:43:49,440 --> 00:43:52,880
+you're saying we had a mathematical
+
+1007
+00:43:51,200 --> 00:43:55,359
+formula for the derivative. We knew it
+
+1008
+00:43:52,880 --> 00:43:57,680
+was 100% correct. And in this case, what
+
+1009
+00:43:55,359 --> 00:44:00,000
+we do is we pick an initial condition at
+
+1010
+00:43:57,680 --> 00:44:02,800
+Z of capital T and we integrate
+
+1011
+00:44:00,000 --> 00:44:04,720
+backwards this OD. But we have no
+
+1012
+00:44:02,800 --> 00:44:07,200
+guarantee that this OD integration
+
+1013
+00:44:04,720 --> 00:44:09,599
+backwards is actually what our
+
+1014
+00:44:07,200 --> 00:44:10,640
+mathematical formula says. That that's
+
+1015
+00:44:09,599 --> 00:44:12,000
+essentially what you're saying. And
+
+1016
+00:44:10,640 --> 00:44:14,720
+that's also I think what you're saying
+
+1017
+00:44:12,000 --> 00:44:17,920
+is that our OD solution could have some
+
+1018
+00:44:14,720 --> 00:44:20,480
+error introduced, right? And so the
+
+1019
+00:44:17,920 --> 00:44:22,400
+shift of the the computation is actually
+
+1020
+00:44:20,480 --> 00:44:25,040
+on whether or not this OD solver is
+
+1021
+00:44:22,400 --> 00:44:27,440
+good. Whether or not that those times
+
+1022
+00:44:25,040 --> 00:44:31,440
+actually coincide with the recursive
+
+1023
+00:44:27,440 --> 00:44:32,800
+definition that we derived, right? And
+
+1024
+00:44:31,440 --> 00:44:34,319
+what did I promise you at the beginning
+
+1025
+00:44:32,800 --> 00:44:37,680
+of the lecture? Well, I promised you
+
+1026
+00:44:34,319 --> 00:44:41,520
+that we spent quite a bit of time
+
+1027
+00:44:37,680 --> 00:44:43,280
+working on OD solvers. And so we're
+
+1028
+00:44:41,520 --> 00:44:46,079
+taking advantage of that sort of 50
+
+1029
+00:44:43,280 --> 00:44:48,960
+years of OD solvers such that I can
+
+1030
+00:44:46,079 --> 00:44:50,880
+promise you it's actually pretty good.
+
+1031
+00:44:48,960 --> 00:44:52,560
+Okay, so that is that error is is
+
+1032
+00:44:50,880 --> 00:44:54,560
+actually small. And for example, you
+
+1033
+00:44:52,560 --> 00:44:57,280
+could actually investigate this yourself
+
+1034
+00:44:54,560 --> 00:44:59,119
+if you wanted to. I'm sure GPT could
+
+1035
+00:44:57,280 --> 00:45:00,880
+generate this for you in a minute. You
+
+1036
+00:44:59,119 --> 00:45:04,079
+could say, okay, let's actually
+
+1037
+00:45:00,880 --> 00:45:06,640
+calculate the recursive gradients for a
+
+1038
+00:45:04,079 --> 00:45:10,640
+simple problem. Take, you know, t= 1
+
+1039
+00:45:06,640 --> 00:45:12,319
+dynamical system x dot= x^2. Okay. And
+
+1040
+00:45:10,640 --> 00:45:13,760
+compare it actually with this adjoint
+
+1041
+00:45:12,319 --> 00:45:16,240
+method and see what the error looks
+
+1042
+00:45:13,760 --> 00:45:18,240
+like. Okay. And I promise you, as long
+
+1043
+00:45:16,240 --> 00:45:20,800
+as you use a good OD solver, it'll be
+
+1044
+00:45:18,240 --> 00:45:22,560
+small.
+
+1045
+00:45:20,800 --> 00:45:26,440
+Okay. But yeah, that's certainly a
+
+1046
+00:45:22,560 --> 00:45:26,440
+disadvantage. Go ahead.
+
+1047
+00:45:40,800 --> 00:45:48,000
+So the okay if I expanded that recursive
+
+1048
+00:45:45,200 --> 00:45:49,520
+calculation right for Oilers you agree
+
+1049
+00:45:48,000 --> 00:45:52,400
+that that's different than actually
+
+1050
+00:45:49,520 --> 00:45:54,640
+doing the OD solver
+
+1051
+00:45:52,400 --> 00:45:57,760
+do you agree with that
+
+1052
+00:45:54,640 --> 00:46:01,520
+okay so in that case if you imagine that
+
+1053
+00:45:57,760 --> 00:46:03,119
+our RK4 solver okay is optimized
+
+1054
+00:46:01,520 --> 00:46:07,359
+you know it takes advantage of let's say
+
+1055
+00:46:03,119 --> 00:46:09,359
+some tricks okay and I instead have to
+
+1056
+00:46:07,359 --> 00:46:11,440
+do that recursive calculation by hand
+
+1057
+00:46:09,359 --> 00:46:14,400
+let's say for RK4 so you can imagine
+
+1058
+00:46:11,440 --> 00:46:16,400
+they're equal on both sides right would
+
+1059
+00:46:14,400 --> 00:46:18,160
+you agree that the optimized solver is
+
+1060
+00:46:16,400 --> 00:46:22,000
+probably faster than my h hand
+
+1061
+00:46:18,160 --> 00:46:24,880
+derivation of the recursive calculation
+
+1062
+00:46:22,000 --> 00:46:26,880
+so that's that's the point yeah we're
+
+1063
+00:46:24,880 --> 00:46:29,359
+taking advantage of the fact that these
+
+1064
+00:46:26,880 --> 00:46:32,079
+things are not just well understood but
+
+1065
+00:46:29,359 --> 00:46:33,839
+they're also you You could have have a
+
+1066
+00:46:32,079 --> 00:46:37,680
+package you know for example scypi has a
+
+1067
+00:46:33,839 --> 00:46:40,000
+package right od45 is beautiful mat lab
+
+1068
+00:46:37,680 --> 00:46:44,079
+these types of things I think Julia even
+
+1069
+00:46:40,000 --> 00:46:46,240
+has a very nice solver nowadays so yeah
+
+1070
+00:46:44,079 --> 00:46:49,640
+okay
+
+1071
+00:46:46,240 --> 00:46:49,640
+other questions
+
+1072
+00:46:49,920 --> 00:46:53,599
+great
+
+1073
+00:46:51,680 --> 00:46:55,920
+okay okay
+
+1074
+00:46:53,599 --> 00:46:58,319
+yeah so as you were saying if this OD is
+
+1075
+00:46:55,920 --> 00:47:01,280
+hard to integrate or it's stiff we we
+
+1076
+00:46:58,319 --> 00:47:01,280
+run into some big errors
+
+1077
+00:47:01,680 --> 00:47:06,800
+Okay. And so let me give you like a a
+
+1078
+00:47:04,079 --> 00:47:09,040
+highle summary of the whole architecture
+
+1079
+00:47:06,800 --> 00:47:13,760
+kind of recapping what we did today. So
+
+1080
+00:47:09,040 --> 00:47:15,760
+or so far. So what we said is that okay
+
+1081
+00:47:13,760 --> 00:47:17,200
+we're we have these ODEs and they
+
+1082
+00:47:15,760 --> 00:47:19,760
+basically are the language of which we
+
+1083
+00:47:17,200 --> 00:47:22,240
+describe dynamical systems spanning
+
+1084
+00:47:19,760 --> 00:47:25,200
+everything from epidemiology to
+
+1085
+00:47:22,240 --> 00:47:27,280
+manipulators. Okay. And we want to try
+
+1086
+00:47:25,200 --> 00:47:29,359
+to think about how can we design a
+
+1087
+00:47:27,280 --> 00:47:31,440
+neural network architecture to sort of
+
+1088
+00:47:29,359 --> 00:47:33,599
+approximate this flows right because for
+
+1089
+00:47:31,440 --> 00:47:36,720
+example I would challenge all of you to
+
+1090
+00:47:33,599 --> 00:47:38,640
+find me a perfect weather dynamics model
+
+1091
+00:47:36,720 --> 00:47:40,319
+that is it wouldn't be so easy to write
+
+1092
+00:47:38,640 --> 00:47:43,280
+it down and so we have to maybe learn
+
+1093
+00:47:40,319 --> 00:47:45,200
+this OD from data okay and this sort of
+
+1094
+00:47:43,280 --> 00:47:46,960
+respects the structure that we know and
+
+1095
+00:47:45,200 --> 00:47:49,040
+so what was the idea of a neural well
+
+1096
+00:47:46,960 --> 00:47:51,440
+the neural OD idea is we have this
+
+1097
+00:47:49,040 --> 00:47:53,119
+differential equation with some input
+
+1098
+00:47:51,440 --> 00:47:55,040
+okay so this could be for example a
+
+1099
+00:47:53,119 --> 00:47:57,440
+starting position pendulum. You could
+
+1100
+00:47:55,040 --> 00:48:02,319
+even think of this input actually as for
+
+1101
+00:47:57,440 --> 00:48:04,240
+example some MNST data. So MNIS is set
+
+1102
+00:48:02,319 --> 00:48:07,040
+of handwritten digits and your goal is
+
+1103
+00:48:04,240 --> 00:48:08,560
+to classify the digits for example.
+
+1104
+00:48:07,040 --> 00:48:11,440
+And what we said is we're going to learn
+
+1105
+00:48:08,560 --> 00:48:14,880
+this function f which represents the
+
+1106
+00:48:11,440 --> 00:48:16,800
+flow of our dynamics. Okay.
+
+1107
+00:48:14,880 --> 00:48:18,800
+And how do we learn this function f?
+
+1108
+00:48:16,800 --> 00:48:21,359
+Well, it's not so simple. So let's let f
+
+1109
+00:48:18,800 --> 00:48:23,119
+be classic MLP.
+
+1110
+00:48:21,359 --> 00:48:25,280
+Then what we're going to do is we're
+
+1111
+00:48:23,119 --> 00:48:28,880
+going to integrate this dynamics f using
+
+1112
+00:48:25,280 --> 00:48:30,800
+our OD solver until some time capital T.
+
+1113
+00:48:28,880 --> 00:48:33,040
+And we saw that this was like the ResNet
+
+1114
+00:48:30,800 --> 00:48:35,200
+structure, but remember the ResNet
+
+1115
+00:48:33,040 --> 00:48:37,520
+structure had a bunch of discrete layers
+
+1116
+00:48:35,200 --> 00:48:39,599
+where we learned a new set of dynamics
+
+1117
+00:48:37,520 --> 00:48:43,359
+for each layer. In this case, we only
+
+1118
+00:48:39,599 --> 00:48:47,880
+have one set of dynamics f, but we can
+
+1119
+00:48:43,359 --> 00:48:47,880
+integrate to say a very large T.
+
+1120
+00:48:48,559 --> 00:48:53,920
+We then said okay that's great but how
+
+1121
+00:48:51,680 --> 00:48:55,359
+do we compute these gradients and the
+
+1122
+00:48:53,920 --> 00:48:58,720
+gradients with respect to the loss
+
+1123
+00:48:55,359 --> 00:49:00,800
+function are I would say not so simple
+
+1124
+00:48:58,720 --> 00:49:03,440
+to compute we saw this recursive design
+
+1125
+00:49:00,800 --> 00:49:05,280
+and so we said okay we can sort of
+
+1126
+00:49:03,440 --> 00:49:08,880
+approximate these gradients in a good
+
+1127
+00:49:05,280 --> 00:49:11,200
+way by defining this adjint state and
+
+1128
+00:49:08,880 --> 00:49:14,800
+doing a sort of reverse backwards solve
+
+1129
+00:49:11,200 --> 00:49:17,200
+the OD solver okay
+
+1130
+00:49:14,800 --> 00:49:18,480
+and what was the key kind of point of
+
+1131
+00:49:17,200 --> 00:49:20,400
+this is that this is the first time
+
+1132
+00:49:18,480 --> 00:49:23,359
+we've actually thought about embedding
+
+1133
+00:49:20,400 --> 00:49:25,920
+some structure physically into our
+
+1134
+00:49:23,359 --> 00:49:27,680
+neural network architecture. Right? So
+
+1135
+00:49:25,920 --> 00:49:30,480
+up until this point we looked at for
+
+1136
+00:49:27,680 --> 00:49:33,359
+example attention which kind of is an
+
+1137
+00:49:30,480 --> 00:49:34,960
+idea basically from
+
+1138
+00:49:33,359 --> 00:49:37,520
+any of you guys know like what seek to
+
+1139
+00:49:34,960 --> 00:49:39,920
+seek is or no?
+
+1140
+00:49:37,520 --> 00:49:41,440
+Okay, let's ignore that. uh but it it's
+
+1141
+00:49:39,920 --> 00:49:43,280
+sort of built off of these years of of
+
+1142
+00:49:41,440 --> 00:49:45,359
+of natural language processing and how
+
+1143
+00:49:43,280 --> 00:49:48,400
+do we handle kind of entire sequences
+
+1144
+00:49:45,359 --> 00:49:50,559
+all at once. Okay. And in this case we
+
+1145
+00:49:48,400 --> 00:49:52,160
+said okay well for dynamical systems we
+
+1146
+00:49:50,559 --> 00:49:54,720
+have a different type of structure the
+
+1147
+00:49:52,160 --> 00:49:57,040
+sort of OD structure and we show that
+
+1148
+00:49:54,720 --> 00:49:58,559
+okay by embedding a neural network in a
+
+1149
+00:49:57,040 --> 00:50:00,800
+structure we can get some some new
+
+1150
+00:49:58,559 --> 00:50:02,319
+architecture but I haven't shown you
+
+1151
+00:50:00,800 --> 00:50:04,160
+whether or not this architecture is good
+
+1152
+00:50:02,319 --> 00:50:05,599
+which of course I'll let you guys kind
+
+1153
+00:50:04,160 --> 00:50:08,559
+of find out in your homework but also
+
+1154
+00:50:05,599 --> 00:50:11,839
+show you some examples in a second
+
+1155
+00:50:08,559 --> 00:50:13,280
+and so here's an simple example I
+
+1156
+00:50:11,839 --> 00:50:16,720
+promised you we would do the handwritten
+
+1157
+00:50:13,280 --> 00:50:19,119
+digits so for example MN
+
+1158
+00:50:16,720 --> 00:50:20,960
+uh is is a very famous data set. For the
+
+1159
+00:50:19,119 --> 00:50:23,200
+longest time, it was considered like the
+
+1160
+00:50:20,960 --> 00:50:26,000
+benchmark data set in sort of computer
+
+1161
+00:50:23,200 --> 00:50:27,599
+vision where okay, I get a pixelized
+
+1162
+00:50:26,000 --> 00:50:30,720
+representation of this number and I have
+
+1163
+00:50:27,599 --> 00:50:32,720
+to classify it as two.
+
+1164
+00:50:30,720 --> 00:50:35,280
+And so how could I turn this into a sort
+
+1165
+00:50:32,720 --> 00:50:37,680
+of neurode architecture? Well, what I
+
+1166
+00:50:35,280 --> 00:50:40,559
+could do is the following. I treat this
+
+1167
+00:50:37,680 --> 00:50:42,559
+pixelized input as an initial condition
+
+1168
+00:50:40,559 --> 00:50:45,839
+for my OD.
+
+1169
+00:50:42,559 --> 00:50:48,640
+Okay, I then will run to some capital T
+
+1170
+00:50:45,839 --> 00:50:51,359
+seconds my neural network architecture
+
+1171
+00:50:48,640 --> 00:50:53,119
+learning this vector field f. Okay, and
+
+1172
+00:50:51,359 --> 00:50:55,280
+then I will do our back propagation like
+
+1173
+00:50:53,119 --> 00:50:56,640
+we talked about.
+
+1174
+00:50:55,280 --> 00:50:58,160
+And so this was kind of the first
+
+1175
+00:50:56,640 --> 00:51:01,359
+experiment ever done with these neural
+
+1176
+00:50:58,160 --> 00:51:04,000
+ODEs. And what do we show? Well, they
+
+1177
+00:51:01,359 --> 00:51:08,480
+showed that you could get approximately
+
+1178
+00:51:04,000 --> 00:51:10,079
+the same performance as ResNets
+
+1179
+00:51:08,480 --> 00:51:15,359
+approximately
+
+1180
+00:51:10,079 --> 00:51:18,800
+with 01 memory. Okay. And you know about
+
+1181
+00:51:15,359 --> 00:51:21,359
+a third of the number of parameters.
+
+1182
+00:51:18,800 --> 00:51:23,440
+So this was a bit pretty big result at
+
+1183
+00:51:21,359 --> 00:51:26,079
+the time. It was 2018. So you can
+
+1184
+00:51:23,440 --> 00:51:28,319
+imagine seven years ago. But the idea is
+
+1185
+00:51:26,079 --> 00:51:32,720
+that this resonant actually works. Okay.
+
+1186
+00:51:28,319 --> 00:51:34,800
+Or this this ENET. Okay, the RKNet is
+
+1187
+00:51:32,720 --> 00:51:38,240
+actually a very simple similar
+
+1188
+00:51:34,800 --> 00:51:40,559
+algorithm. Okay, but they did not
+
+1189
+00:51:38,240 --> 00:51:42,800
+introduce the adjint method. So you were
+
+1190
+00:51:40,559 --> 00:51:45,599
+asking earlier about like why wouldn't I
+
+1191
+00:51:42,800 --> 00:51:47,680
+just expand A4 that actually was done.
+
+1192
+00:51:45,599 --> 00:51:49,920
+It was sort of this RK net. It works
+
+1193
+00:51:47,680 --> 00:51:51,440
+pretty well in practice. The only thing
+
+1194
+00:51:49,920 --> 00:51:54,960
+is that you have to store the whole
+
+1195
+00:51:51,440 --> 00:51:56,640
+time. Okay, because we saw that when we
+
+1196
+00:51:54,960 --> 00:51:59,680
+expand the gradient with respect to f,
+
+1197
+00:51:56,640 --> 00:52:01,839
+it depends on all of the previous times.
+
+1198
+00:51:59,680 --> 00:52:05,440
+Okay.
+
+1199
+00:52:01,839 --> 00:52:07,920
+All right. And so then since this now
+
+1200
+00:52:05,440 --> 00:52:10,720
+these kind of methods are all over
+
+1201
+00:52:07,920 --> 00:52:12,720
+generative modeling. So does anyone know
+
+1202
+00:52:10,720 --> 00:52:15,359
+the problem generative modeling off the
+
+1203
+00:52:12,720 --> 00:52:16,319
+top of your head? Like if I ask what's
+
+1204
+00:52:15,359 --> 00:52:18,400
+the difference between like a
+
+1205
+00:52:16,319 --> 00:52:19,680
+discriminative and a generative model?
+
+1206
+00:52:18,400 --> 00:52:22,000
+Any of you guys gotten that question
+
+1207
+00:52:19,680 --> 00:52:25,280
+before?
+
+1208
+00:52:22,000 --> 00:52:28,319
+Okay. A generative model aims to
+
+1209
+00:52:25,280 --> 00:52:29,839
+approximate a probability distribution.
+
+1210
+00:52:28,319 --> 00:52:32,000
+Okay.
+
+1211
+00:52:29,839 --> 00:52:34,559
+And a descriptive model aims to learn a
+
+1212
+00:52:32,000 --> 00:52:36,319
+mapping from input to output labels.
+
+1213
+00:52:34,559 --> 00:52:38,160
+Okay. And these are actually
+
+1214
+00:52:36,319 --> 00:52:41,680
+fundamentally different ways of thinking
+
+1215
+00:52:38,160 --> 00:52:44,720
+about problems. Um and so in generative
+
+1216
+00:52:41,680 --> 00:52:46,960
+modeling what I could do for example the
+
+1217
+00:52:44,720 --> 00:52:50,079
+way kind of diffusion models work is
+
+1218
+00:52:46,960 --> 00:52:52,960
+imagine I take a data set and I want to
+
+1219
+00:52:50,079 --> 00:52:56,640
+learn the mapping from pure noise let's
+
+1220
+00:52:52,960 --> 00:52:59,839
+say Gaussian noise okay to a target
+
+1221
+00:52:56,640 --> 00:53:01,200
+image. Okay, well this target image can
+
+1222
+00:52:59,839 --> 00:53:04,240
+be represented by a probability
+
+1223
+00:53:01,200 --> 00:53:06,319
+distribution. And it turns out that this
+
+1224
+00:53:04,240 --> 00:53:08,240
+mapping from a noise to this target
+
+1225
+00:53:06,319 --> 00:53:09,920
+image can actually be represented by an
+
+1226
+00:53:08,240 --> 00:53:12,000
+OD.
+
+1227
+00:53:09,920 --> 00:53:15,200
+And so basically all of the generative
+
+1228
+00:53:12,000 --> 00:53:16,960
+modeling work nowadays is built off of
+
+1229
+00:53:15,200 --> 00:53:19,839
+this idea that we actually just need to
+
+1230
+00:53:16,960 --> 00:53:23,839
+learn this OD mapping from say pure
+
+1231
+00:53:19,839 --> 00:53:25,760
+noise to a a beautiful image.
+
+1232
+00:53:23,839 --> 00:53:28,000
+And so where what is the architecture
+
+1233
+00:53:25,760 --> 00:53:32,640
+that's natural to do that? Well, of
+
+1234
+00:53:28,000 --> 00:53:34,720
+course, it's a neural OD. Okay. And so
+
+1235
+00:53:32,640 --> 00:53:37,200
+this is kind of the backbone be behind
+
+1236
+00:53:34,720 --> 00:53:40,240
+Sora. It's now kind of being used all
+
+1237
+00:53:37,200 --> 00:53:42,559
+over the place for actually text
+
+1238
+00:53:40,240 --> 00:53:44,880
+generation as well. So one advantage of
+
+1239
+00:53:42,559 --> 00:53:46,559
+this is that for example, imagine that
+
+1240
+00:53:44,880 --> 00:53:49,040
+you are Google and you're trying to make
+
+1241
+00:53:46,559 --> 00:53:51,839
+Gemini, but you want Gemini to work on
+
+1242
+00:53:49,040 --> 00:53:53,200
+your phone. Okay, one thing you could do
+
+1243
+00:53:51,839 --> 00:53:55,440
+is you could say, okay, have the phone
+
+1244
+00:53:53,200 --> 00:53:57,839
+send a signal to the cloud, run on my
+
+1245
+00:53:55,440 --> 00:53:59,200
+GPUs, and then kind of send it back, but
+
+1246
+00:53:57,839 --> 00:54:01,760
+you can imagine that could take some
+
+1247
+00:53:59,200 --> 00:54:03,200
+time and it depends on network latency.
+
+1248
+00:54:01,760 --> 00:54:07,040
+In this case, actually, what they've
+
+1249
+00:54:03,200 --> 00:54:08,880
+tried to do is develop a on phone
+
+1250
+00:54:07,040 --> 00:54:13,839
+diffusion model for the new Pixel
+
+1251
+00:54:08,880 --> 00:54:15,920
+phones. Um, does it work?
+
+1252
+00:54:13,839 --> 00:54:17,599
+to be seen. But the idea is that you can
+
+1253
+00:54:15,920 --> 00:54:18,960
+at least run a large language model on
+
+1254
+00:54:17,599 --> 00:54:21,119
+your phone, for example, with this
+
+1255
+00:54:18,960 --> 00:54:24,680
+architecture. It's it's a little bit
+
+1256
+00:54:21,119 --> 00:54:24,680
+more than that, but
+
+1257
+00:54:26,400 --> 00:54:31,559
+give it a second.
+
+1258
+00:54:28,559 --> 00:54:31,559
+Okay.
+
+1259
+00:54:32,319 --> 00:54:37,359
+And so here's the exact idea that I was
+
+1260
+00:54:34,240 --> 00:54:39,119
+talking about. We have some noise, okay?
+
+1261
+00:54:37,359 --> 00:54:42,160
+And we want to learn the mapping from
+
+1262
+00:54:39,119 --> 00:54:43,920
+noise to an image. Okay. And this is
+
+1263
+00:54:42,160 --> 00:54:46,559
+actually what's called an inverse
+
+1264
+00:54:43,920 --> 00:54:48,720
+diffusion process. So the forward
+
+1265
+00:54:46,559 --> 00:54:50,559
+diffusion process is okay I slowly add
+
+1266
+00:54:48,720 --> 00:54:53,280
+image to the noise. This is easy to do.
+
+1267
+00:54:50,559 --> 00:54:54,880
+We know how to add uh noise to images.
+
+1268
+00:54:53,280 --> 00:54:56,319
+But learning this reverse direction is
+
+1269
+00:54:54,880 --> 00:54:58,319
+actually a little bit tricky. And we can
+
+1270
+00:54:56,319 --> 00:55:00,800
+represent it with an OD of which we
+
+1271
+00:54:58,319 --> 00:55:02,240
+learn the dynamics function.
+
+1272
+00:55:00,800 --> 00:55:04,559
+And so this is actually like the
+
+1273
+00:55:02,240 --> 00:55:06,319
+backbone idea behind generative models.
+
+1274
+00:55:04,559 --> 00:55:08,640
+You can imagine okay now if I want to
+
+1275
+00:55:06,319 --> 00:55:10,960
+say okay draw me a picture of a giraffe
+
+1276
+00:55:08,640 --> 00:55:13,119
+well I'll learn a conditional backwards
+
+1277
+00:55:10,960 --> 00:55:15,200
+pass right conditional on the word
+
+1278
+00:55:13,119 --> 00:55:18,160
+giraffe
+
+1279
+00:55:15,200 --> 00:55:20,240
+okay where else is this sort of popular
+
+1280
+00:55:18,160 --> 00:55:23,680
+so I promised you that this was big for
+
+1281
+00:55:20,240 --> 00:55:26,800
+for co it's really big in learning based
+
+1282
+00:55:23,680 --> 00:55:28,800
+control okay you can imagine that
+
+1283
+00:55:26,800 --> 00:55:32,160
+control theorists love to work on these
+
+1284
+00:55:28,800 --> 00:55:35,680
+OD dynamics and so learning the dynamics
+
+1285
+00:55:32,160 --> 00:55:37,760
+is always a challenge Especially
+
+1286
+00:55:35,680 --> 00:55:40,400
+for complicated systems where we just
+
+1287
+00:55:37,760 --> 00:55:42,160
+have input output data and so commonly
+
+1288
+00:55:40,400 --> 00:55:44,720
+people have tried to learn neural
+
+1289
+00:55:42,160 --> 00:55:46,880
+architectures and then drive controllers
+
+1290
+00:55:44,720 --> 00:55:49,119
+based on that architecture.
+
+1291
+00:55:46,880 --> 00:55:52,319
+And then lastly of course I promised you
+
+1292
+00:55:49,119 --> 00:55:55,760
+forecasting. So here for example is a
+
+1293
+00:55:52,319 --> 00:55:58,480
+set of weather patterns. Okay. And what
+
+1294
+00:55:55,760 --> 00:56:02,000
+I have here basically is I can learn a
+
+1295
+00:55:58,480 --> 00:56:03,920
+neural OD where each time step I might
+
+1296
+00:56:02,000 --> 00:56:05,680
+check my data. Okay. Okay. And then I
+
+1297
+00:56:03,920 --> 00:56:08,880
+can restart the OD over and over and
+
+1298
+00:56:05,680 --> 00:56:10,640
+over again. And so what I see here is is
+
+1299
+00:56:08,880 --> 00:56:14,000
+for example two things, wind and
+
+1300
+00:56:10,640 --> 00:56:17,040
+pressure. And actually what I know for
+
+1301
+00:56:14,000 --> 00:56:19,359
+example is this green line that's solid.
+
+1302
+00:56:17,040 --> 00:56:22,000
+Okay. So this is actually what I know
+
+1303
+00:56:19,359 --> 00:56:24,319
+and actually can truly measure. The
+
+1304
+00:56:22,000 --> 00:56:27,200
+green dots are then samples that I
+
+1305
+00:56:24,319 --> 00:56:30,079
+actually fed the model. Okay. And from
+
+1306
+00:56:27,200 --> 00:56:33,680
+those samples, you can see that I can
+
+1307
+00:56:30,079 --> 00:56:35,200
+actually forecast later beyond my
+
+1308
+00:56:33,680 --> 00:56:38,559
+estimate. And you see it has this sort
+
+1309
+00:56:35,200 --> 00:56:40,400
+of syosoidal um type shape. And then
+
+1310
+00:56:38,559 --> 00:56:42,400
+these green dots are again what the true
+
+1311
+00:56:40,400 --> 00:56:44,480
+values ended up being. So you see it's
+
+1312
+00:56:42,400 --> 00:56:46,880
+not perfect of course when it's quite
+
+1313
+00:56:44,480 --> 00:56:49,359
+hard to predict, but it looks reasonable
+
+1314
+00:56:46,880 --> 00:56:51,119
+actually as a as a prediction model. Um
+
+1315
+00:56:49,359 --> 00:56:52,640
+and this actually I I saw a paper
+
+1316
+00:56:51,119 --> 00:56:55,920
+recently that it is doing the same thing
+
+1317
+00:56:52,640 --> 00:56:57,280
+in financial markets but you know
+
+1318
+00:56:55,920 --> 00:56:59,760
+financial markets you need to be a
+
+1319
+00:56:57,280 --> 00:57:01,440
+little bit more uh thoughtful because
+
+1320
+00:56:59,760 --> 00:57:03,920
+you want to output a distribution over
+
+1321
+00:57:01,440 --> 00:57:06,079
+risk. So not just a single point
+
+1322
+00:57:03,920 --> 00:57:08,480
+forecast but a full distribution but the
+
+1323
+00:57:06,079 --> 00:57:12,000
+same idea can sort of hold and here's
+
+1324
+00:57:08,480 --> 00:57:14,400
+another example. Okay.
+
+1325
+00:57:12,000 --> 00:57:15,680
+And so let me kind of conclude. In your
+
+1326
+00:57:14,400 --> 00:57:18,079
+homework, you're going to train a neural
+
+1327
+00:57:15,680 --> 00:57:19,280
+OD to solve a simple problem. And
+
+1328
+00:57:18,079 --> 00:57:20,720
+actually, you're going to look at
+
+1329
+00:57:19,280 --> 00:57:22,480
+whether these architecturals are
+
+1330
+00:57:20,720 --> 00:57:25,359
+universal. That means they can sort of
+
+1331
+00:57:22,480 --> 00:57:27,839
+approximate any function. And so what
+
+1332
+00:57:25,359 --> 00:57:29,760
+are some things to consider in an early?
+
+1333
+00:57:27,839 --> 00:57:31,680
+Well, that dynamics function f you
+
+1334
+00:57:29,760 --> 00:57:33,119
+typically actually want it to be simple
+
+1335
+00:57:31,680 --> 00:57:36,319
+because we're going to need to evaluate
+
+1336
+00:57:33,119 --> 00:57:38,960
+it quite a bit. Okay? And so usually we
+
+1337
+00:57:36,319 --> 00:57:42,240
+use something like an MLP. Second thing
+
+1338
+00:57:38,960 --> 00:57:45,280
+is that we have to be careful when
+
+1339
+00:57:42,240 --> 00:57:47,359
+initializing our neural OD. It's just
+
+1340
+00:57:45,280 --> 00:57:50,160
+like a typical MLP where we have to be
+
+1341
+00:57:47,359 --> 00:57:52,160
+careful with our gradients for example
+
+1342
+00:57:50,160 --> 00:57:54,160
+in the first couple iterations of our
+
+1343
+00:57:52,160 --> 00:57:56,079
+back prop. The same thing happens here
+
+1344
+00:57:54,160 --> 00:57:59,119
+and it's exactly what you guys
+
+1345
+00:57:56,079 --> 00:58:02,000
+mentioned. The reverse process can be a
+
+1346
+00:57:59,119 --> 00:58:03,920
+nightmare to backwards integrate if we
+
+1347
+00:58:02,000 --> 00:58:07,200
+don't choose some very simple initial
+
+1348
+00:58:03,920 --> 00:58:10,079
+conditions to start from. Okay.
+
+1349
+00:58:07,200 --> 00:58:13,760
+Second thing is that
+
+1350
+00:58:10,079 --> 00:58:16,559
+we need our functions, our neural OD
+
+1351
+00:58:13,760 --> 00:58:19,280
+architecture to actually be a C1
+
+1352
+00:58:16,559 --> 00:58:23,359
+function to guarantee that the adjoint
+
+1353
+00:58:19,280 --> 00:58:28,000
+is actually well defined mathematically.
+
+1354
+00:58:23,359 --> 00:58:30,880
+This is kind of hidden in practice but
+
+1355
+00:58:28,000 --> 00:58:33,040
+what people use nowadays in the neuro
+
+1356
+00:58:30,880 --> 00:58:35,280
+architecture is some modification of
+
+1357
+00:58:33,040 --> 00:58:38,640
+RLU. So maybe you guys have seen like
+
+1358
+00:58:35,280 --> 00:58:40,799
+JLU or sireu functions. Um they're kind
+
+1359
+00:58:38,640 --> 00:58:42,960
+of all over the language models. Now the
+
+1360
+00:58:40,799 --> 00:58:44,799
+problem with RLU of course is you guys
+
+1361
+00:58:42,960 --> 00:58:46,880
+know and maybe talked about is that
+
+1362
+00:58:44,799 --> 00:58:49,200
+there's that kink at zero, right? So
+
+1363
+00:58:46,880 --> 00:58:50,880
+this is my RLU function. This is the
+
+1364
+00:58:49,200 --> 00:58:54,000
+point Z and there's a kink here and so
+
+1365
+00:58:50,880 --> 00:58:56,720
+it's not C1 there. Right? And so we kind
+
+1366
+00:58:54,000 --> 00:58:59,359
+of use well-defined approximations for
+
+1367
+00:58:56,720 --> 00:59:01,280
+example where this is differentiable.
+
+1368
+00:58:59,359 --> 00:59:02,480
+That'll help you in practice, but
+
+1369
+00:59:01,280 --> 00:59:05,359
+everything on your homework can be done
+
+1370
+00:59:02,480 --> 00:59:09,920
+with a relu function. Okay.
+
+1371
+00:59:05,359 --> 00:59:12,799
+Lastly, it's very common to augment this
+
+1372
+00:59:09,920 --> 00:59:14,640
+neural OD architecture with a softmax at
+
+1373
+00:59:12,799 --> 00:59:17,280
+the end because you can imagine if I
+
+1374
+00:59:14,640 --> 00:59:20,000
+want to do discrete binning, right? And
+
+1375
+00:59:17,280 --> 00:59:22,240
+my input is this, you know, 256 x 256
+
+1376
+00:59:20,000 --> 00:59:24,160
+set of pixels, I might want to add a
+
+1377
+00:59:22,240 --> 00:59:26,400
+soft max at the end to actually do
+
+1378
+00:59:24,160 --> 00:59:28,480
+classification. So in our handwritten
+
+1379
+00:59:26,400 --> 00:59:32,160
+data set, that's the kind of final
+
+1380
+00:59:28,480 --> 00:59:34,079
+puzzle piece that they did.
+
+1381
+00:59:32,160 --> 00:59:35,839
+Okay,
+
+1382
+00:59:34,079 --> 00:59:39,520
+I promised you also that these neural
+
+1383
+00:59:35,839 --> 00:59:41,839
+ODs would be more inter interpretable
+
+1384
+00:59:39,520 --> 00:59:43,599
+give or take. And so what do I mean by
+
+1385
+00:59:41,839 --> 00:59:45,839
+that?
+
+1386
+00:59:43,599 --> 00:59:48,000
+Well, the nice thing about these sort of
+
+1387
+00:59:45,839 --> 00:59:50,240
+ODS is we can actually visualize the
+
+1388
+00:59:48,000 --> 00:59:52,160
+vector field dynamics. So anyone who's
+
+1389
+00:59:50,240 --> 00:59:54,799
+familiar with with regular ODS you might
+
+1390
+00:59:52,160 --> 00:59:57,040
+look at what the flow of f looks like to
+
+1391
+00:59:54,799 --> 00:59:59,280
+check for example stability limit cycles
+
+1392
+00:59:57,040 --> 01:00:02,480
+these types of things we can actually do
+
+1393
+00:59:59,280 --> 01:00:04,319
+the same thing with our learn dynamics f
+
+1394
+01:00:02,480 --> 01:00:06,640
+and this kind of gives us an idea of how
+
+1395
+01:00:04,319 --> 01:00:08,480
+the behavior is going to look so for
+
+1396
+01:00:06,640 --> 01:00:11,359
+example here what I've kind of plotted
+
+1397
+01:00:08,480 --> 01:00:13,359
+is is a vector field dynamics of x and y
+
+1398
+01:00:11,359 --> 01:00:16,240
+and the arrows represent the direction
+
+1399
+01:00:13,359 --> 01:00:19,520
+of f okay and every arrow is normalized
+
+1400
+01:00:16,240 --> 01:00:21,119
+to be unit size okay or even smaller
+
+1401
+01:00:19,520 --> 01:00:22,720
+than unit size in this case just for the
+
+1402
+01:00:21,119 --> 01:00:24,240
+image and what I can see is that these
+
+1403
+01:00:22,720 --> 01:00:27,440
+trajectories are actually going to kind
+
+1404
+01:00:24,240 --> 01:00:28,319
+of flow along f and this visualization
+
+1405
+01:00:27,440 --> 01:00:29,920
+gives us a little bit of
+
+1406
+01:00:28,319 --> 01:00:33,920
+interpretability of what we actually
+
+1407
+01:00:29,920 --> 01:00:35,920
+learned and so can you imagine then if I
+
+1408
+01:00:33,920 --> 01:00:38,480
+learn this dynamics function f and let's
+
+1409
+01:00:35,920 --> 01:00:41,440
+say that this is correct but over here I
+
+1410
+01:00:38,480 --> 01:00:44,480
+start doing some seriously odd stuff
+
+1411
+01:00:41,440 --> 01:00:46,880
+with my neural od well I can imagine
+
+1412
+01:00:44,480 --> 01:00:49,280
+that it probably the neural network did
+
+1413
+01:00:46,880 --> 01:00:51,760
+not see some trajectory that belongs
+
+1414
+01:00:49,280 --> 01:00:54,240
+over here. And this gives me an idea of
+
+1415
+01:00:51,760 --> 01:00:57,040
+how I can do for example how well I'll
+
+1416
+01:00:54,240 --> 01:00:58,960
+do for example out of distribution right
+
+1417
+01:00:57,040 --> 01:01:00,480
+because if I plot this this field and I
+
+1418
+01:00:58,960 --> 01:01:02,000
+say okay we're doing some weird things
+
+1419
+01:01:00,480 --> 01:01:03,920
+over here I don't see why we're doing
+
+1420
+01:01:02,000 --> 01:01:05,119
+that well then I can assume that maybe
+
+1421
+01:01:03,920 --> 01:01:06,480
+those trajectories are out of
+
+1422
+01:01:05,119 --> 01:01:07,839
+distribution gives me a little sense of
+
+1423
+01:01:06,480 --> 01:01:10,960
+where my neural network's actually going
+
+1424
+01:01:07,839 --> 01:01:13,119
+to work. Okay
+
+1425
+01:01:10,960 --> 01:01:14,720
+another thing is that we can ask all the
+
+1426
+01:01:13,119 --> 01:01:16,720
+questions that we asked about dynamical
+
+1427
+01:01:14,720 --> 01:01:18,880
+systems. So what does stability look
+
+1428
+01:01:16,720 --> 01:01:22,319
+like? Do we have fixed points? What is a
+
+1429
+01:01:18,880 --> 01:01:25,520
+region of attraction? Um, we can also
+
+1430
+01:01:22,319 --> 01:01:27,200
+augment our function f to maybe enforce
+
+1431
+01:01:25,520 --> 01:01:30,079
+these types of of things. So, for
+
+1432
+01:01:27,200 --> 01:01:31,839
+example, imagine that we know the
+
+1433
+01:01:30,079 --> 01:01:34,559
+pendulum is going to be stable at the
+
+1434
+01:01:31,839 --> 01:01:37,280
+bottom. Well, we can kind of maybe think
+
+1435
+01:01:34,559 --> 01:01:39,599
+about that and add to our loss function
+
+1436
+01:01:37,280 --> 01:01:42,160
+a condition that guarantees that our
+
+1437
+01:01:39,599 --> 01:01:44,720
+neural network at the point 0 is also
+
+1438
+01:01:42,160 --> 01:01:46,079
+zero. These types of things we'll think
+
+1439
+01:01:44,720 --> 01:01:47,760
+about later. They're called physics
+
+1440
+01:01:46,079 --> 01:01:49,359
+informs losses. We'll do we'll do a
+
+1441
+01:01:47,760 --> 01:01:51,599
+discussion on that. But this kind of
+
+1442
+01:01:49,359 --> 01:01:55,119
+lens lets us help think about this.
+
+1443
+01:01:51,599 --> 01:01:57,359
+Okay. Lastly, we can kind of in
+
+1444
+01:01:55,119 --> 01:02:00,559
+investigate what happens if we perturb
+
+1445
+01:01:57,359 --> 01:02:02,480
+this matrix to our vector field. So for
+
+1446
+01:02:00,559 --> 01:02:03,920
+example, we learn some dynamics and we
+
+1447
+01:02:02,480 --> 01:02:06,480
+know that our learn dynamics are not
+
+1448
+01:02:03,920 --> 01:02:08,880
+perfect. Okay. So we go to use let's say
+
+1449
+01:02:06,480 --> 01:02:11,760
+a controller based on these dynamics.
+
+1450
+01:02:08,880 --> 01:02:14,319
+How bad can we expect our system to
+
+1451
+01:02:11,760 --> 01:02:16,319
+behave with this sort of approximation?
+
+1452
+01:02:14,319 --> 01:02:17,760
+You can kind of do an analysis of this
+
+1453
+01:02:16,319 --> 01:02:20,720
+by actually perturbing the weight
+
+1454
+01:02:17,760 --> 01:02:23,440
+matrices. So for example, you add some
+
+1455
+01:02:20,720 --> 01:02:25,839
+epsilon to f to all the weights in f.
+
+1456
+01:02:23,440 --> 01:02:27,280
+How far off do my trajectories go? Do
+
+1457
+01:02:25,839 --> 01:02:29,280
+they go really far away or are they
+
+1458
+01:02:27,280 --> 01:02:31,359
+close together? This is sort of a
+
+1459
+01:02:29,280 --> 01:02:33,839
+sensitivity analysis and it's kind of
+
+1460
+01:02:31,359 --> 01:02:34,799
+very common in in ODEs. For example, you
+
+1461
+01:02:33,839 --> 01:02:37,200
+guys have probably done like a
+
+1462
+01:02:34,799 --> 01:02:39,200
+bifurcification analysis. Same type of
+
+1463
+01:02:37,200 --> 01:02:43,520
+idea, but now we're thinking in terms of
+
+1464
+01:02:39,200 --> 01:02:44,559
+learning. Okay. All right. And lastly I
+
+1465
+01:02:43,520 --> 01:02:46,960
+want to kind of give you some
+
+1466
+01:02:44,559 --> 01:02:48,960
+disadvantages. We talked about some but
+
+1467
+01:02:46,960 --> 01:02:51,040
+the the overwhelming sort of
+
+1468
+01:02:48,960 --> 01:02:53,520
+disadvantages are are really there. So
+
+1469
+01:02:51,040 --> 01:02:55,599
+the first thing is that we see that
+
+1470
+01:02:53,520 --> 01:02:58,880
+actually the structure of an OD cannot
+
+1471
+01:02:55,599 --> 01:03:00,319
+approximate any function. Okay. So maybe
+
+1472
+01:02:58,880 --> 01:03:02,559
+you guys have seen this universal
+
+1473
+01:03:00,319 --> 01:03:04,480
+approximation theorem. It's a theorem
+
+1474
+01:03:02,559 --> 01:03:06,480
+that mathematicians care about but
+
+1475
+01:03:04,480 --> 01:03:07,920
+people in practice don't care about too
+
+1476
+01:03:06,480 --> 01:03:09,119
+too much but all your favorite
+
+1477
+01:03:07,920 --> 01:03:11,119
+architectures are universally
+
+1478
+01:03:09,119 --> 01:03:13,440
+approximal. So transformers for example
+
+1479
+01:03:11,119 --> 01:03:16,160
+are. And actually the structure of the
+
+1480
+01:03:13,440 --> 01:03:18,640
+OD as we presented today is not which is
+
+1481
+01:03:16,160 --> 01:03:20,160
+kind of something that might upset you.
+
+1482
+01:03:18,640 --> 01:03:22,319
+And we'll see that you can make what's
+
+1483
+01:03:20,160 --> 01:03:24,880
+called an augmented neuro sort of fix
+
+1484
+01:03:22,319 --> 01:03:26,799
+this. So for example, why this would be
+
+1485
+01:03:24,880 --> 01:03:30,000
+a problem is that imagine we're using
+
+1486
+01:03:26,799 --> 01:03:31,680
+this on on some computer vision task. It
+
+1487
+01:03:30,000 --> 01:03:33,280
+might be that the architecture is a
+
+1488
+01:03:31,680 --> 01:03:35,119
+fundamental limitation that we can't
+
+1489
+01:03:33,280 --> 01:03:37,359
+approximate that function which is kind
+
+1490
+01:03:35,119 --> 01:03:39,119
+of gross. Okay.
+
+1491
+01:03:37,359 --> 01:03:41,119
+Another thing is that we do still have
+
+1492
+01:03:39,119 --> 01:03:43,520
+those gradient problems that we talked
+
+1493
+01:03:41,119 --> 01:03:46,079
+about. if t is humongous. Okay. And this
+
+1494
+01:03:43,520 --> 01:03:48,559
+is all because if you imagine that
+
+1495
+01:03:46,079 --> 01:03:50,319
+backwards od solve, the farther we get
+
+1496
+01:03:48,559 --> 01:03:51,839
+away from where we started for the
+
+1497
+01:03:50,319 --> 01:03:54,640
+gradients, the more error we're going to
+
+1498
+01:03:51,839 --> 01:03:58,559
+have. This sort of compounds.
+
+1499
+01:03:54,640 --> 01:04:00,960
+And lastly, a real problem for these
+
+1500
+01:03:58,559 --> 01:04:04,400
+these objects is that when we have
+
+1501
+01:04:00,960 --> 01:04:06,880
+highdimensional or stiff dynamics, that
+
+1502
+01:04:04,400 --> 01:04:09,119
+backwards OD solver does not work well.
+
+1503
+01:04:06,880 --> 01:04:11,520
+Okay. And so that actually might be a
+
+1504
+01:04:09,119 --> 01:04:14,000
+case where you mentioned that the
+
+1505
+01:04:11,520 --> 01:04:15,359
+recursive calculation may be better
+
+1506
+01:04:14,000 --> 01:04:16,640
+because we have like for example an
+
+1507
+01:04:15,359 --> 01:04:20,079
+analytical form but you're going to pay
+
+1508
+01:04:16,640 --> 01:04:22,559
+a cost right and the cost is going to be
+
+1509
+01:04:20,079 --> 01:04:25,200
+the cost of training and here we have a
+
+1510
+01:04:22,559 --> 01:04:27,039
+little graph this was only up to 23 but
+
+1511
+01:04:25,200 --> 01:04:28,640
+you can see actually it's quite quite
+
+1512
+01:04:27,039 --> 01:04:32,400
+the trend upwards on the left we have a
+
+1513
+01:04:28,640 --> 01:04:35,839
+log scale cost okay and so back in the
+
+1514
+01:04:32,400 --> 01:04:37,599
+day I mean compute almost costed very
+
+1515
+01:04:35,839 --> 01:04:39,680
+little to try to train a neural network
+
+1516
+01:04:37,599 --> 01:04:42,240
+now you can imagine it's much even
+
+1517
+01:04:39,680 --> 01:04:44,640
+higher than this right so we have to
+
+1518
+01:04:42,240 --> 01:04:46,880
+always keep this cost in mind because
+
+1519
+01:04:44,640 --> 01:04:48,559
+you know the US actually like has a
+
+1520
+01:04:46,880 --> 01:04:50,319
+limitation on power lines and these
+
+1521
+01:04:48,559 --> 01:04:54,359
+types of things so we can't just build
+
+1522
+01:04:50,319 --> 01:04:54,359
+data centers left and right
+
+1523
+01:04:54,400 --> 01:04:58,640
+um and so with that I'll leave you with
+
+1524
+01:04:56,400 --> 01:05:00,720
+some future reading if you're interested
+
+1525
+01:04:58,640 --> 01:05:03,359
+you'll look at this augmented neurode
+
+1526
+01:05:00,720 --> 01:05:05,039
+IDN homework another thing that you can
+
+1527
+01:05:03,359 --> 01:05:07,039
+look at is integrating that sort of
+
+1528
+01:05:05,039 --> 01:05:09,839
+stabilizing point that I was talking
+
+1529
+01:05:07,039 --> 01:05:12,319
+about. So I give you a little example.
+
+1530
+01:05:09,839 --> 01:05:14,240
+And lastly, one of the things that we
+
+1531
+01:05:12,319 --> 01:05:16,000
+showed was that sort of example of
+
+1532
+01:05:14,240 --> 01:05:17,839
+forecasting where we're sort of getting
+
+1533
+01:05:16,000 --> 01:05:19,760
+new sensor measurements. I didn't really
+
+1534
+01:05:17,839 --> 01:05:22,319
+explain how that works and that's kind
+
+1535
+01:05:19,760 --> 01:05:25,039
+of developed in these articles as well.
+
+1536
+01:05:22,319 --> 01:05:26,720
+Okay. Lastly, this is what happens when
+
+1537
+01:05:25,039 --> 01:05:30,799
+you have pertabbations to that weight
+
+1538
+01:05:26,720 --> 01:05:33,440
+matrix. Okay. And so with that, yeah,
+
+1539
+01:05:30,799 --> 01:05:33,440
+we'll see you next
+

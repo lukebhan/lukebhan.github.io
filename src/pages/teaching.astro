@@ -1,0 +1,233 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import site from '../data/site.json';
+import teach from '../data/teaching.json';
+const { teachingPage: t } = site;
+const title = 'Teaching · Luke Bhan';
+const description = 'Luke Bhan on teaching: a participation-first philosophy for the ChatGPT era, and a mini lecture series introducing scientific machine learning.';
+const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+---
+<Base title={title} description={description}>
+  <Nav base="/" />
+  <main>
+    <article class="tp">
+      <div class="wrap">
+        <header class="tp-head">
+          <p class="eyebrow">{t.eyebrow}</p>
+          <h1>Teaching</h1>
+          <p class="tp-philos">{t.philosophy}</p>
+        </header>
+
+        <section class="tp-block">
+          <h2>{t.series.title}</h2>
+          <p class="tp-intro">{t.series.intro}</p>
+          {t.series.playlist && (
+            <a class="series-link" href={t.series.playlist} target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h13v2H3V5zm0 4h13v2H3V9zm0 4h9v2H3v-2zm12 .5v6l5-3-5-3z"></path></svg>
+              Watch the full series on YouTube
+              <span class="arr" aria-hidden="true">↗</span>
+            </a>
+          )}
+          <div class="lectures">
+            {t.series.lectures.map((l, i) => (
+              <article class="lec">
+                <div class="lec-num">{String(i + 1).padStart(2, '0')}</div>
+                <div class="lec-body">
+                  <h3>{l.title}</h3>
+                  <p class="lec-sum">{l.summary}</p>
+                  <ul class="lec-tags">
+                    {l.highlights.map((h) => <li>{h}</li>)}
+                  </ul>
+
+                  <div class="lec-videos" data-n={l.videos.length}>
+                    {l.videos.map((v, j) => {
+                      const pid = `pl-${i}-${j}`;
+                      return (
+                        <figure class="vid">
+                          {v.part && <figcaption class="vid-part">{v.part}</figcaption>}
+                          <div class="player" id={pid}>
+                            {v.youtube ? (
+                              <button class="yt" type="button" data-player={pid} data-id={v.youtube}
+                                aria-label={`Play ${l.title}${v.part ? ' · ' + v.part : ''}`}>
+                                <img src={v.thumb} width="1280" height="720" loading="lazy"
+                                  alt={`${l.title}${v.part ? ' ' + v.part : ''}`} />
+                                <span class="play" aria-hidden="true">
+                                  <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="31"></circle><path d="M26 20l20 12-20 12z"></path></svg>
+                                </span>
+                              </button>
+                            ) : (
+                              <div class="soon">
+                                <img src={v.thumb} width="1280" height="720" loading="lazy" alt={l.title} />
+                                <span>Video coming soon</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {v.youtube && (
+                            <div class="hl">
+                              {v.clips && v.clips.length > 0 ? (
+                                <>
+                                  <p class="hl-head">Jump to a highlight</p>
+                                  <ul>
+                                    {v.clips.map((c) => (
+                                      <li>
+                                        <button class="clip" type="button"
+                                          data-player={pid} data-id={c.youtube} data-start={c.start} data-end={c.end}>
+                                          <span class="tri" aria-hidden="true">▶</span>
+                                          <span class="cl-label">{c.label}</span>
+                                          <span class="cl-time">{fmt(c.start)}</span>
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </>
+                              ) : (
+                                <button class="full" type="button" data-player={pid} data-id={v.youtube}>
+                                  <span class="tri" aria-hidden="true">▶</span> Watch the full lecture
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {v.slides && <a class="vid-slides" href={v.slides} target="_blank" rel="noopener">Slides (PDF) <span aria-hidden="true">↗</span></a>}
+                        </figure>
+                      );
+                    })}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="tp-block">
+          <h2>Courses &amp; assistantships</h2>
+          {teach.teaching.map((c) => (
+            <div class="tp-row">
+              <div class="tp-when">{c.when}</div>
+              <div class="tp-what"><span set:html={c.what}></span><div class="tp-detail">{c.detail}</div></div>
+            </div>
+          ))}
+        </section>
+
+        <p class="tp-back"><a href="/#top">← Back to home</a></p>
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .tp { padding: 40px 0 0; }
+  .tp-head { max-width: 46em; margin-bottom: 26px; }
+  .tp-head h1 { font-family: var(--display); font-weight: 600; font-size: clamp(30px, 6vw, 42px); line-height: 1.05; letter-spacing: -.02em; margin: 8px 0 0; color: var(--ink); }
+  .tp-philos { font-size: clamp(16.5px, 2.2vw, 19px); line-height: 1.55; color: var(--ink); margin: 16px 0 0; max-width: 40em; }
+
+  .tp-block { border-top: 1px solid var(--hair); padding: 30px 0; }
+  .tp-block h2 { font-family: var(--display); font-weight: 600; font-size: clamp(20px, 4vw, 24px); margin: 0 0 8px; }
+  .tp-intro { font-size: 16px; color: var(--muted); line-height: 1.55; margin: 0 0 18px; max-width: 46em; }
+  .series-link { display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--hair); border-radius: 999px; padding: 9px 16px; text-decoration: none; margin: 0 0 24px; transition: border-color .15s, background .15s; }
+  .series-link svg { width: 16px; height: 16px; fill: #c4302b; flex: none; }
+  .series-link .arr { color: var(--teal); }
+
+  /* lecture cards */
+  .lectures { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .lec { display: grid; grid-template-columns: 48px 1fr; gap: 18px; padding: 20px; border: 1px solid var(--hair); border-radius: 12px; background: #fff; }
+  .lec-num { font-family: var(--mono); font-size: 13px; color: var(--teal); padding-top: 3px; }
+  .lec-body { min-width: 0; }
+  .lec h3 { font-family: var(--display); font-weight: 600; font-size: 18px; margin: 0; color: var(--indigo); }
+  .lec-sum { font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 6px 0 0; }
+  .lec-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 7px; padding: 0; margin: 12px 0 0; }
+  .lec-tags li { font-family: var(--mono); font-size: 11px; letter-spacing: .02em; color: var(--muted); border: 1px solid var(--hair); border-radius: 999px; padding: 4px 10px; }
+
+  /* video + highlights */
+  .lec-videos { display: grid; grid-template-columns: 1fr; gap: 22px; margin: 18px 0 0; }
+  .vid { margin: 0; }
+  .vid-part { font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em; color: var(--teal); margin: 0 0 7px; }
+  .player { position: relative; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: var(--panel); border: 1px solid var(--hair); }
+  .player img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .player :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; display: block; }
+  .yt .play { position: absolute; top: 50%; left: 50%; width: 62px; height: 62px; transform: translate(-50%, -50%); transition: transform .15s; }
+  .yt .play svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 16px rgba(0,0,0,.35)); }
+  .yt .play circle { fill: rgba(24,43,73,.82); }
+  .yt .play path { fill: #fff; }
+  .soon { position: absolute; inset: 0; }
+  .soon img { filter: grayscale(.35) brightness(.92); }
+  .soon span { position: absolute; bottom: 10px; left: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: #fff; background: rgba(24,43,73,.78); padding: 4px 9px; border-radius: 6px; }
+
+  .hl { margin-top: 12px; }
+  .hl-head { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
+  .hl ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .clip, .full { width: 100%; text-align: left; display: flex; align-items: center; gap: 11px; font-family: var(--mono); font-size: 12.5px; color: var(--ink); background: var(--panel); border: 1px solid var(--hair); border-radius: 9px; padding: 9px 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .full { width: auto; }
+  .tri { color: var(--accent); font-size: 10px; flex: none; }
+  .cl-label { flex: 1; }
+  .cl-time { color: var(--teal); font-size: 11.5px; flex: none; }
+  .vid-slides { display: inline-block; margin-top: 11px; font-family: var(--mono); font-size: 12.5px; color: var(--accent); text-decoration: none; }
+
+  /* courses rows */
+  .lec-link { display: inline-block; margin-top: 16px; font-family: var(--mono); font-size: 12.5px; color: var(--accent); text-decoration: none; }
+  .tp-row { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 12px 0; border-top: 1px solid var(--hair); }
+  .tp-row:first-of-type { border-top: 0; }
+  .tp-when { font-family: var(--mono); font-size: 12px; color: var(--teal); }
+  .tp-what { font-size: 16px; line-height: 1.5; }
+  .tp-detail { font-size: 14.5px; color: var(--muted); line-height: 1.55; margin-top: 2px; }
+  .tp-back { font-family: var(--mono); font-size: 13px; margin: 24px 0 8px; }
+
+  @media (min-width: 760px) {
+    .lec-videos[data-n="2"] { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 680px) {
+    .tp-row { grid-template-columns: 150px 1fr; gap: 24px; }
+  }
+  @media (hover: hover) {
+    .yt:hover .play { transform: translate(-50%, -50%) scale(1.08); }
+    .yt:hover .play circle { fill: var(--accent); }
+    .clip:hover, .full:hover { border-color: var(--accent); background: #fff; }
+    .series-link:hover { border-color: var(--accent); background: #fff; }
+    .vid-slides:hover { color: var(--ink); }
+  }
+</style>
+
+<script>
+  // YouTube IFrame API: reliable seek + auto-stop at clip end, one player per video.
+  let apiReady = false;
+  const queue = [];
+  window.onYouTubeIframeAPIReady = () => { apiReady = true; queue.forEach((f) => f()); queue.length = 0; };
+  (function loadAPI() {
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
+  })();
+  const whenReady = (cb) => (apiReady ? cb() : queue.push(cb));
+
+  const players = {};
+  function play(pid, videoId, start, end) {
+    whenReady(() => {
+      const opts = { startSeconds: start || 0 };
+      if (end) opts.endSeconds = end;
+      if (players[pid]) {
+        players[pid].loadVideoById({ videoId, ...opts });
+        return;
+      }
+      const box = document.getElementById(pid);
+      box.innerHTML = '<div></div>';
+      const vars = { autoplay: 1, rel: 0, modestbranding: 1, start: start || 0 };
+      if (end) vars.end = end;
+      players[pid] = new YT.Player(box.firstChild, { videoId, playerVars: vars });
+    });
+  }
+
+  document.querySelectorAll('[data-player][data-id]').forEach((b) => {
+    b.addEventListener('click', () => {
+      play(
+        b.dataset.player,
+        b.dataset.id,
+        b.dataset.start ? parseInt(b.dataset.start, 10) : 0,
+        b.dataset.end ? parseInt(b.dataset.end, 10) : 0
+      );
+    });
+  });
+</script>

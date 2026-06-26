@@ -1,0 +1,37 @@
+---
+import site from '../data/site.json';
+const { name, tagline, blurb, quickLinks, hero } = site;
+---
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-id">
+      <div class="namerow">
+        <img class="avatar" id="avatar" src="/portrait.jpg" alt={`Portrait of ${name}`} />
+        <h1 class="name">{name}</h1>
+      </div>
+      <p class="tagline" set:html={tagline}></p>
+      <p class="blurb">{blurb}</p>
+      <p class="hlinks">{quickLinks.map((l, i) => (
+        <>{i > 0 && <span class="sep" aria-hidden="true">·</span>}<a href={l.href}>{l.label}</a></>
+      ))}</p>
+    </div>
+    <figure class="panel demo">
+      <div class="demo-row">
+        <div class="demo-cell">
+          <span class={`demo-tag ${hero.demo.left.state}`}>{hero.demo.left.label}</span>
+          <video src={hero.demo.left.src} autoplay loop muted playsinline preload="metadata"
+                 width="1088" height="1088" aria-label={hero.demo.left.alt}></video>
+        </div>
+        <div class="demo-cell">
+          <span class={`demo-tag ${hero.demo.right.state}`}>{hero.demo.right.label}</span>
+          <video src={hero.demo.right.src} autoplay loop muted playsinline preload="metadata"
+                 width="1088" height="1088" aria-label={hero.demo.right.alt}></video>
+        </div>
+      </div>
+      <figcaption class="cap">
+        <span>{hero.demo.caption}</span>
+        <a href={hero.demo.link.href}>{hero.demo.link.label}</a>
+      </figcaption>
+    </figure>
+  </div>
+</section>

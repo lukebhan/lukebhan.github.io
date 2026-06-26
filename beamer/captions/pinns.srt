@@ -1,0 +1,6712 @@
+1
+00:00:00,320 --> 00:00:05,600
+So today we're going to be talking about
+
+2
+00:00:02,399 --> 00:00:08,160
+pins, physics informed neural networks.
+
+3
+00:00:05,600 --> 00:00:11,920
+It's kind of a new class of ways to
+
+4
+00:00:08,160 --> 00:00:14,559
+solve PTEs and ODEs. And the promise
+
+5
+00:00:11,920 --> 00:00:17,440
+when pins came out was that they didn't
+
+6
+00:00:14,559 --> 00:00:20,160
+require data. Okay? So you could learn a
+
+7
+00:00:17,440 --> 00:00:22,800
+solution to a PTE strictly from
+
+8
+00:00:20,160 --> 00:00:24,480
+equations. And we'll see it's not so
+
+9
+00:00:22,800 --> 00:00:26,320
+easy to do that. I think probably many
+
+10
+00:00:24,480 --> 00:00:28,640
+of you have heard of pins and heard they
+
+11
+00:00:26,320 --> 00:00:30,240
+don't work. And so we'll talk about a
+
+12
+00:00:28,640 --> 00:00:32,079
+bunch of engineering tricks today
+
+13
+00:00:30,240 --> 00:00:34,000
+basically. And these engineering tricks
+
+14
+00:00:32,079 --> 00:00:35,680
+aren't just useful for pins. Like
+
+15
+00:00:34,000 --> 00:00:37,120
+they're pretty useful in general
+
+16
+00:00:35,680 --> 00:00:41,160
+whenever you guys are trying to train
+
+17
+00:00:37,120 --> 00:00:41,160
+neural networks. Okay. So,
+
+18
+00:00:44,399 --> 00:00:48,879
+okay. So,
+
+19
+00:00:47,039 --> 00:00:51,200
+like we were saying, for example, for
+
+20
+00:00:48,879 --> 00:00:53,440
+Navia Stokes in 3D, we need 10 billion
+
+21
+00:00:51,200 --> 00:00:55,360
+points. It's going to take quite a few
+
+22
+00:00:53,440 --> 00:00:57,440
+days on our solver to generate 10
+
+23
+00:00:55,360 --> 00:00:59,600
+billion points. And so what happens if I
+
+24
+00:00:57,440 --> 00:01:01,280
+don't have access to a DOE or you know
+
+25
+00:00:59,600 --> 00:01:04,239
+one of the crazy open AAI compute
+
+26
+00:01:01,280 --> 00:01:06,479
+clusters right
+
+27
+00:01:04,239 --> 00:01:08,640
+but typically what you will know for
+
+28
+00:01:06,479 --> 00:01:11,119
+your phys for your problem is you will
+
+29
+00:01:08,640 --> 00:01:13,760
+know some governing equations derived
+
+30
+00:01:11,119 --> 00:01:15,520
+you know in an old textbook of which
+
+31
+00:01:13,760 --> 00:01:18,320
+it's not fun to read but you can get
+
+32
+00:01:15,520 --> 00:01:20,560
+through it right and so the question is
+
+33
+00:01:18,320 --> 00:01:23,439
+can you learn a model a surrogate let's
+
+34
+00:01:20,560 --> 00:01:26,000
+say with that fast inference time for
+
+35
+00:01:23,439 --> 00:01:27,680
+your problem just from equations And
+
+36
+00:01:26,000 --> 00:01:32,880
+that's kind of the the question that was
+
+37
+00:01:27,680 --> 00:01:36,079
+asked around 2018 now almost almost
+
+38
+00:01:32,880 --> 00:01:37,600
+can you do this and it turns out you can
+
+39
+00:01:36,079 --> 00:01:38,880
+talk about how to do that today and so
+
+40
+00:01:37,600 --> 00:01:41,280
+just to give you guys an idea of where
+
+41
+00:01:38,880 --> 00:01:43,840
+we're going. So where we've been
+
+42
+00:01:41,280 --> 00:01:46,000
+recently is in this neural operators,
+
+43
+00:01:43,840 --> 00:01:48,640
+neural odes, dynamical systems realm
+
+44
+00:01:46,000 --> 00:01:50,159
+where we had high amounts of data. And
+
+45
+00:01:48,640 --> 00:01:52,640
+today we're going to go and look at the
+
+46
+00:01:50,159 --> 00:01:55,439
+opposite end where we have no data but
+
+47
+00:01:52,640 --> 00:01:57,520
+we have some physical equations. And of
+
+48
+00:01:55,439 --> 00:01:59,280
+course you could combine these two ideas
+
+49
+00:01:57,520 --> 00:02:00,960
+to build you know these sort of hybrid
+
+50
+00:01:59,280 --> 00:02:02,719
+models. But this is kind of where we're
+
+51
+00:02:00,960 --> 00:02:03,920
+going today and and and we'll talk a
+
+52
+00:02:02,719 --> 00:02:05,680
+little bit more about what this looks
+
+53
+00:02:03,920 --> 00:02:07,600
+like.
+
+54
+00:02:05,680 --> 00:02:09,119
+All right. So let's consider our
+
+55
+00:02:07,600 --> 00:02:10,879
+transport example. We've been working
+
+56
+00:02:09,119 --> 00:02:13,120
+with this for a couple weeks now. We
+
+57
+00:02:10,879 --> 00:02:14,959
+have a derivative in time equals
+
+58
+00:02:13,120 --> 00:02:17,200
+derivative in space, an initial
+
+59
+00:02:14,959 --> 00:02:19,840
+condition given by this function g of x
+
+60
+00:02:17,200 --> 00:02:24,400
+and a boundary condition ders at one,
+
+61
+00:02:19,840 --> 00:02:26,239
+right? And so what we used to do or what
+
+62
+00:02:24,400 --> 00:02:28,160
+the paradigm that we kind of claimed up
+
+63
+00:02:26,239 --> 00:02:31,440
+until this point is that we would use
+
+64
+00:02:28,160 --> 00:02:33,519
+our expensive PTE solver to generate a
+
+65
+00:02:31,440 --> 00:02:35,519
+bunch of outputs, right? So we would
+
+66
+00:02:33,519 --> 00:02:37,280
+have x1 to xn for different times and
+
+67
+00:02:35,519 --> 00:02:39,760
+we'd have to do this discretization over
+
+68
+00:02:37,280 --> 00:02:41,519
+a grid. And we showed a couple different
+
+69
+00:02:39,760 --> 00:02:43,519
+ways to do this. For example, we showed
+
+70
+00:02:41,519 --> 00:02:46,480
+Oilers's method. We talked about what
+
+71
+00:02:43,519 --> 00:02:48,879
+RK4 looks like. And we remember the
+
+72
+00:02:46,480 --> 00:02:50,800
+problem though is that we might not have
+
+73
+00:02:48,879 --> 00:02:54,239
+access to this compute, right? We don't
+
+74
+00:02:50,800 --> 00:02:56,560
+have this Oracle PTE solver always for
+
+75
+00:02:54,239 --> 00:02:58,800
+all our problems. And even if we did
+
+76
+00:02:56,560 --> 00:03:00,480
+have it, maybe the PTE solver is not
+
+77
+00:02:58,800 --> 00:03:02,640
+working out of the box. You know, you
+
+78
+00:03:00,480 --> 00:03:04,879
+could imagine this is a problem. So what
+
+79
+00:03:02,640 --> 00:03:07,040
+can we do? Well, we're going to
+
+80
+00:03:04,879 --> 00:03:09,519
+introduce a paradigm, the pin paradigm
+
+81
+00:03:07,040 --> 00:03:11,840
+today. And with a bunch of engineering
+
+82
+00:03:09,519 --> 00:03:13,599
+tricks, we can make it work. But there
+
+83
+00:03:11,840 --> 00:03:15,599
+is one caveat and we'll sort of talk
+
+84
+00:03:13,599 --> 00:03:18,560
+about this. It's only going to work for
+
+85
+00:03:15,599 --> 00:03:20,239
+one PTE. So if we change our initial
+
+86
+00:03:18,560 --> 00:03:21,840
+condition, for example, or change our
+
+87
+00:03:20,239 --> 00:03:23,440
+boundary condition, or we don't have the
+
+88
+00:03:21,840 --> 00:03:25,840
+coefficient one here, but we have some
+
+89
+00:03:23,440 --> 00:03:29,040
+number, we're going to have to retrain
+
+90
+00:03:25,840 --> 00:03:30,560
+our neural network, which is kind of not
+
+91
+00:03:29,040 --> 00:03:32,720
+so great. We'll see that in a second.
+
+92
+00:03:30,560 --> 00:03:34,640
+So, okay. So, the idea of a pin is
+
+93
+00:03:32,720 --> 00:03:36,239
+really, really simple. What we're going
+
+94
+00:03:34,640 --> 00:03:39,040
+to do is we're going to let the solution
+
+95
+00:03:36,239 --> 00:03:41,760
+PTE be given by a neural network
+
+96
+00:03:39,040 --> 00:03:44,799
+parameterized by theta with positions x
+
+97
+00:03:41,760 --> 00:03:47,519
+and t. And the goal is to just enforce
+
+98
+00:03:44,799 --> 00:03:49,519
+that u of theta x oft is equal to u of x
+
+99
+00:03:47,519 --> 00:03:52,560
+of t. And so, we're going to do this for
+
+100
+00:03:49,519 --> 00:03:55,040
+example with an MSE loss term, right?
+
+101
+00:03:52,560 --> 00:03:56,400
+And so in a supervised paradigm right
+
+102
+00:03:55,040 --> 00:03:58,959
+what we would have done is we would have
+
+103
+00:03:56,400 --> 00:04:01,760
+said okay we have some solution over
+
+104
+00:03:58,959 --> 00:04:03,040
+some grid and we can sort of map these
+
+105
+00:04:01,760 --> 00:04:06,959
+two together. We could take the mean
+
+106
+00:04:03,040 --> 00:04:09,360
+squared error right and the thing is is
+
+107
+00:04:06,959 --> 00:04:11,040
+that we kind of hoped for example that
+
+108
+00:04:09,360 --> 00:04:12,959
+our neural network might be able to give
+
+109
+00:04:11,040 --> 00:04:15,680
+us some some generalization over an
+
+110
+00:04:12,959 --> 00:04:17,359
+entire topology. So that is like for
+
+111
+00:04:15,680 --> 00:04:19,759
+example if we let our neural network be
+
+112
+00:04:17,359 --> 00:04:21,759
+represented with two inputs x and t it
+
+113
+00:04:19,759 --> 00:04:24,240
+can give us interpolation over those
+
+114
+00:04:21,759 --> 00:04:25,680
+points x and t instead of say you know a
+
+115
+00:04:24,240 --> 00:04:30,320
+linear interpolation or something like
+
+116
+00:04:25,680 --> 00:04:32,639
+that right and so we saw this paradigm a
+
+117
+00:04:30,320 --> 00:04:34,160
+little bit with neural operators
+
+118
+00:04:32,639 --> 00:04:36,080
+although we talked about things like
+
+119
+00:04:34,160 --> 00:04:38,000
+super resolution and asking a little bit
+
+120
+00:04:36,080 --> 00:04:39,600
+more of our neural network we're not
+
+121
+00:04:38,000 --> 00:04:42,160
+going to focus on that here what we're
+
+122
+00:04:39,600 --> 00:04:46,400
+going to focus on is the fact that we
+
+123
+00:04:42,160 --> 00:04:49,120
+may not have this you. Okay.
+
+124
+00:04:46,400 --> 00:04:51,680
+Okay. And so just to give you guys an
+
+125
+00:04:49,120 --> 00:04:54,400
+idea of of why this paradigm may or may
+
+126
+00:04:51,680 --> 00:04:57,199
+not make sense. Okay. First of all, we
+
+127
+00:04:54,400 --> 00:04:59,919
+argued that we could query at any point.
+
+128
+00:04:57,199 --> 00:05:02,000
+The next thing we could say is that we
+
+129
+00:04:59,919 --> 00:05:04,720
+could do some sort of outof sample
+
+130
+00:05:02,000 --> 00:05:07,120
+prediction. This is kind of a a stretch.
+
+131
+00:05:04,720 --> 00:05:09,120
+I'm not going to tell you this works all
+
+132
+00:05:07,120 --> 00:05:12,000
+the time. For example, if you're ever
+
+133
+00:05:09,120 --> 00:05:14,880
+like getting a paper back and you're in
+
+134
+00:05:12,000 --> 00:05:17,840
+a new field, let's say you're in
+
+135
+00:05:14,880 --> 00:05:19,600
+weather, okay, and you had some reviewer
+
+136
+00:05:17,840 --> 00:05:21,039
+and the reviewer is always going to ask
+
+137
+00:05:19,600 --> 00:05:22,880
+you this question if you're using a
+
+138
+00:05:21,039 --> 00:05:24,720
+neural network and they're not familiar.
+
+139
+00:05:22,880 --> 00:05:29,039
+Does it work outside of your training
+
+140
+00:05:24,720 --> 00:05:31,840
+distribution, right? And the safe answer
+
+141
+00:05:29,039 --> 00:05:33,199
+to that is no, it does not. Okay? And
+
+142
+00:05:31,840 --> 00:05:34,560
+typically the reviewer will be okay with
+
+143
+00:05:33,199 --> 00:05:37,280
+this especially if they're non neural
+
+144
+00:05:34,560 --> 00:05:38,720
+network but people have still tried to
+
+145
+00:05:37,280 --> 00:05:41,680
+kind of show that these types of
+
+146
+00:05:38,720 --> 00:05:43,919
+paradigms will work on X and T outside
+
+147
+00:05:41,680 --> 00:05:45,759
+of the training distribution.
+
+148
+00:05:43,919 --> 00:05:49,280
+I will don't want to sell that to you
+
+149
+00:05:45,759 --> 00:05:51,360
+today but just I have to put it up here
+
+150
+00:05:49,280 --> 00:05:54,000
+just so you can say it is possible.
+
+151
+00:05:51,360 --> 00:05:56,880
+Okay. One thing you may do to kind of
+
+152
+00:05:54,000 --> 00:05:59,120
+handle this is you might have very few
+
+153
+00:05:56,880 --> 00:06:01,520
+let's say you have long horizons problem
+
+154
+00:05:59,120 --> 00:06:03,280
+right so t is very large you may have a
+
+155
+00:06:01,520 --> 00:06:05,840
+very few number of instances where you
+
+156
+00:06:03,280 --> 00:06:08,080
+solve for that full long horizon and you
+
+157
+00:06:05,840 --> 00:06:10,160
+can train with those instances as well
+
+158
+00:06:08,080 --> 00:06:12,400
+as a lot of instances where you solve to
+
+159
+00:06:10,160 --> 00:06:13,919
+a short horizon right and then you can
+
+160
+00:06:12,400 --> 00:06:16,160
+ask okay hopefully the neural network
+
+161
+00:06:13,919 --> 00:06:18,639
+can kind of interpolate that longer sort
+
+162
+00:06:16,160 --> 00:06:20,560
+of amateurized training data essentially
+
+163
+00:06:18,639 --> 00:06:22,160
+that's an idea that you can do and and
+
+164
+00:06:20,560 --> 00:06:25,360
+it kind of works actually if if you do
+
+165
+00:06:22,160 --> 00:06:28,000
+this sort of parameterization
+
+166
+00:06:25,360 --> 00:06:30,880
+and then yeah one thing I haven't really
+
+167
+00:06:28,000 --> 00:06:32,560
+talked about or showed you is that these
+
+168
+00:06:30,880 --> 00:06:34,960
+things actually work better than some
+
+169
+00:06:32,560 --> 00:06:37,360
+interpolation solver and this is of
+
+170
+00:06:34,960 --> 00:06:39,440
+course problem dependent so I can find
+
+171
+00:06:37,360 --> 00:06:41,520
+some problem with you know shocks or
+
+172
+00:06:39,440 --> 00:06:43,360
+high oscillation where the linear
+
+173
+00:06:41,520 --> 00:06:44,639
+interpolation is going to break or even
+
+174
+00:06:43,360 --> 00:06:46,240
+if you use splines or something like
+
+175
+00:06:44,639 --> 00:06:49,120
+that it's going to break and maybe a
+
+176
+00:06:46,240 --> 00:06:51,520
+neural network does a little bit better
+
+177
+00:06:49,120 --> 00:06:53,199
+it's sort of though not always honest
+
+178
+00:06:51,520 --> 00:06:54,560
+Right? Because if the problem is very
+
+179
+00:06:53,199 --> 00:06:56,319
+smooth, the neuronet network could
+
+180
+00:06:54,560 --> 00:06:58,400
+actually you know for some reason
+
+181
+00:06:56,319 --> 00:07:00,160
+interject some aliasing which we talked
+
+182
+00:06:58,400 --> 00:07:03,039
+about last time if there's not enough
+
+183
+00:07:00,160 --> 00:07:04,479
+sample points and in that case it's
+
+184
+00:07:03,039 --> 00:07:06,400
+probably better to use some linear
+
+185
+00:07:04,479 --> 00:07:10,080
+interpolation. Okay. So you can see it
+
+186
+00:07:06,400 --> 00:07:12,560
+depends a lot on your problem. And then
+
+187
+00:07:10,080 --> 00:07:14,319
+the last thing is that this sort of
+
+188
+00:07:12,560 --> 00:07:16,240
+paradigm where we use this neural
+
+189
+00:07:14,319 --> 00:07:18,800
+network the neural OD and the neural
+
+190
+00:07:16,240 --> 00:07:21,440
+operators they did have some physics
+
+191
+00:07:18,800 --> 00:07:25,520
+incorporation compared to like an MLP
+
+192
+00:07:21,440 --> 00:07:27,919
+right but you know we've spent I don't
+
+193
+00:07:25,520 --> 00:07:30,400
+know 300 years since Newton working on
+
+194
+00:07:27,919 --> 00:07:33,919
+calculus and sort of trying to derive
+
+195
+00:07:30,400 --> 00:07:35,520
+how how these sort of ideas work and we
+
+196
+00:07:33,919 --> 00:07:36,960
+kind of just ignored that and said let's
+
+197
+00:07:35,520 --> 00:07:39,440
+replace this with some datadriven
+
+198
+00:07:36,960 --> 00:07:41,680
+approach. Okay. So, um, you can see
+
+199
+00:07:39,440 --> 00:07:44,000
+there's a quite a bit of trade-offs for
+
+200
+00:07:41,680 --> 00:07:46,720
+this idea of, okay, let's let our
+
+201
+00:07:44,000 --> 00:07:48,800
+solution be a neural network. Um, and
+
+202
+00:07:46,720 --> 00:07:50,319
+we're going to kind of see, okay, what
+
+203
+00:07:48,800 --> 00:07:52,240
+that looks like, and then we're going to
+
+204
+00:07:50,319 --> 00:07:56,080
+see about 50 training tricks to make it
+
+205
+00:07:52,240 --> 00:07:57,919
+actually work. Okay. All right. So, let
+
+206
+00:07:56,080 --> 00:07:59,599
+me give you the high level of pins and
+
+207
+00:07:57,919 --> 00:08:02,240
+then we'll kind of go into some training
+
+208
+00:07:59,599 --> 00:08:04,319
+tricks. So remember that we talked about
+
+209
+00:08:02,240 --> 00:08:06,240
+our original transport PTE with some
+
+210
+00:08:04,319 --> 00:08:08,400
+initial condition and let's say we want
+
+211
+00:08:06,240 --> 00:08:12,319
+to know it for some future time you know
+
+212
+00:08:08,400 --> 00:08:16,160
+t equals 0.5 for example. So the way pin
+
+213
+00:08:12,319 --> 00:08:19,120
+works is we explicitly are going to
+
+214
+00:08:16,160 --> 00:08:21,919
+model the PTE as parts of our loss
+
+215
+00:08:19,120 --> 00:08:24,160
+function. Okay. So this first loss
+
+216
+00:08:21,919 --> 00:08:26,800
+function with some let's say waiting
+
+217
+00:08:24,160 --> 00:08:28,720
+term lambda 1 is going to be the data
+
+218
+00:08:26,800 --> 00:08:30,560
+that we have. So imagine we have maybe
+
+219
+00:08:28,720 --> 00:08:32,959
+one or two examples. Not very many
+
+220
+00:08:30,560 --> 00:08:34,719
+examples, but we have one or two. Okay,
+
+221
+00:08:32,959 --> 00:08:37,279
+so that's going to be our our classic
+
+222
+00:08:34,719 --> 00:08:40,080
+root mean squared error that we saw two
+
+223
+00:08:37,279 --> 00:08:42,399
+slides ago. Then we're going to add some
+
+224
+00:08:40,080 --> 00:08:45,040
+new terms, these three on the right. And
+
+225
+00:08:42,399 --> 00:08:47,680
+these are going to be called the physics
+
+226
+00:08:45,040 --> 00:08:49,680
+informed terms. Kind of why you took
+
+227
+00:08:47,680 --> 00:08:51,680
+this class maybe for that hot keyword,
+
+228
+00:08:49,680 --> 00:08:53,440
+but physics informed. And what does that
+
+229
+00:08:51,680 --> 00:08:56,320
+mean? Well, it means that we're going to
+
+230
+00:08:53,440 --> 00:08:57,600
+consider these equations up top here and
+
+231
+00:08:56,320 --> 00:08:59,839
+we're actually going to encode them as
+
+232
+00:08:57,600 --> 00:09:03,360
+loss functions, right? So, if u of theta
+
+233
+00:08:59,839 --> 00:09:05,760
+is our PTE, you might imagine, okay, our
+
+234
+00:09:03,360 --> 00:09:07,760
+data is our MSE squared term and we
+
+235
+00:09:05,760 --> 00:09:10,160
+might assume that okay, since we know
+
+236
+00:09:07,760 --> 00:09:13,040
+that U of theta for any initial
+
+237
+00:09:10,160 --> 00:09:15,920
+condition should be G, we can encode
+
+238
+00:09:13,040 --> 00:09:18,399
+this. Okay, and we could code this for
+
+239
+00:09:15,920 --> 00:09:20,959
+as many X points as we want. For
+
+240
+00:09:18,399 --> 00:09:23,279
+example, some uniform discretization.
+
+241
+00:09:20,959 --> 00:09:26,399
+Okay. And so this is just a very simple
+
+242
+00:09:23,279 --> 00:09:28,560
+idea, but it says, okay, let's penalize
+
+243
+00:09:26,399 --> 00:09:30,720
+our learn neural network whenever it
+
+244
+00:09:28,560 --> 00:09:32,640
+doesn't match our initial condition.
+
+245
+00:09:30,720 --> 00:09:35,279
+Pretty simple. We're going to do the
+
+246
+00:09:32,640 --> 00:09:37,440
+same thing for the boundary condition.
+
+247
+00:09:35,279 --> 00:09:38,800
+And actually, we can do this for in this
+
+248
+00:09:37,440 --> 00:09:40,640
+case, I have a derslay boundary
+
+249
+00:09:38,800 --> 00:09:42,480
+condition, which just means I'm actually
+
+250
+00:09:40,640 --> 00:09:44,399
+setting the boundary at the point.
+
+251
+00:09:42,480 --> 00:09:46,160
+Another option maybe you guys know is a
+
+252
+00:09:44,399 --> 00:09:48,320
+noman boundary condition and that's
+
+253
+00:09:46,160 --> 00:09:49,920
+where you're
+
+254
+00:09:48,320 --> 00:09:52,320
+you're going to set the boundary
+
+255
+00:09:49,920 --> 00:09:54,240
+condition at the derivative at say one
+
+256
+00:09:52,320 --> 00:09:56,560
+for example and we'll see that a little
+
+257
+00:09:54,240 --> 00:09:57,920
+bit later but the same exact idea we're
+
+258
+00:09:56,560 --> 00:10:00,000
+going to say okay this should be equal
+
+259
+00:09:57,920 --> 00:10:02,880
+to zero so we're going to put a penalty
+
+260
+00:10:00,000 --> 00:10:04,800
+on it for its boundary condition and the
+
+261
+00:10:02,880 --> 00:10:08,720
+last part kind of the most interesting
+
+262
+00:10:04,800 --> 00:10:10,720
+part is that we can actually enforce
+
+263
+00:10:08,720 --> 00:10:12,560
+sorry this should be a minus we can
+
+264
+00:10:10,720 --> 00:10:15,440
+enforce this equation
+
+265
+00:10:12,560 --> 00:10:18,160
+up top here to actually hold, right? So
+
+266
+00:10:15,440 --> 00:10:20,959
+we know that u minus ux should equal
+
+267
+00:10:18,160 --> 00:10:23,120
+zero. Okay. And so down here for
+
+268
+00:10:20,959 --> 00:10:25,040
+example, if this was a correctly a minus
+
+269
+00:10:23,120 --> 00:10:26,959
+term, this would be enforcing that
+
+270
+00:10:25,040 --> 00:10:28,880
+equation. And now you may ask, okay, how
+
+271
+00:10:26,959 --> 00:10:30,320
+do you do these derivatives? It turns
+
+272
+00:10:28,880 --> 00:10:31,920
+out, well, we can just run them through
+
+273
+00:10:30,320 --> 00:10:34,320
+torch because we know how to take
+
+274
+00:10:31,920 --> 00:10:36,480
+derivatives with respect to our inputs
+
+275
+00:10:34,320 --> 00:10:38,000
+uh after years of auto differentiation.
+
+276
+00:10:36,480 --> 00:10:40,480
+And we'll talk a little bit more about
+
+277
+00:10:38,000 --> 00:10:42,880
+auto differentiation later, but it turns
+
+278
+00:10:40,480 --> 00:10:45,839
+out these aren't too bad to evaluate.
+
+279
+00:10:42,880 --> 00:10:49,600
+And so you can see now here we've sort
+
+280
+00:10:45,839 --> 00:10:51,839
+of encoded the dynamics of our PTE into
+
+281
+00:10:49,600 --> 00:10:55,279
+our loss function as a sort of soft
+
+282
+00:10:51,839 --> 00:10:58,399
+constraint, right? And actually it turns
+
+283
+00:10:55,279 --> 00:11:01,519
+out we don't even need any data. So if
+
+284
+00:10:58,399 --> 00:11:03,360
+this term for example was zero, we don't
+
+285
+00:11:01,519 --> 00:11:05,440
+have any data. We could still try to
+
+286
+00:11:03,360 --> 00:11:07,680
+learn the solution to the PTE based on
+
+287
+00:11:05,440 --> 00:11:11,680
+the parameters that we have completely
+
+288
+00:11:07,680 --> 00:11:14,079
+from designing this loss function.
+
+289
+00:11:11,680 --> 00:11:15,680
+So this is the whole idea of pins. Any
+
+290
+00:11:14,079 --> 00:11:20,360
+questions? Maybe to stop here. Slow
+
+291
+00:11:15,680 --> 00:11:20,360
+down. Yes sir.
+
+292
+00:11:21,839 --> 00:11:25,839
+Okay. We'll we'll get there. We'll get
+
+293
+00:11:23,760 --> 00:11:27,600
+to an example
+
+294
+00:11:25,839 --> 00:11:29,440
+actually. So what we're going to do kind
+
+295
+00:11:27,600 --> 00:11:31,279
+of where the rest of this talk is going
+
+296
+00:11:29,440 --> 00:11:33,360
+is this is not a hard idea to introduce,
+
+297
+00:11:31,279 --> 00:11:34,800
+right? like it's pretty straightforward
+
+298
+00:11:33,360 --> 00:11:37,760
+but it's actually a hard idea to
+
+299
+00:11:34,800 --> 00:11:39,600
+implement and make work and we'll see
+
+300
+00:11:37,760 --> 00:11:41,040
+okay our choices of lambda are really
+
+301
+00:11:39,600 --> 00:11:42,560
+going to matter our neural network
+
+302
+00:11:41,040 --> 00:11:44,240
+architecture is going to matter how we
+
+303
+00:11:42,560 --> 00:11:46,079
+train is going to matter so I'm going to
+
+304
+00:11:44,240 --> 00:11:51,399
+give you a couple ideas there to think
+
+305
+00:11:46,079 --> 00:11:51,399
+about yeah sir in the back
+
+306
+00:11:56,000 --> 00:12:00,640
+just a normalization
+
+307
+00:11:58,560 --> 00:12:02,000
+nothing nothing very particular but if
+
+308
+00:12:00,640 --> 00:12:05,440
+you think about it like we don't want
+
+309
+00:12:02,000 --> 00:12:06,880
+our loss function blowing up, right? For
+
+310
+00:12:05,440 --> 00:12:08,240
+example, then you would get training
+
+311
+00:12:06,880 --> 00:12:09,760
+instability and then your gradients are
+
+312
+00:12:08,240 --> 00:12:11,839
+going to blow up and then nothing's
+
+313
+00:12:09,760 --> 00:12:14,079
+going to work. We'll see how to sort of
+
+314
+00:12:11,839 --> 00:12:15,920
+choose these lambdas a little bit later.
+
+315
+00:12:14,079 --> 00:12:19,959
+Um, but for now, you can just treat them
+
+316
+00:12:15,920 --> 00:12:19,959
+as a as a normalization.
+
+317
+00:12:20,800 --> 00:12:27,480
+Um, well, what well, in what sense do
+
+318
+00:12:23,839 --> 00:12:27,480
+you mean diminish it?
+
+319
+00:12:45,040 --> 00:12:49,519
+um it won't necessarily okay this is it
+
+320
+00:12:47,680 --> 00:12:51,600
+won't necessarily
+
+321
+00:12:49,519 --> 00:12:53,040
+it'll keep the gradients reasonably
+
+322
+00:12:51,600 --> 00:12:55,440
+numbered but the gradients can still
+
+323
+00:12:53,040 --> 00:12:58,959
+blow up right because these loss terms
+
+324
+00:12:55,440 --> 00:13:01,519
+can still blow up Okay, so it's kind of
+
+325
+00:12:58,959 --> 00:13:03,760
+just a normalized way to trade off
+
+326
+00:13:01,519 --> 00:13:08,240
+different terms essentially. So for
+
+327
+00:13:03,760 --> 00:13:11,279
+example, if lambda four is 0.9 and the
+
+328
+00:13:08,240 --> 00:13:13,279
+other three are 0.03 for example,
+
+329
+00:13:11,279 --> 00:13:15,040
+something like that, then we're really
+
+330
+00:13:13,279 --> 00:13:17,040
+going to weight this equation term more
+
+331
+00:13:15,040 --> 00:13:19,839
+than the other ones. That's the whole
+
+332
+00:13:17,040 --> 00:13:21,680
+idea. Whether or not lambda blows up is
+
+333
+00:13:19,839 --> 00:13:23,920
+kind of
+
+334
+00:13:21,680 --> 00:13:26,240
+more a function of the actual loss
+
+335
+00:13:23,920 --> 00:13:28,959
+terms. and we'll see they'll get large
+
+336
+00:13:26,240 --> 00:13:30,639
+as you would imagine.
+
+337
+00:13:28,959 --> 00:13:32,560
+Yeah. But if your training for example
+
+338
+00:13:30,639 --> 00:13:34,800
+is super unstable, it might be worth
+
+339
+00:13:32,560 --> 00:13:37,279
+choosing a lower normalization actually
+
+340
+00:13:34,800 --> 00:13:39,440
+and see if things work. It's sort of
+
+341
+00:13:37,279 --> 00:13:41,920
+Yeah.
+
+342
+00:13:39,440 --> 00:13:45,360
+Yeah. Minus minus right here should be a
+
+343
+00:13:41,920 --> 00:13:47,360
+minus. Yes. Yeah.
+
+344
+00:13:45,360 --> 00:13:50,639
+The reason is I actually did a different
+
+345
+00:13:47,360 --> 00:13:52,000
+PTE earlier and so yeah, but this was
+
+346
+00:13:50,639 --> 00:13:54,079
+the one we've been doing kind of the
+
+347
+00:13:52,000 --> 00:13:58,959
+whole class. Um so wanted to keep that
+
+348
+00:13:54,079 --> 00:14:01,959
+in mind. Other questions? Yes sir.
+
+349
+00:13:58,959 --> 00:14:01,959
+Sorry.
+
+350
+00:14:02,399 --> 00:14:08,160
+Where's K?
+
+351
+00:14:05,440 --> 00:14:11,600
+These are the number of points that I'm
+
+352
+00:14:08,160 --> 00:14:13,760
+going to choose for uh I okay so for
+
+353
+00:14:11,600 --> 00:14:16,720
+example like I may have picked a un a
+
+354
+00:14:13,760 --> 00:14:21,279
+grid right. So for example uniform grid
+
+355
+00:14:16,720 --> 00:14:23,120
+in X might be 10 points 0 0.1.2 0.3 0.
+
+356
+00:14:21,279 --> 00:14:25,360
+So these K are kind of chosen by the
+
+357
+00:14:23,120 --> 00:14:28,000
+user essentially however many points you
+
+358
+00:14:25,360 --> 00:14:30,480
+have and you want to choose. Now these
+
+359
+00:14:28,000 --> 00:14:32,399
+are called collocation points and we'll
+
+360
+00:14:30,480 --> 00:14:35,040
+actually talk a lot about how to choose
+
+361
+00:14:32,399 --> 00:14:37,839
+these points later. Um sort of as well.
+
+362
+00:14:35,040 --> 00:14:39,279
+Yeah. All great questions though like a
+
+363
+00:14:37,839 --> 00:14:42,560
+lot of the questions you're asking we're
+
+364
+00:14:39,279 --> 00:14:44,240
+hopefully answer later. So yeah any
+
+365
+00:14:42,560 --> 00:14:46,240
+others
+
+366
+00:14:44,240 --> 00:14:48,560
+everybody gets the idea though hopefully
+
+367
+00:14:46,240 --> 00:14:52,000
+of introducing sort of these terms to
+
+368
+00:14:48,560 --> 00:14:53,839
+represent your equations. Okay. Okay.
+
+369
+00:14:52,000 --> 00:14:55,519
+And so just a brief review. How many of
+
+370
+00:14:53,839 --> 00:14:57,120
+you have heard of auto differentiation?
+
+371
+00:14:55,519 --> 00:14:59,440
+I would assume everyone. You probably
+
+372
+00:14:57,120 --> 00:15:01,360
+used it on your homeworks. Great. Just a
+
+373
+00:14:59,440 --> 00:15:03,600
+brief review of what it is and where
+
+374
+00:15:01,360 --> 00:15:06,000
+else kind of things exist. So how do you
+
+375
+00:15:03,600 --> 00:15:08,079
+compute these derivatives? Just one.
+
+376
+00:15:06,000 --> 00:15:09,680
+Essentially the way the derivatives work
+
+377
+00:15:08,079 --> 00:15:12,880
+is you break everything down by a chain
+
+378
+00:15:09,680 --> 00:15:14,639
+rule into a set of simple operations. So
+
+379
+00:15:12,880 --> 00:15:17,440
+what do I mean by simple operations?
+
+380
+00:15:14,639 --> 00:15:19,360
+Add, multiply, sign. typically nothing
+
+381
+00:15:17,440 --> 00:15:22,000
+more than a binary operation which just
+
+382
+00:15:19,360 --> 00:15:23,440
+means two inputs one output. Okay. And
+
+383
+00:15:22,000 --> 00:15:25,279
+then you're going to apply this chain
+
+384
+00:15:23,440 --> 00:15:27,040
+rule automatically
+
+385
+00:15:25,279 --> 00:15:30,399
+and the key is that you build this sort
+
+386
+00:15:27,040 --> 00:15:32,079
+of tensor graph of the chain rule and of
+
+387
+00:15:30,399 --> 00:15:36,160
+course as you know PyTorch will do all
+
+388
+00:15:32,079 --> 00:15:38,240
+your derivatives for you. Okay. And so
+
+389
+00:15:36,160 --> 00:15:41,040
+it's kind of like you know you're taking
+
+390
+00:15:38,240 --> 00:15:42,720
+some highlevel Michelin star dish and
+
+391
+00:15:41,040 --> 00:15:44,320
+you're putting things slowly adding
+
+392
+00:15:42,720 --> 00:15:46,800
+layers of flavor. That's kind of the
+
+393
+00:15:44,320 --> 00:15:48,320
+decomposition of an auto diff. And it
+
+394
+00:15:46,800 --> 00:15:50,240
+turns out this isn't the only way to do
+
+395
+00:15:48,320 --> 00:15:52,880
+this. So kind of to give you guys an
+
+396
+00:15:50,240 --> 00:15:55,759
+idea, for example, we saw a little bit
+
+397
+00:15:52,880 --> 00:15:56,959
+of how to do manual differentiation. I
+
+398
+00:15:55,759 --> 00:15:59,600
+think you've seen in your calculus
+
+399
+00:15:56,959 --> 00:16:00,720
+class. Numerical differentiation. What
+
+400
+00:15:59,600 --> 00:16:02,800
+does this mean? This is our finite
+
+401
+00:16:00,720 --> 00:16:05,759
+difference algorithms. So we approximate
+
+402
+00:16:02,800 --> 00:16:08,160
+a derivative between two points.
+
+403
+00:16:05,759 --> 00:16:09,839
+Symbolic differentiation essentially you
+
+404
+00:16:08,160 --> 00:16:11,600
+have a set of symbols and you know their
+
+405
+00:16:09,839 --> 00:16:15,040
+derivatives. Kind of very close to
+
+406
+00:16:11,600 --> 00:16:17,440
+automatic. And then there is one other
+
+407
+00:16:15,040 --> 00:16:21,680
+type of differentiation that is
+
+408
+00:16:17,440 --> 00:16:24,240
+available. Um, but
+
+409
+00:16:21,680 --> 00:16:27,360
+can anyone name what we kind of saw as a
+
+410
+00:16:24,240 --> 00:16:31,800
+cool way to do gradients? Perhaps you
+
+411
+00:16:27,360 --> 00:16:31,800
+may know because we talked about it.
+
+412
+00:16:32,480 --> 00:16:39,720
+So, uh, for the neural OD. So, what do
+
+413
+00:16:36,560 --> 00:16:39,720
+we do?
+
+414
+00:16:52,000 --> 00:16:55,519
+kind of yeah exactly so I guess it could
+
+415
+00:16:53,920 --> 00:16:57,120
+fall under this numerical question but
+
+416
+00:16:55,519 --> 00:16:58,800
+the idea was we created that adjoint
+
+417
+00:16:57,120 --> 00:17:00,399
+state right then we made a separate
+
+418
+00:16:58,800 --> 00:17:02,399
+differential equation to do our back
+
+419
+00:17:00,399 --> 00:17:04,559
+propagation that's kind of a cool way to
+
+420
+00:17:02,399 --> 00:17:06,400
+do differentiation actually and I guess
+
+421
+00:17:04,559 --> 00:17:07,760
+it falls in the numerical category
+
+422
+00:17:06,400 --> 00:17:10,240
+although it's not so slow because we're
+
+423
+00:17:07,760 --> 00:17:13,120
+taking advantage of our OD sol okay so
+
+424
+00:17:10,240 --> 00:17:15,439
+just something to know Okay, back to our
+
+425
+00:17:13,120 --> 00:17:17,439
+our problem. So let's consider a little
+
+426
+00:17:15,439 --> 00:17:19,679
+bit challenging of an example. We have
+
+427
+00:17:17,439 --> 00:17:22,160
+the Schroinger equation. Okay, it lives
+
+428
+00:17:19,679 --> 00:17:24,799
+in complex domain
+
+429
+00:17:22,160 --> 00:17:27,439
+and it's nonlinear, right? For example,
+
+430
+00:17:24,799 --> 00:17:29,600
+we have a squared term here. It has a
+
+431
+00:17:27,439 --> 00:17:31,360
+diffusion term. So that's this second
+
+432
+00:17:29,600 --> 00:17:33,440
+spatial derivative here. This diffusion
+
+433
+00:17:31,360 --> 00:17:36,880
+term kind of you can think of spreads
+
+434
+00:17:33,440 --> 00:17:40,480
+things out. And we're going to choose
+
+435
+00:17:36,880 --> 00:17:42,880
+some initial condition given by seeant.
+
+436
+00:17:40,480 --> 00:17:44,160
+And what we're going to have is two
+
+437
+00:17:42,880 --> 00:17:45,679
+different boundary conditions now
+
+438
+00:17:44,160 --> 00:17:47,440
+because we have a second spatial
+
+439
+00:17:45,679 --> 00:17:48,960
+derivative. So the PD needs to be well
+
+440
+00:17:47,440 --> 00:17:50,480
+defined.
+
+441
+00:17:48,960 --> 00:17:51,760
+And what are our boundary conditions?
+
+442
+00:17:50,480 --> 00:17:54,000
+Well, the first one is actually really
+
+443
+00:17:51,760 --> 00:17:55,919
+simple. It's a periodic derslay boundary
+
+444
+00:17:54,000 --> 00:17:57,440
+condition. This means that okay, the
+
+445
+00:17:55,919 --> 00:17:59,840
+left hand side of our domain has to
+
+446
+00:17:57,440 --> 00:18:01,919
+equal the right. And the second boundary
+
+447
+00:17:59,840 --> 00:18:03,760
+condition is that noman boundary
+
+448
+00:18:01,919 --> 00:18:05,600
+condition we talked about. Basically
+
+449
+00:18:03,760 --> 00:18:09,120
+saying that the derivatives actually
+
+450
+00:18:05,600 --> 00:18:12,160
+have to be equal with respect to space.
+
+451
+00:18:09,120 --> 00:18:14,160
+So classic problem very important in
+
+452
+00:18:12,160 --> 00:18:16,400
+quantum mechanics. How are we going to
+
+453
+00:18:14,160 --> 00:18:18,799
+kind of do a simple example for physics
+
+454
+00:18:16,400 --> 00:18:21,360
+and form loss? Well again we had four
+
+455
+00:18:18,799 --> 00:18:22,880
+terms. The data term, initial condition,
+
+456
+00:18:21,360 --> 00:18:26,880
+boundary condition and of course the
+
+457
+00:18:22,880 --> 00:18:29,840
+dynamics. Okay. And so let's assume we
+
+458
+00:18:26,880 --> 00:18:32,080
+have n data points supervised. N data is
+
+459
+00:18:29,840 --> 00:18:33,760
+small, right? Because if we had a ton,
+
+460
+00:18:32,080 --> 00:18:36,160
+well we could just kind of rely on this
+
+461
+00:18:33,760 --> 00:18:39,280
+term. Okay, so end date is some small
+
+462
+00:18:36,160 --> 00:18:40,960
+number. And the first kind of loss that
+
+463
+00:18:39,280 --> 00:18:43,200
+we talked about is defining this initial
+
+464
+00:18:40,960 --> 00:18:45,280
+condition loss. And so it's pretty
+
+465
+00:18:43,200 --> 00:18:47,600
+simple how to do it. What we're going to
+
+466
+00:18:45,280 --> 00:18:49,360
+do is we're going to choose an L2 loss.
+
+467
+00:18:47,600 --> 00:18:53,200
+Okay, we're going to say that our neural
+
+468
+00:18:49,360 --> 00:18:55,600
+network at all time zero for all points
+
+469
+00:18:53,200 --> 00:18:57,440
+Xi, which is just a set of points I
+
+470
+00:18:55,600 --> 00:18:58,880
+choose. So K, I am going to choose I'm
+
+471
+00:18:57,440 --> 00:19:00,960
+going to choose these points. And this
+
+472
+00:18:58,880 --> 00:19:03,360
+is just a normalization.
+
+473
+00:19:00,960 --> 00:19:04,880
+Okay, you don't need this necessarily.
+
+474
+00:19:03,360 --> 00:19:07,520
+And what do I say? Okay, I'm going to
+
+475
+00:19:04,880 --> 00:19:09,600
+penalize this squared error. Pretty
+
+476
+00:19:07,520 --> 00:19:11,200
+simple. I'm going to do the same thing
+
+477
+00:19:09,600 --> 00:19:13,039
+for the boundary terms. I'm going to
+
+478
+00:19:11,200 --> 00:19:14,559
+have two of them, right? I'm going to
+
+479
+00:19:13,039 --> 00:19:16,559
+have the first one for the derslay
+
+480
+00:19:14,559 --> 00:19:18,720
+boundary condition and the second one
+
+481
+00:19:16,559 --> 00:19:21,600
+for the vanoyman boundary condition.
+
+482
+00:19:18,720 --> 00:19:24,240
+Okay, exactly the same way I did the
+
+483
+00:19:21,600 --> 00:19:27,679
+penalties for the last two. I'm going to
+
+484
+00:19:24,240 --> 00:19:29,760
+choose some points from K1 to K2
+
+485
+00:19:27,679 --> 00:19:31,760
+representing different time instances.
+
+486
+00:19:29,760 --> 00:19:33,760
+How I choose these is up to me and we'll
+
+487
+00:19:31,760 --> 00:19:36,640
+talk about why. And I'm going to
+
+488
+00:19:33,760 --> 00:19:39,440
+penalize the squared errors and the
+
+489
+00:19:36,640 --> 00:19:40,799
+spatial derivative errors. Now I am
+
+490
+00:19:39,440 --> 00:19:43,360
+hiding something from you a little bit
+
+491
+00:19:40,799 --> 00:19:45,440
+here. These actual boundary errors on
+
+492
+00:19:43,360 --> 00:19:48,400
+the spatial derivative,
+
+493
+00:19:45,440 --> 00:19:50,320
+they may require ghost points. So any of
+
+494
+00:19:48,400 --> 00:19:52,799
+you guys studied PD solvers know what a
+
+495
+00:19:50,320 --> 00:19:54,880
+ghost point is.
+
+496
+00:19:52,799 --> 00:19:56,799
+Okay, pretty much no one. They may just
+
+497
+00:19:54,880 --> 00:19:58,559
+require a trick. Let's just leave it at
+
+498
+00:19:56,799 --> 00:20:00,320
+that. In practice, you won't notice it,
+
+499
+00:19:58,559 --> 00:20:02,160
+but under the hood, Torch is doing it.
+
+500
+00:20:00,320 --> 00:20:03,919
+And if you want more information on
+
+501
+00:20:02,160 --> 00:20:05,840
+that, come see me later and we'll talk
+
+502
+00:20:03,919 --> 00:20:08,160
+about it.
+
+503
+00:20:05,840 --> 00:20:10,960
+Okay. And of course, the equationbased
+
+504
+00:20:08,160 --> 00:20:13,280
+lost is essentially the same exact thing
+
+505
+00:20:10,960 --> 00:20:16,960
+we saw before. Okay. We're going to
+
+506
+00:20:13,280 --> 00:20:18,640
+encode that nasty looking Schroinger
+
+507
+00:20:16,960 --> 00:20:20,640
+equation. So this was the left hand
+
+508
+00:20:18,640 --> 00:20:21,919
+side. This term, these two terms were on
+
+509
+00:20:20,640 --> 00:20:24,799
+the right hand side. You see they're
+
+510
+00:20:21,919 --> 00:20:26,320
+correctly subtracted now. And
+
+511
+00:20:24,799 --> 00:20:28,720
+essentially what we're going to do is
+
+512
+00:20:26,320 --> 00:20:32,080
+penalize this term enforcing the
+
+513
+00:20:28,720 --> 00:20:34,000
+physics. Right? And so I think pretty
+
+514
+00:20:32,080 --> 00:20:36,080
+easily you guys could adapt this to your
+
+515
+00:20:34,000 --> 00:20:38,480
+problem in the same way. The nice thing
+
+516
+00:20:36,080 --> 00:20:41,280
+of course is that we're using backrop to
+
+517
+00:20:38,480 --> 00:20:43,280
+handle the gradients. Now does torch
+
+518
+00:20:41,280 --> 00:20:45,039
+compute second order gradients? Does
+
+519
+00:20:43,280 --> 00:20:48,280
+anyone know if it's easy to compute this
+
+520
+00:20:45,039 --> 00:20:48,280
+or not?
+
+521
+00:20:49,280 --> 00:20:54,240
+Any ideas?
+
+522
+00:20:52,159 --> 00:20:55,840
+Okay. If I can compute a first order
+
+523
+00:20:54,240 --> 00:20:57,520
+gradient,
+
+524
+00:20:55,840 --> 00:21:00,400
+you would agree that I can do that,
+
+525
+00:20:57,520 --> 00:21:02,159
+right? I would say and then it just
+
+526
+00:21:00,400 --> 00:21:04,799
+turns out I can do the same thing kind
+
+527
+00:21:02,159 --> 00:21:07,039
+of with that chain rule idea. Uh
+
+528
+00:21:04,799 --> 00:21:09,600
+essentially taking the gradient again
+
+529
+00:21:07,039 --> 00:21:11,120
+and it actually is not super expensive
+
+530
+00:21:09,600 --> 00:21:13,679
+to compute. It is a little expensive,
+
+531
+00:21:11,120 --> 00:21:16,000
+but like you'll see the simulations I'll
+
+532
+00:21:13,679 --> 00:21:19,200
+show you later. They were all run within
+
+533
+00:21:16,000 --> 00:21:20,880
+an hour on my my Mac. Yeah, you have a
+
+534
+00:21:19,200 --> 00:21:23,200
+question.
+
+535
+00:21:20,880 --> 00:21:25,840
+Okay, great. Okay. And so we put it all
+
+536
+00:21:23,200 --> 00:21:27,919
+together, we get this sort of loss term.
+
+537
+00:21:25,840 --> 00:21:30,159
+We have four different parts, right? The
+
+538
+00:21:27,919 --> 00:21:32,400
+data loss, the initial condition, the
+
+539
+00:21:30,159 --> 00:21:34,960
+boundary condition, and the key is
+
+540
+00:21:32,400 --> 00:21:37,440
+enforcing our equation.
+
+541
+00:21:34,960 --> 00:21:40,080
+Second example. All right. And so what
+
+542
+00:21:37,440 --> 00:21:42,240
+does this look like in practice? Well,
+
+543
+00:21:40,080 --> 00:21:45,919
+it looks like the following. So what I
+
+544
+00:21:42,240 --> 00:21:48,480
+have here, okay, is the true solution to
+
+545
+00:21:45,919 --> 00:21:51,280
+this Schroinger equation. Okay? And what
+
+546
+00:21:48,480 --> 00:21:54,400
+you see is these sort of black points.
+
+547
+00:21:51,280 --> 00:21:56,000
+These are my chosen collocation points
+
+548
+00:21:54,400 --> 00:21:59,840
+which means the chosen points at which I
+
+549
+00:21:56,000 --> 00:22:01,919
+evaluated XI and TI. Okay. And you see
+
+550
+00:21:59,840 --> 00:22:05,360
+they they are you know symmetric in this
+
+551
+00:22:01,919 --> 00:22:07,280
+case but they don't have to be. And here
+
+552
+00:22:05,360 --> 00:22:09,440
+actually we show an example. This was
+
+553
+00:22:07,280 --> 00:22:12,480
+the example shown quite a long time ago
+
+554
+00:22:09,440 --> 00:22:14,640
+in that pin paper of how well the pin is
+
+555
+00:22:12,480 --> 00:22:16,240
+doing at learning this specific PTE.
+
+556
+00:22:14,640 --> 00:22:18,480
+Right? And you see it's basically
+
+557
+00:22:16,240 --> 00:22:21,360
+indistinguishable. L2 errors on the
+
+558
+00:22:18,480 --> 00:22:24,400
+magnitude of 10 the minus4
+
+559
+00:22:21,360 --> 00:22:27,039
+which is kind of really good actually.
+
+560
+00:22:24,400 --> 00:22:29,679
+Okay.
+
+561
+00:22:27,039 --> 00:22:31,039
+And so let's talk about we now we have
+
+562
+00:22:29,679 --> 00:22:33,919
+this method. Let's talk about some
+
+563
+00:22:31,039 --> 00:22:36,400
+advantages some disadvantages. So maybe
+
+564
+00:22:33,919 --> 00:22:38,400
+we'll do what we did last time. Spend
+
+565
+00:22:36,400 --> 00:22:39,760
+five or so minutes with your friend next
+
+566
+00:22:38,400 --> 00:22:42,960
+to you or your neighbor. Introduce
+
+567
+00:22:39,760 --> 00:22:45,120
+yourself and just talk what advantages
+
+568
+00:22:42,960 --> 00:22:48,720
+do you see and what disadvantages do you
+
+569
+00:22:45,120 --> 00:22:48,720
+see. Go ahead.
+
+570
+00:26:05,760 --> 00:26:10,559
+All right, great.
+
+571
+00:26:08,480 --> 00:26:12,400
+Let's Any volunteers? Any groups want to
+
+572
+00:26:10,559 --> 00:26:15,520
+share what they talked about?
+
+573
+00:26:12,400 --> 00:26:17,520
+Advantages, disadvantages?
+
+574
+00:26:15,520 --> 00:26:19,600
+How about you guys over in this area? I
+
+575
+00:26:17,520 --> 00:26:22,600
+saw you guys talking. Any advantage,
+
+576
+00:26:19,600 --> 00:26:22,600
+disadvantage?
+
+577
+00:26:27,039 --> 00:26:30,400
+Yeah. Yeah. Exactly. So, one
+
+578
+00:26:28,559 --> 00:26:31,760
+disadvantage our friend shared is that
+
+579
+00:26:30,400 --> 00:26:34,880
+you have to retrain and we'll we'll look
+
+580
+00:26:31,760 --> 00:26:36,480
+at that in a second. Um, how about over
+
+581
+00:26:34,880 --> 00:26:39,840
+here? Did you guys have anything
+
+582
+00:26:36,480 --> 00:26:44,520
+interesting you guys found?
+
+583
+00:26:39,840 --> 00:26:44,520
+Advantages maybe. Advantages.
+
+584
+00:26:46,480 --> 00:26:52,640
+How about you? Any ideas? Yeah. No
+
+585
+00:26:49,600 --> 00:26:54,720
+advantages. Nothing.
+
+586
+00:26:52,640 --> 00:26:58,720
+Okay. Well, let me ask you a question
+
+587
+00:26:54,720 --> 00:27:01,440
+then. What in those four loss terms?
+
+588
+00:26:58,720 --> 00:27:04,159
+Okay. One of those loss terms I said had
+
+589
+00:27:01,440 --> 00:27:07,400
+a very small number. Do you remember
+
+590
+00:27:04,159 --> 00:27:07,400
+which one?
+
+591
+00:27:08,559 --> 00:27:14,480
+So, in these four loss terms, right, we
+
+592
+00:27:11,520 --> 00:27:16,400
+had this term, the data loss, an initial
+
+593
+00:27:14,480 --> 00:27:19,840
+condition, a boundary condition, and an
+
+594
+00:27:16,400 --> 00:27:22,720
+equation loss. Any ideas which one we
+
+595
+00:27:19,840 --> 00:27:27,559
+talked about maybe didn't didn't have a
+
+596
+00:27:22,720 --> 00:27:27,559
+huge huge number maybe in this sum?
+
+597
+00:27:28,000 --> 00:27:32,279
+One of them doesn't look like the other
+
+598
+00:27:29,279 --> 00:27:32,279
+three.
+
+599
+00:27:37,120 --> 00:27:43,840
+Um not quite. So these three are all
+
+600
+00:27:39,919 --> 00:27:45,360
+over points right from K1, K2, K3. But
+
+601
+00:27:43,840 --> 00:27:47,520
+this one is over the number of data
+
+602
+00:27:45,360 --> 00:27:49,520
+solves I have. So if I don't have much
+
+603
+00:27:47,520 --> 00:27:52,640
+data for my problem, that's kind of a
+
+604
+00:27:49,520 --> 00:27:54,480
+big advantage of our pins. Okay, so for
+
+605
+00:27:52,640 --> 00:27:57,039
+example, do we need the data loss?
+
+606
+00:27:54,480 --> 00:28:00,159
+Another thing is scalability. So we
+
+607
+00:27:57,039 --> 00:28:02,559
+argued that we could query new points
+
+608
+00:28:00,159 --> 00:28:04,399
+that is not if our PD changed without
+
+609
+00:28:02,559 --> 00:28:06,080
+retraining though we talked about
+
+610
+00:28:04,399 --> 00:28:08,000
+interpolation.
+
+611
+00:28:06,080 --> 00:28:10,159
+And like I mentioned, the whole point is
+
+612
+00:28:08,000 --> 00:28:12,000
+that we don't need data, right? So this
+
+613
+00:28:10,159 --> 00:28:13,279
+we'll see a little bit later for inverse
+
+614
+00:28:12,000 --> 00:28:16,000
+problems and we'll talk about what an
+
+615
+00:28:13,279 --> 00:28:18,000
+inverse problem is. Another thing is
+
+616
+00:28:16,000 --> 00:28:20,559
+that we'll see that there was this sort
+
+617
+00:28:18,000 --> 00:28:22,080
+of soft regularization that is this can
+
+618
+00:28:20,559 --> 00:28:24,159
+just be added to any neural network
+
+619
+00:28:22,080 --> 00:28:26,159
+architecture without changing the neural
+
+620
+00:28:24,159 --> 00:28:29,760
+network. And we'll see if whether or not
+
+621
+00:28:26,159 --> 00:28:31,840
+this really works later. Okay. And of
+
+622
+00:28:29,760 --> 00:28:35,200
+course, for example, we could use a pin
+
+623
+00:28:31,840 --> 00:28:37,440
+loss when training our neural operator.
+
+624
+00:28:35,200 --> 00:28:39,440
+All right. And disadvantages. So we
+
+625
+00:28:37,440 --> 00:28:41,440
+talked about those lambda coefficients
+
+626
+00:28:39,440 --> 00:28:44,159
+with our friend. And why do they equal
+
+627
+00:28:41,440 --> 00:28:46,080
+one? Well, it's not so obvious actually
+
+628
+00:28:44,159 --> 00:28:47,760
+why they should equal one. And it's a
+
+629
+00:28:46,080 --> 00:28:50,320
+good question and we'll talk about how
+
+630
+00:28:47,760 --> 00:28:52,159
+to choose them.
+
+631
+00:28:50,320 --> 00:28:54,320
+Another thing is that we showed that
+
+632
+00:28:52,159 --> 00:28:57,360
+that second derivative right in our
+
+633
+00:28:54,320 --> 00:28:59,919
+Schrodinger term requires two gradient
+
+634
+00:28:57,360 --> 00:29:02,080
+passes essentially which can actually
+
+635
+00:28:59,919 --> 00:29:04,640
+slow down our our problem if we have a
+
+636
+00:29:02,080 --> 00:29:07,520
+lot of collocation points. Okay, so that
+
+637
+00:29:04,640 --> 00:29:09,279
+is if K1, K2, and K3 are really large,
+
+638
+00:29:07,520 --> 00:29:11,440
+it could be expensive to sort of compute
+
+639
+00:29:09,279 --> 00:29:14,000
+that derivative.
+
+640
+00:29:11,440 --> 00:29:16,000
+And we'll see that we can struggle with
+
+641
+00:29:14,000 --> 00:29:18,080
+discontinuity.
+
+642
+00:29:16,000 --> 00:29:19,440
+And you might imagine why we would
+
+643
+00:29:18,080 --> 00:29:20,880
+struggle with discontinuity. It's right.
+
+644
+00:29:19,440 --> 00:29:23,520
+It's because the only thing we sort of
+
+645
+00:29:20,880 --> 00:29:25,919
+have to base our our problem off of is
+
+646
+00:29:23,520 --> 00:29:29,440
+that equation.
+
+647
+00:29:25,919 --> 00:29:32,240
+And lastly, we have this sort of soft
+
+648
+00:29:29,440 --> 00:29:34,880
+regularization term which means that it
+
+649
+00:29:32,240 --> 00:29:37,600
+is possible for our system not to hold
+
+650
+00:29:34,880 --> 00:29:39,440
+at every point, right? There's no hard
+
+651
+00:29:37,600 --> 00:29:41,520
+constraints and designing hard
+
+652
+00:29:39,440 --> 00:29:43,039
+constraint neural networks is actually
+
+653
+00:29:41,520 --> 00:29:44,399
+kind of an open problem right now.
+
+654
+00:29:43,039 --> 00:29:48,799
+There's still a lot of architectures
+
+655
+00:29:44,399 --> 00:29:50,799
+coming out. Um, so yeah, and then kind
+
+656
+00:29:48,799 --> 00:29:52,480
+of to give you an idea of like okay, can
+
+657
+00:29:50,799 --> 00:29:55,600
+these be used for your problems in your
+
+658
+00:29:52,480 --> 00:29:58,640
+research or no? And basically the
+
+659
+00:29:55,600 --> 00:30:01,840
+question is okay if you have a PTE
+
+660
+00:29:58,640 --> 00:30:03,919
+that's well defined and you have a
+
+661
+00:30:01,840 --> 00:30:05,679
+solver or someone spent time figuring
+
+662
+00:30:03,919 --> 00:30:08,240
+out how to build a solver you should
+
+663
+00:30:05,679 --> 00:30:10,240
+probably use that solver
+
+664
+00:30:08,240 --> 00:30:12,480
+but many times you're going to have
+
+665
+00:30:10,240 --> 00:30:14,880
+things like geometries that are not you
+
+666
+00:30:12,480 --> 00:30:17,360
+know over zero to one as we've chosen in
+
+667
+00:30:14,880 --> 00:30:19,200
+this or you'll have obstacles in your
+
+668
+00:30:17,360 --> 00:30:21,840
+geometry like we talked about last time
+
+669
+00:30:19,200 --> 00:30:23,600
+with that motion planning problem. Okay.
+
+670
+00:30:21,840 --> 00:30:25,520
+And so for there pins can be really
+
+671
+00:30:23,600 --> 00:30:28,919
+useful as sort of an augmentation to
+
+672
+00:30:25,520 --> 00:30:28,919
+your laws term.
+
+673
+00:30:30,399 --> 00:30:35,840
+Okay. And so here's the the punchline of
+
+674
+00:30:33,440 --> 00:30:39,039
+today and I think many of you already
+
+675
+00:30:35,840 --> 00:30:41,200
+had some intuition about this. Like in
+
+676
+00:30:39,039 --> 00:30:45,840
+practice and research people claim these
+
+677
+00:30:41,200 --> 00:30:48,320
+things don't work. And for any PTE that
+
+678
+00:30:45,840 --> 00:30:49,600
+people actually care about pins don't
+
+679
+00:30:48,320 --> 00:30:50,960
+work. you know, you'll hear it
+
+680
+00:30:49,600 --> 00:30:53,440
+especially if you go to some ML
+
+681
+00:30:50,960 --> 00:30:55,039
+conferences. Okay? And so today I'm
+
+682
+00:30:53,440 --> 00:30:59,279
+going to tell you about all the tricks
+
+683
+00:30:55,039 --> 00:31:01,200
+we can do to try and make pins work.
+
+684
+00:30:59,279 --> 00:31:02,080
+Okay? And so we're going to have to talk
+
+685
+00:31:01,200 --> 00:31:03,760
+about things like
+
+686
+00:31:02,080 --> 00:31:05,200
+non-dimensionalization. And we'll give
+
+687
+00:31:03,760 --> 00:31:08,399
+it through an example of what that looks
+
+688
+00:31:05,200 --> 00:31:10,720
+like. We actually do need to modify our
+
+689
+00:31:08,399 --> 00:31:12,720
+architecture, it turns out, to handle
+
+690
+00:31:10,720 --> 00:31:15,600
+this sort of spectral bias problem we've
+
+691
+00:31:12,720 --> 00:31:18,159
+been talking about for two lectures now.
+
+692
+00:31:15,600 --> 00:31:20,799
+And lastly, we're going to have to talk
+
+693
+00:31:18,159 --> 00:31:22,320
+about a very unique training pipeline to
+
+694
+00:31:20,799 --> 00:31:24,640
+actually get these to work. So, how do
+
+695
+00:31:22,320 --> 00:31:26,720
+we pick lambda i? How do we pick our
+
+696
+00:31:24,640 --> 00:31:28,799
+collocation points? And actually, we'll
+
+697
+00:31:26,720 --> 00:31:30,640
+even see that if we modify our
+
+698
+00:31:28,799 --> 00:31:33,039
+optimizer, that is we don't use
+
+699
+00:31:30,640 --> 00:31:34,960
+something like atom every single time,
+
+700
+00:31:33,039 --> 00:31:37,360
+we will get some some pretty unique
+
+701
+00:31:34,960 --> 00:31:39,519
+performance improvements.
+
+702
+00:31:37,360 --> 00:31:40,960
+Okay. Okay. So, first we're going to
+
+703
+00:31:39,519 --> 00:31:42,559
+start with this idea of
+
+704
+00:31:40,960 --> 00:31:44,240
+non-dimensionalization.
+
+705
+00:31:42,559 --> 00:31:46,640
+Okay.
+
+706
+00:31:44,240 --> 00:31:48,960
+And so essentially here for example
+
+707
+00:31:46,640 --> 00:31:51,600
+imagine I have the heat equation. It's a
+
+708
+00:31:48,960 --> 00:31:53,919
+well-known equation. PTE actually
+
+709
+00:31:51,600 --> 00:31:57,039
+sometimes has an analytical solution.
+
+710
+00:31:53,919 --> 00:31:58,640
+And let's assume very very simply we
+
+711
+00:31:57,039 --> 00:32:00,799
+have zero boundary condition and zero
+
+712
+00:31:58,640 --> 00:32:03,279
+initial condition. So pretty much the
+
+713
+00:32:00,799 --> 00:32:06,399
+simplest heat equation. We have a 1D
+
+714
+00:32:03,279 --> 00:32:09,200
+domain from 0 to capital L and we have
+
+715
+00:32:06,399 --> 00:32:11,039
+time from 0 to t. And we're going to let
+
+716
+00:32:09,200 --> 00:32:13,360
+this parameter d be called the
+
+717
+00:32:11,039 --> 00:32:15,279
+diffusivity coefficient. It's going to
+
+718
+00:32:13,360 --> 00:32:17,600
+have let's say meters squared over
+
+719
+00:32:15,279 --> 00:32:19,519
+seconds. Okay, so this describes
+
+720
+00:32:17,600 --> 00:32:22,000
+essentially imagine I have a heat
+
+721
+00:32:19,519 --> 00:32:24,399
+source, right? So I took a lighter and I
+
+722
+00:32:22,000 --> 00:32:26,320
+heated up for example a piece of paper
+
+723
+00:32:24,399 --> 00:32:28,960
+from the middle and that paper is going
+
+724
+00:32:26,320 --> 00:32:30,240
+to slowly burn outwards, right? That's
+
+725
+00:32:28,960 --> 00:32:32,960
+essentially kind of how the heat
+
+726
+00:32:30,240 --> 00:32:37,320
+equation is describing how we diffuse
+
+727
+00:32:32,960 --> 00:32:37,320
+over some sort of substance.
+
+728
+00:32:39,519 --> 00:32:42,799
+All right. And so how do we do
+
+729
+00:32:41,360 --> 00:32:45,039
+non-dimensionalization? It's actually
+
+730
+00:32:42,799 --> 00:32:47,919
+really simple. Okay, what we're going to
+
+731
+00:32:45,039 --> 00:32:49,440
+define are new variables that are called
+
+732
+00:32:47,919 --> 00:32:51,519
+dimensionless in the sense that we're
+
+733
+00:32:49,440 --> 00:32:54,480
+going to divide them by the size of the
+
+734
+00:32:51,519 --> 00:32:57,440
+domain. So we define this x prime and t
+
+735
+00:32:54,480 --> 00:32:59,440
+prime, which is just x over l and t over
+
+736
+00:32:57,440 --> 00:33:01,039
+t.
+
+737
+00:32:59,440 --> 00:33:04,080
+And the nice thing about x prime and t
+
+738
+00:33:01,039 --> 00:33:05,279
+prime is they now both live in 0 to one.
+
+739
+00:33:04,080 --> 00:33:07,519
+All right? Because we're not going to go
+
+740
+00:33:05,279 --> 00:33:09,440
+past l. So this number will never be
+
+741
+00:33:07,519 --> 00:33:11,440
+larger than one. Okay? And we're always,
+
+742
+00:33:09,440 --> 00:33:14,960
+of course, going to start at zero. And
+
+743
+00:33:11,440 --> 00:33:16,559
+similarly, we're not going to go past T.
+
+744
+00:33:14,960 --> 00:33:20,320
+And so what you might do is you might
+
+745
+00:33:16,559 --> 00:33:22,960
+recalculate the chain rule for this PTE.
+
+746
+00:33:20,320 --> 00:33:25,120
+Okay, in terms of our new coordinates,
+
+747
+00:33:22,960 --> 00:33:26,480
+okay, and we'll get something like this.
+
+748
+00:33:25,120 --> 00:33:29,679
+Okay, so the derivative with respect to
+
+749
+00:33:26,480 --> 00:33:31,039
+U with respect to T is equal to 1 / T
+
+750
+00:33:29,679 --> 00:33:33,360
+times the derivative with respect to T
+
+751
+00:33:31,039 --> 00:33:35,519
+prime. Okay, and it just turns out,
+
+752
+00:33:33,360 --> 00:33:39,120
+okay, the d of T prime over T just
+
+753
+00:33:35,519 --> 00:33:42,080
+satisfies 1 / T. And we can do the same
+
+754
+00:33:39,120 --> 00:33:44,640
+thing for L and we'll get 1 over L^2.
+
+755
+00:33:42,080 --> 00:33:47,120
+Okay, for the second derivative. And you
+
+756
+00:33:44,640 --> 00:33:48,480
+know if your PD is not so simple, you
+
+757
+00:33:47,120 --> 00:33:50,640
+may have to think about these a little
+
+758
+00:33:48,480 --> 00:33:52,960
+bit and actually compute the derivatives
+
+759
+00:33:50,640 --> 00:33:54,559
+yourself.
+
+760
+00:33:52,960 --> 00:33:56,399
+Okay. And so from here, what we can do
+
+761
+00:33:54,559 --> 00:33:59,600
+then is we can just plug in our
+
+762
+00:33:56,399 --> 00:34:02,080
+derivatives and we can rescale this D
+
+763
+00:33:59,600 --> 00:34:05,200
+star to be dimensionless
+
+764
+00:34:02,080 --> 00:34:07,279
+by multiplying it by T over L^2. And
+
+765
+00:34:05,200 --> 00:34:11,200
+remember for example your units for d
+
+766
+00:34:07,279 --> 00:34:14,480
+star were me squar over seconds. So this
+
+767
+00:34:11,200 --> 00:34:16,159
+exactly cancels out those sort of units.
+
+768
+00:34:14,480 --> 00:34:18,879
+And then we get everything nicely
+
+769
+00:34:16,159 --> 00:34:20,399
+normalized in 0 to one with a
+
+770
+00:34:18,879 --> 00:34:23,119
+coefficient that will be reasonably
+
+771
+00:34:20,399 --> 00:34:24,879
+small.
+
+772
+00:34:23,119 --> 00:34:28,200
+Okay. And so why do we do this? Anyone
+
+773
+00:34:24,879 --> 00:34:28,200
+have any ideas?
+
+774
+00:34:31,200 --> 00:34:35,679
+Any reason why this PTE might be easier
+
+775
+00:34:33,679 --> 00:34:39,320
+to solve than the previous one from a
+
+776
+00:34:35,679 --> 00:34:39,320
+numerical perspective?
+
+777
+00:34:42,159 --> 00:34:50,399
+Okay, I'll give you a first hint. So
+
+778
+00:34:45,359 --> 00:34:52,639
+t is now in 0 to one. Okay. And it turns
+
+779
+00:34:50,399 --> 00:34:54,399
+out that if we imagine things over zero
+
+780
+00:34:52,639 --> 00:34:56,879
+to one
+
+781
+00:34:54,399 --> 00:34:59,760
+rather than over zero to say some really
+
+782
+00:34:56,879 --> 00:35:01,760
+long capital T. Okay. We can sort of
+
+783
+00:34:59,760 --> 00:35:04,000
+think of that as a little bit of a a
+
+784
+00:35:01,760 --> 00:35:06,480
+trick, right? So our solver is sort of
+
+785
+00:35:04,000 --> 00:35:08,000
+now grid invariant, right? So every
+
+786
+00:35:06,480 --> 00:35:09,839
+every solver or neural network that we
+
+787
+00:35:08,000 --> 00:35:12,640
+train can always live on 0ero to one.
+
+788
+00:35:09,839 --> 00:35:14,320
+It's one trick. A second thing that we
+
+789
+00:35:12,640 --> 00:35:17,440
+might be able to interested in is this
+
+790
+00:35:14,320 --> 00:35:19,839
+coefficient is now normalized with
+
+791
+00:35:17,440 --> 00:35:21,520
+respect to its units. So you can imagine
+
+792
+00:35:19,839 --> 00:35:24,960
+that if this coefficient was very large
+
+793
+00:35:21,520 --> 00:35:27,680
+in the beginning okay and the domain is
+
+794
+00:35:24,960 --> 00:35:30,560
+for example t is not too large but l is
+
+795
+00:35:27,680 --> 00:35:32,560
+for example large it sort of reduces
+
+796
+00:35:30,560 --> 00:35:34,079
+this coefficient to something easier to
+
+797
+00:35:32,560 --> 00:35:37,359
+learn.
+
+798
+00:35:34,079 --> 00:35:39,599
+Just one little trick it's actually also
+
+799
+00:35:37,359 --> 00:35:40,960
+done when you're using a classical PTE
+
+800
+00:35:39,599 --> 00:35:42,800
+solver. So that's where the trick comes
+
+801
+00:35:40,960 --> 00:35:44,720
+from.
+
+802
+00:35:42,800 --> 00:35:47,040
+Okay. So this is the first thing that
+
+803
+00:35:44,720 --> 00:35:49,040
+you can do and I'm going to give you an
+
+804
+00:35:47,040 --> 00:35:50,720
+example at the end after we present all
+
+805
+00:35:49,040 --> 00:35:54,079
+of these things about how much each of
+
+806
+00:35:50,720 --> 00:35:55,280
+these really matters. Okay. Okay. The
+
+807
+00:35:54,079 --> 00:35:58,880
+second thing we could start thinking
+
+808
+00:35:55,280 --> 00:36:00,960
+about is our architecture design. And if
+
+809
+00:35:58,880 --> 00:36:02,400
+we think about a pin loss, one thing
+
+810
+00:36:00,960 --> 00:36:04,880
+that's really going to matter in our
+
+811
+00:36:02,400 --> 00:36:06,960
+architecture is what our initial
+
+812
+00:36:04,880 --> 00:36:08,800
+conditions are going to be. that is what
+
+813
+00:36:06,960 --> 00:36:11,839
+do we pick the weights theta to be
+
+814
+00:36:08,800 --> 00:36:13,839
+initially for our neural network. Right?
+
+815
+00:36:11,839 --> 00:36:16,480
+Because for example, if the weights are
+
+816
+00:36:13,839 --> 00:36:18,160
+like a really large set of numbers, that
+
+817
+00:36:16,480 --> 00:36:19,680
+loss function is going to blow up and
+
+818
+00:36:18,160 --> 00:36:21,280
+we're going to get numerical instability
+
+819
+00:36:19,680 --> 00:36:25,200
+before we even have a chance to start
+
+820
+00:36:21,280 --> 00:36:27,520
+learning. Okay? And so it turns out you
+
+821
+00:36:25,200 --> 00:36:29,359
+have to use Laura initialization.
+
+822
+00:36:27,520 --> 00:36:32,240
+Anyone's seen this before? You probably
+
+823
+00:36:29,359 --> 00:36:35,440
+used it before.
+
+824
+00:36:32,240 --> 00:36:36,800
+Okay. Uh yeah, if you're interested in
+
+825
+00:36:35,440 --> 00:36:38,240
+it, come see me after class. It's kind
+
+826
+00:36:36,800 --> 00:36:39,760
+of the standard way that torch will
+
+827
+00:36:38,240 --> 00:36:42,160
+initialize your neural networks actually
+
+828
+00:36:39,760 --> 00:36:44,960
+by default. The next thing is that we
+
+829
+00:36:42,160 --> 00:36:48,000
+want to use smooth activations.
+
+830
+00:36:44,960 --> 00:36:51,040
+Okay, so you have some problems when you
+
+831
+00:36:48,000 --> 00:36:52,960
+use RLU with these pins in that that
+
+832
+00:36:51,040 --> 00:36:55,920
+discontinuity at zero that we talked
+
+833
+00:36:52,960 --> 00:36:57,760
+about, right? So remember RLU is zero
+
+834
+00:36:55,920 --> 00:36:59,839
+and then it kind of spikes up at the
+
+835
+00:36:57,760 --> 00:37:01,760
+point zero is actually going to cause
+
+836
+00:36:59,839 --> 00:37:04,160
+some problems. And so it turns out
+
+837
+00:37:01,760 --> 00:37:05,680
+smooth activations are very important.
+
+838
+00:37:04,160 --> 00:37:07,839
+And lastly, I'm finally going to tell
+
+839
+00:37:05,680 --> 00:37:10,160
+you what this spectral bias for your
+
+840
+00:37:07,839 --> 00:37:13,200
+feature approach is going to be. Okay,
+
+841
+00:37:10,160 --> 00:37:14,880
+so let's talk about it. So spectral bias
+
+842
+00:37:13,200 --> 00:37:17,440
+we've talked about a few times, but I've
+
+843
+00:37:14,880 --> 00:37:19,040
+never given you an example. Is this idea
+
+844
+00:37:17,440 --> 00:37:20,720
+that
+
+845
+00:37:19,040 --> 00:37:23,920
+classical neuronet networks for example
+
+846
+00:37:20,720 --> 00:37:26,560
+MLPS will learn for example if you're
+
+847
+00:37:23,920 --> 00:37:28,800
+mapping a signal to a signal low for
+
+848
+00:37:26,560 --> 00:37:30,560
+modes of that signal first. Right? So we
+
+849
+00:37:28,800 --> 00:37:33,119
+know that any function we can decompose
+
+850
+00:37:30,560 --> 00:37:34,160
+as a set of fora features and those
+
+851
+00:37:33,119 --> 00:37:36,720
+features are going to have different
+
+852
+00:37:34,160 --> 00:37:40,560
+modes and the higher oscillation modes
+
+853
+00:37:36,720 --> 00:37:43,359
+sort of describe essentially how how
+
+854
+00:37:40,560 --> 00:37:46,000
+kind of the features behave you know
+
+855
+00:37:43,359 --> 00:37:47,839
+very tight together and the lower modes
+
+856
+00:37:46,000 --> 00:37:50,000
+sort of describe the general straight
+
+857
+00:37:47,839 --> 00:37:52,560
+for example the envelope and so here's
+
+858
+00:37:50,000 --> 00:37:55,359
+an example of a neural network trained
+
+859
+00:37:52,560 --> 00:37:58,000
+50,000 epox and it's just a very simple
+
+860
+00:37:55,359 --> 00:38:00,560
+neural network it's just an MLP and we
+
+861
+00:37:58,000 --> 00:38:01,920
+see that okay for this pretty tricky
+
+862
+00:38:00,560 --> 00:38:05,920
+function it's just trying to learn the
+
+863
+00:38:01,920 --> 00:38:08,079
+function. So x maps to sine of x plus
+
+864
+00:38:05,920 --> 00:38:10,800
+sine of 5x. Okay. And so you get this
+
+865
+00:38:08,079 --> 00:38:12,400
+sort of general sign form kind of shown
+
+866
+00:38:10,800 --> 00:38:14,640
+with this black dash. And then the sign
+
+867
+00:38:12,400 --> 00:38:16,880
+of 5x creates the inner oscillations.
+
+868
+00:38:14,640 --> 00:38:18,400
+And you see okay if it's at 5x you know
+
+869
+00:38:16,880 --> 00:38:20,640
+it's going to have a higher 4 a mode.
+
+870
+00:38:18,400 --> 00:38:22,160
+For example five in this case right?
+
+871
+00:38:20,640 --> 00:38:25,520
+Because the 4a modes are the number of
+
+872
+00:38:22,160 --> 00:38:27,119
+oscillations in one period.
+
+873
+00:38:25,520 --> 00:38:28,880
+And so what we see here is okay if I'm
+
+874
+00:38:27,119 --> 00:38:31,520
+training my neural network it's first
+
+875
+00:38:28,880 --> 00:38:34,320
+going to learn the general shape and
+
+876
+00:38:31,520 --> 00:38:36,320
+then after a large number of epochs
+
+877
+00:38:34,320 --> 00:38:38,800
+it'll eventually learn that sort of
+
+878
+00:38:36,320 --> 00:38:41,599
+small features. Okay.
+
+879
+00:38:38,800 --> 00:38:44,480
+And so can anyone guess why this may
+
+880
+00:38:41,599 --> 00:38:47,599
+matter for our problem specifically?
+
+881
+00:38:44,480 --> 00:38:49,440
+That is when we're training pins
+
+882
+00:38:47,599 --> 00:38:52,800
+why do we think this may be an
+
+883
+00:38:49,440 --> 00:38:54,640
+interesting thing to care about?
+
+884
+00:38:52,800 --> 00:38:57,880
+Anyone over here? How about you? You
+
+885
+00:38:54,640 --> 00:38:57,880
+look excited.
+
+886
+00:39:09,119 --> 00:39:14,000
+Yeah, exactly. So, our friend said
+
+887
+00:39:11,599 --> 00:39:15,920
+basically that if you're training a pin
+
+888
+00:39:14,000 --> 00:39:18,960
+and the loss function has some really
+
+889
+00:39:15,920 --> 00:39:21,760
+high frequency behavior or oscillation,
+
+890
+00:39:18,960 --> 00:39:23,119
+especially in the equation, for example,
+
+891
+00:39:21,760 --> 00:39:24,480
+we're never going to learn it. it's
+
+892
+00:39:23,119 --> 00:39:26,320
+going to be a little bit too hard to
+
+893
+00:39:24,480 --> 00:39:28,960
+learn it maybe without some data for
+
+894
+00:39:26,320 --> 00:39:30,720
+example and that's exactly why we care
+
+895
+00:39:28,960 --> 00:39:33,040
+and so one of the things that was
+
+896
+00:39:30,720 --> 00:39:37,680
+introduced almost 10 years ago now in
+
+897
+00:39:33,040 --> 00:39:41,839
+2015 was forier features okay and the
+
+898
+00:39:37,680 --> 00:39:43,920
+idea is that we're going to encode the
+
+899
+00:39:41,839 --> 00:39:46,560
+input locations
+
+900
+00:39:43,920 --> 00:39:49,280
+through this sort of lifting function
+
+901
+00:39:46,560 --> 00:39:51,200
+okay and so essentially what we do is we
+
+902
+00:39:49,280 --> 00:39:53,680
+say okay let's let these set of gamas
+
+903
+00:39:51,200 --> 00:39:57,839
+survise be a set of lifting functions
+
+904
+00:39:53,680 --> 00:40:00,720
+that encode this into Forier features
+
+905
+00:39:57,839 --> 00:40:05,280
+which are essentially cosiness and ss
+
+906
+00:40:00,720 --> 00:40:07,680
+with a period depending on B. Okay. And
+
+907
+00:40:05,280 --> 00:40:12,560
+B here in this case is just going to be
+
+908
+00:40:07,680 --> 00:40:14,640
+a Gaussian sampled. Okay. And so
+
+909
+00:40:12,560 --> 00:40:16,560
+essentially what I'm going to do is the
+
+910
+00:40:14,640 --> 00:40:19,920
+following. Right? So so for my sign
+
+911
+00:40:16,560 --> 00:40:21,920
+function here. Okay. Mapping these X's
+
+912
+00:40:19,920 --> 00:40:25,040
+values. those are my inputs to my neural
+
+913
+00:40:21,920 --> 00:40:27,599
+network into let's say the solution of
+
+914
+00:40:25,040 --> 00:40:29,040
+this function f ofx right the same thing
+
+915
+00:40:27,599 --> 00:40:30,960
+we're going to happen with our PD we're
+
+916
+00:40:29,040 --> 00:40:34,320
+going to map those x and t values into a
+
+917
+00:40:30,960 --> 00:40:36,480
+solution of our pd okay and what
+
+918
+00:40:34,320 --> 00:40:38,320
+basically this this this idea this paper
+
+919
+00:40:36,480 --> 00:40:41,359
+is is it says okay instead of just
+
+920
+00:40:38,320 --> 00:40:43,680
+giving those x of values directly okay
+
+921
+00:40:41,359 --> 00:40:46,079
+you should give this sort of gamma x ofi
+
+922
+00:40:43,680 --> 00:40:49,119
+transform all right it's essentially a
+
+923
+00:40:46,079 --> 00:40:51,200
+feature mapping okay of which I think
+
+924
+00:40:49,119 --> 00:40:52,880
+you guys are all familiar with and so
+
+925
+00:40:51,200 --> 00:40:57,280
+the idea is okay we just sort of
+
+926
+00:40:52,880 --> 00:40:59,040
+parameterize this into frequency space
+
+927
+00:40:57,280 --> 00:41:01,359
+if you want to know why this sort of
+
+928
+00:40:59,040 --> 00:41:04,319
+works you could sort of think of the
+
+929
+00:41:01,359 --> 00:41:06,640
+intuition that it sort of rebalances the
+
+930
+00:41:04,319 --> 00:41:08,720
+modes of the system so that is when the
+
+931
+00:41:06,640 --> 00:41:10,960
+neural network is learning and it gets
+
+932
+00:41:08,720 --> 00:41:13,200
+points x of i it's going to see for
+
+933
+00:41:10,960 --> 00:41:15,040
+example the long oscillation in a
+
+934
+00:41:13,200 --> 00:41:17,359
+similar way it sees the high
+
+935
+00:41:15,040 --> 00:41:19,599
+oscillations there's more reason to this
+
+936
+00:41:17,359 --> 00:41:21,520
+from a theory standpoint but that's an
+
+937
+00:41:19,599 --> 00:41:23,359
+idea you can think about if you want to
+
+938
+00:41:21,520 --> 00:41:28,640
+know more of course I link the famous
+
+939
+00:41:23,359 --> 00:41:32,880
+paper here which is available on canvas
+
+940
+00:41:28,640 --> 00:41:34,480
+okay all right and so what other things
+
+941
+00:41:32,880 --> 00:41:35,520
+that we talked about would be useful
+
+942
+00:41:34,480 --> 00:41:37,280
+well one of them we said was
+
+943
+00:41:35,520 --> 00:41:38,880
+initialization
+
+944
+00:41:37,280 --> 00:41:40,720
+the other thing is that we need to use
+
+945
+00:41:38,880 --> 00:41:42,319
+smooth activations
+
+946
+00:41:40,720 --> 00:41:44,800
+and the last thing is that we didn't
+
+947
+00:41:42,319 --> 00:41:46,480
+really talk about this but the weights
+
+948
+00:41:44,800 --> 00:41:48,720
+of your neural network should actually
+
+949
+00:41:46,480 --> 00:41:50,560
+be normalized
+
+950
+00:41:48,720 --> 00:41:52,640
+okay and it's for the same thing that we
+
+951
+00:41:50,560 --> 00:41:54,480
+cared about that initialization that is
+
+952
+00:41:52,640 --> 00:41:56,160
+if our weights start blowing up before
+
+953
+00:41:54,480 --> 00:41:57,680
+we learn anything before we have enough
+
+954
+00:41:56,160 --> 00:41:59,119
+iterations we're going to reach
+
+955
+00:41:57,680 --> 00:42:00,960
+numerical instability and then our
+
+956
+00:41:59,119 --> 00:42:04,000
+solver is going to break in the learning
+
+957
+00:42:00,960 --> 00:42:06,640
+process okay so just a little trick
+
+958
+00:42:04,000 --> 00:42:09,040
+basically
+
+959
+00:42:06,640 --> 00:42:12,000
+all right any questions here about some
+
+960
+00:42:09,040 --> 00:42:14,240
+tricks that you may want to try actually
+
+961
+00:42:12,000 --> 00:42:18,440
+I would start with these things
+
+962
+00:42:14,240 --> 00:42:18,440
+especially if you wanted to train a pen
+
+963
+00:42:18,960 --> 00:42:23,520
+Okay, great. Let's keep going. So, the
+
+964
+00:42:22,240 --> 00:42:25,359
+next thing I'm going to answer your
+
+965
+00:42:23,520 --> 00:42:30,480
+question about is how to choose those
+
+966
+00:42:25,359 --> 00:42:33,359
+lambdas. Okay. And one proposal that's
+
+967
+00:42:30,480 --> 00:42:36,640
+pretty natural and shown to work is to
+
+968
+00:42:33,359 --> 00:42:38,480
+rewe each lambda by a gradient norm.
+
+969
+00:42:36,640 --> 00:42:41,599
+Okay. And so what is this going to look
+
+970
+00:42:38,480 --> 00:42:44,240
+like? It looks like the following. So
+
+971
+00:42:41,599 --> 00:42:48,480
+for example, my lambda for my data term
+
+972
+00:42:44,240 --> 00:42:50,800
+and my loss. Okay. I'm going to rewrate
+
+973
+00:42:48,480 --> 00:42:53,280
+by sort of a normalization of the max
+
+974
+00:42:50,800 --> 00:42:56,319
+theta. So that is the worst neural
+
+975
+00:42:53,280 --> 00:42:58,960
+network I'm parameter I'm changing with
+
+976
+00:42:56,319 --> 00:43:02,240
+respect to the original neural network
+
+977
+00:42:58,960 --> 00:43:04,400
+some bar lambda. Okay. And what bar
+
+978
+00:43:02,240 --> 00:43:06,880
+lambda in this case or bar gradient
+
+979
+00:43:04,400 --> 00:43:09,920
+sorry is going to represent the mean.
+
+980
+00:43:06,880 --> 00:43:12,160
+Okay. So this is basically a reweing of
+
+981
+00:43:09,920 --> 00:43:13,839
+how far away I'm changing one of my
+
+982
+00:43:12,160 --> 00:43:16,800
+parameters compared to how I'm changing
+
+983
+00:43:13,839 --> 00:43:20,480
+most of them. Okay. for each individual
+
+984
+00:43:16,800 --> 00:43:23,119
+loss term. Okay, so for example here,
+
+985
+00:43:20,480 --> 00:43:25,839
+okay, we have the full loss term and
+
+986
+00:43:23,119 --> 00:43:27,359
+here we just have the data portion. Here
+
+987
+00:43:25,839 --> 00:43:28,640
+again we have the full loss term but now
+
+988
+00:43:27,359 --> 00:43:31,599
+we just have the initial condition
+
+989
+00:43:28,640 --> 00:43:33,839
+portion and so on and so forth. Okay,
+
+990
+00:43:31,599 --> 00:43:37,200
+and the key is
+
+991
+00:43:33,839 --> 00:43:39,760
+why we we sort of picked lambda eq equal
+
+992
+00:43:37,200 --> 00:43:43,760
+to one. You may ask that it's actually
+
+993
+00:43:39,760 --> 00:43:45,119
+just a choice of pure arbitrary choice.
+
+994
+00:43:43,760 --> 00:43:49,200
+So I could have picked for example
+
+995
+00:43:45,119 --> 00:43:51,440
+lambda hat bc equal to one. Okay. Okay.
+
+996
+00:43:49,200 --> 00:43:54,319
+So again the idea is okay I'm going to
+
+997
+00:43:51,440 --> 00:43:56,160
+choose the equation term right. So that
+
+998
+00:43:54,319 --> 00:43:58,480
+is the term that matters that enforces
+
+999
+00:43:56,160 --> 00:44:01,119
+the actual physics of the PD to be one
+
+1000
+00:43:58,480 --> 00:44:03,520
+arbitrarily. And then based on that term
+
+1001
+00:44:01,119 --> 00:44:06,720
+I'm going to set the ratio of all of the
+
+1002
+00:44:03,520 --> 00:44:08,720
+other terms to how effective they are
+
+1003
+00:44:06,720 --> 00:44:11,200
+compared to that term. Okay? It's
+
+1004
+00:44:08,720 --> 00:44:14,079
+essentially a reweing. So let me put you
+
+1005
+00:44:11,200 --> 00:44:16,640
+through an example. Imagine that for
+
+1006
+00:44:14,079 --> 00:44:19,680
+example my initial condition loss is is
+
+1007
+00:44:16,640 --> 00:44:22,160
+pretty bad. Okay.
+
+1008
+00:44:19,680 --> 00:44:25,359
+And my equation loss is pretty good.
+
+1009
+00:44:22,160 --> 00:44:29,160
+Will lambda be large or small
+
+1010
+00:44:25,359 --> 00:44:29,160
+for the initial condition.
+
+1011
+00:44:29,839 --> 00:44:34,480
+So my initial condition loss is bad.
+
+1012
+00:44:32,640 --> 00:44:36,640
+That means probably this average
+
+1013
+00:44:34,480 --> 00:44:38,640
+gradient is a little bit large. You
+
+1014
+00:44:36,640 --> 00:44:41,599
+would agree. Okay. Because we try to
+
+1015
+00:44:38,640 --> 00:44:44,319
+make a big step correction. Okay. My
+
+1016
+00:44:41,599 --> 00:44:46,720
+initial equation loss I said was good.
+
+1017
+00:44:44,319 --> 00:44:49,119
+So this max theta probably isn't too
+
+1018
+00:44:46,720 --> 00:44:51,440
+humongous. Okay. So what's going to
+
+1019
+00:44:49,119 --> 00:44:54,319
+happen is this lambda IC is going to
+
+1020
+00:44:51,440 --> 00:44:55,680
+become small. Okay. And why is it going
+
+1021
+00:44:54,319 --> 00:44:58,319
+to become small? Well because remember
+
+1022
+00:44:55,680 --> 00:45:00,560
+we talked about in pins we have this
+
+1023
+00:44:58,319 --> 00:45:03,119
+training instability
+
+1024
+00:45:00,560 --> 00:45:04,560
+right where if this loss function blows
+
+1025
+00:45:03,119 --> 00:45:06,400
+up that's why we introduced the
+
+1026
+00:45:04,560 --> 00:45:08,079
+normalization then we're going to run
+
+1027
+00:45:06,400 --> 00:45:11,280
+into numerical issues before we even
+
+1028
+00:45:08,079 --> 00:45:14,079
+start learning. And since my I know my
+
+1029
+00:45:11,280 --> 00:45:15,760
+initial condition loss is large and
+
+1030
+00:45:14,079 --> 00:45:17,920
+therefore its gradient's large. I want
+
+1031
+00:45:15,760 --> 00:45:19,760
+to sort of corroborate that by making
+
+1032
+00:45:17,920 --> 00:45:22,800
+the parameter that multiplies it small
+
+1033
+00:45:19,760 --> 00:45:25,599
+so that whole term isn't too big.
+
+1034
+00:45:22,800 --> 00:45:29,440
+Does it make sense? Okay. So then one
+
+1035
+00:45:25,599 --> 00:45:32,880
+more question for you guys. Imagine the
+
+1036
+00:45:29,440 --> 00:45:36,079
+opposite occurs. So for example,
+
+1037
+00:45:32,880 --> 00:45:38,319
+my equation loss is really small. So I'm
+
+1038
+00:45:36,079 --> 00:45:41,200
+doing really really well on my equation
+
+1039
+00:45:38,319 --> 00:45:43,040
+but or sorry imagine my equation loss is
+
+1040
+00:45:41,200 --> 00:45:44,880
+really large. So I just started
+
+1041
+00:45:43,040 --> 00:45:47,520
+training. I don't know too much about my
+
+1042
+00:45:44,880 --> 00:45:49,119
+PTE but you know the boundary condition
+
+1043
+00:45:47,520 --> 00:45:50,880
+is just zero. It's something very
+
+1044
+00:45:49,119 --> 00:45:53,200
+simple. So I learned that very very
+
+1045
+00:45:50,880 --> 00:45:55,920
+easily. Okay. What would you guys
+
+1046
+00:45:53,200 --> 00:46:01,079
+imagine is the value of this lambda BC?
+
+1047
+00:45:55,920 --> 00:46:01,079
+Would it be large or small? Any takers?
+
+1048
+00:46:01,920 --> 00:46:04,920
+Any
+
+1049
+00:46:07,040 --> 00:46:13,319
+ideas?
+
+1050
+00:46:09,520 --> 00:46:13,319
+All right. Someone random
+
+1051
+00:46:14,400 --> 00:46:19,319
+large.
+
+1052
+00:46:16,319 --> 00:46:19,319
+Why?
+
+1053
+00:46:26,560 --> 00:46:29,560
+Mhm.
+
+1054
+00:46:31,040 --> 00:46:34,040
+Mhm.
+
+1055
+00:46:41,920 --> 00:46:46,640
+Exactly. Or so basically he's saying
+
+1056
+00:46:44,560 --> 00:46:48,800
+this term is going to be close to zero.
+
+1057
+00:46:46,640 --> 00:46:50,079
+This term is going to be large. Okay.
+
+1058
+00:46:48,800 --> 00:46:53,599
+Something large divided by something
+
+1059
+00:46:50,079 --> 00:46:56,319
+close to zero is large. I agree. Let me
+
+1060
+00:46:53,599 --> 00:46:58,640
+ask you, do you notice any problem with
+
+1061
+00:46:56,319 --> 00:47:00,880
+what you just said for deriving these
+
+1062
+00:46:58,640 --> 00:47:03,680
+equations? So, for example, imagine
+
+1063
+00:47:00,880 --> 00:47:05,200
+we're doing really, really well in all
+
+1064
+00:47:03,680 --> 00:47:06,800
+of our loss. We're getting close to
+
+1065
+00:47:05,200 --> 00:47:10,200
+convergence. Do you guys see any
+
+1066
+00:47:06,800 --> 00:47:10,200
+problems here
+
+1067
+00:47:12,079 --> 00:47:17,920
+numerically? So, that is lamb. The BC
+
+1068
+00:47:15,200 --> 00:47:19,359
+term is really good. The IC term is
+
+1069
+00:47:17,920 --> 00:47:22,160
+good. The data term is good. They're all
+
+1070
+00:47:19,359 --> 00:47:25,160
+very close to zero. Anyone see any
+
+1071
+00:47:22,160 --> 00:47:25,160
+issues?
+
+1072
+00:47:29,599 --> 00:47:34,440
+Uh, sure. How about just numerically?
+
+1073
+00:47:36,160 --> 00:47:40,560
+It it is going to cost us something to
+
+1074
+00:47:37,839 --> 00:47:43,200
+compute this for sure. Definitely. But
+
+1075
+00:47:40,560 --> 00:47:45,119
+okay, if if these are really close to
+
+1076
+00:47:43,200 --> 00:47:47,119
+zero, are we going to change our
+
+1077
+00:47:45,119 --> 00:47:48,880
+parameters a lot?
+
+1078
+00:47:47,119 --> 00:47:51,359
+Okay. So, what will be the the norm of
+
+1079
+00:47:48,880 --> 00:47:54,240
+these gradients? Will they be large or
+
+1080
+00:47:51,359 --> 00:47:57,119
+small?
+
+1081
+00:47:54,240 --> 00:47:59,760
+They'd be small. Really small. In fact,
+
+1082
+00:47:57,119 --> 00:48:02,400
+we have to be careful about dividing by
+
+1083
+00:47:59,760 --> 00:48:04,560
+zero here. And so what you might do is
+
+1084
+00:48:02,400 --> 00:48:06,720
+clip it. So you could say that okay,
+
+1085
+00:48:04,560 --> 00:48:09,200
+these values can be no smaller than some
+
+1086
+00:48:06,720 --> 00:48:12,720
+number, right? So we need to be careful
+
+1087
+00:48:09,200 --> 00:48:14,000
+about this um and and for this relative
+
+1088
+00:48:12,720 --> 00:48:15,839
+scaling, but hopefully it gives some
+
+1089
+00:48:14,000 --> 00:48:19,359
+intuition about why we chose it this way
+
+1090
+00:48:15,839 --> 00:48:21,280
+or why one may choose it this way.
+
+1091
+00:48:19,359 --> 00:48:24,000
+And so then another thing that we kind
+
+1092
+00:48:21,280 --> 00:48:27,359
+of consider is that loss functions can
+
+1093
+00:48:24,000 --> 00:48:28,880
+be super noisy. Okay, so for example,
+
+1094
+00:48:27,359 --> 00:48:31,280
+here is our loss function and you see
+
+1095
+00:48:28,880 --> 00:48:32,960
+it's jumping all over the place. And so
+
+1096
+00:48:31,280 --> 00:48:35,680
+what we might not want to do is update
+
+1097
+00:48:32,960 --> 00:48:37,280
+our parameters all over the place. And
+
+1098
+00:48:35,680 --> 00:48:39,760
+the simplest way to kind of fix this is
+
+1099
+00:48:37,280 --> 00:48:41,440
+to use a moving average. Okay, so that
+
+1100
+00:48:39,760 --> 00:48:43,920
+we might take okay, let's take the
+
+1101
+00:48:41,440 --> 00:48:45,359
+average gradient norm over the last 50
+
+1102
+00:48:43,920 --> 00:48:48,480
+steps, for example, and we're going to
+
+1103
+00:48:45,359 --> 00:48:50,480
+update based on a linear equation. very
+
+1104
+00:48:48,480 --> 00:48:53,480
+common for example in time series
+
+1105
+00:48:50,480 --> 00:48:53,480
+analysis.
+
+1106
+00:48:55,359 --> 00:48:59,359
+All right.
+
+1107
+00:48:57,040 --> 00:49:02,000
+The next trick I'm going to kind of show
+
+1108
+00:48:59,359 --> 00:49:05,040
+you is is actually to handle the
+
+1109
+00:49:02,000 --> 00:49:06,720
+temporal dependency of your PTE. So
+
+1110
+00:49:05,040 --> 00:49:09,760
+remember we have a PDE. It's evolving
+
+1111
+00:49:06,720 --> 00:49:11,760
+both in space and time. And it turns out
+
+1112
+00:49:09,760 --> 00:49:13,920
+that well let me give you some
+
+1113
+00:49:11,760 --> 00:49:16,880
+intuition. So imagine that I'm trying to
+
+1114
+00:49:13,920 --> 00:49:18,880
+learn this PTE. Okay. And remember that
+
+1115
+00:49:16,880 --> 00:49:20,720
+that loss function that we described
+
+1116
+00:49:18,880 --> 00:49:22,640
+just encodes a bunch of X points, a
+
+1117
+00:49:20,720 --> 00:49:23,920
+bunch of T points. It doesn't care about
+
+1118
+00:49:22,640 --> 00:49:26,480
+how they're related. It just encodes
+
+1119
+00:49:23,920 --> 00:49:30,079
+them. And so imagine if I try to learn
+
+1120
+00:49:26,480 --> 00:49:32,960
+this PTE and I have a very bad first two
+
+1121
+00:49:30,079 --> 00:49:34,960
+seconds. Do you think my next 4 seconds
+
+1122
+00:49:32,960 --> 00:49:36,960
+will be good?
+
+1123
+00:49:34,960 --> 00:49:40,000
+Probably not, right? Because my first
+
+1124
+00:49:36,960 --> 00:49:42,319
+two were bad. And so the idea of this
+
+1125
+00:49:40,000 --> 00:49:44,720
+whole temporal dependency is basically
+
+1126
+00:49:42,319 --> 00:49:47,200
+you introduce a waiting factor that
+
+1127
+00:49:44,720 --> 00:49:48,559
+depends on time and it decays as time
+
+1128
+00:49:47,200 --> 00:49:50,880
+goes farther. So you need to make sure
+
+1129
+00:49:48,559 --> 00:49:53,040
+you get your earlier points right before
+
+1130
+00:49:50,880 --> 00:49:55,119
+your later points.
+
+1131
+00:49:53,040 --> 00:49:57,119
+And so that's the entire idea of this
+
+1132
+00:49:55,119 --> 00:49:58,720
+sort of temporal dependency trick. So
+
+1133
+00:49:57,119 --> 00:50:02,160
+for example, imagine t is very large
+
+1134
+00:49:58,720 --> 00:50:04,800
+capital t almost 100 right? Then what we
+
+1135
+00:50:02,160 --> 00:50:08,800
+will do is we'll say okay
+
+1136
+00:50:04,800 --> 00:50:11,599
+first we will essentially split the PTE
+
+1137
+00:50:08,800 --> 00:50:13,920
+learning the first one second
+
+1138
+00:50:11,599 --> 00:50:17,359
+okay and we'll say okay we want to value
+
+1139
+00:50:13,920 --> 00:50:18,800
+this 1 second very strongly
+
+1140
+00:50:17,359 --> 00:50:21,040
+and then what we're going to try to do
+
+1141
+00:50:18,800 --> 00:50:22,480
+is then learn the PTE let's say we do
+
+1142
+00:50:21,040 --> 00:50:24,079
+really well in this and we valued it
+
+1143
+00:50:22,480 --> 00:50:27,119
+strongly and we're going to try to learn
+
+1144
+00:50:24,079 --> 00:50:28,880
+the PTE later to 2 seconds and we could
+
+1145
+00:50:27,119 --> 00:50:31,760
+do this over and over and over again
+
+1146
+00:50:28,880 --> 00:50:33,040
+recursively for n seconds Right? And
+
+1147
+00:50:31,760 --> 00:50:34,559
+it's sort of a curriculum learning
+
+1148
+00:50:33,040 --> 00:50:36,240
+approach. So that way we don't actually
+
+1149
+00:50:34,559 --> 00:50:39,280
+have to learn to the full 100 seconds
+
+1150
+00:50:36,240 --> 00:50:40,720
+all at once. One little trick I think
+
+1151
+00:50:39,280 --> 00:50:44,079
+you could have thought of that. The
+
+1152
+00:50:40,720 --> 00:50:46,640
+second thing that we might do is we
+
+1153
+00:50:44,079 --> 00:50:49,599
+might add like I was mentioning a
+
+1154
+00:50:46,640 --> 00:50:51,520
+waiting factor, okay, to the front of
+
+1155
+00:50:49,599 --> 00:50:53,920
+the loss function, say the equation
+
+1156
+00:50:51,520 --> 00:50:55,440
+loss. And this waiting factor is
+
+1157
+00:50:53,920 --> 00:50:57,280
+essentially a factor that decays with
+
+1158
+00:50:55,440 --> 00:50:59,839
+time. Okay, you can think of it as an
+
+1159
+00:50:57,280 --> 00:51:02,000
+exponential that decays with time. Okay.
+
+1160
+00:50:59,839 --> 00:51:03,839
+And so basically it says that remember
+
+1161
+00:51:02,000 --> 00:51:05,440
+we said okay we need to learn the first
+
+1162
+00:51:03,839 --> 00:51:06,880
+second really well before we can learn
+
+1163
+00:51:05,440 --> 00:51:09,280
+the second second. Well it basically
+
+1164
+00:51:06,880 --> 00:51:11,839
+says in my loss function value those
+
+1165
+00:51:09,280 --> 00:51:13,520
+early seconds much more. Just a simple
+
+1166
+00:51:11,839 --> 00:51:17,200
+reweing.
+
+1167
+00:51:13,520 --> 00:51:19,760
+Another trick you can do.
+
+1168
+00:51:17,200 --> 00:51:22,880
+And so like I was saying if early time
+
+1169
+00:51:19,760 --> 00:51:24,240
+residuals are large this w subi is not
+
+1170
+00:51:22,880 --> 00:51:25,440
+going to care about later times. It's
+
+1171
+00:51:24,240 --> 00:51:28,000
+just going to focus on the original
+
+1172
+00:51:25,440 --> 00:51:30,400
+times. And once the early time residuals
+
+1173
+00:51:28,000 --> 00:51:32,319
+shrink, then we can start caring about
+
+1174
+00:51:30,400 --> 00:51:36,760
+later times. It's essentially a
+
+1175
+00:51:32,319 --> 00:51:36,760
+scheduling factor. Yes, sir.
+
+1176
+00:51:41,200 --> 00:51:46,800
+No, but this is all we're all we're
+
+1177
+00:51:44,319 --> 00:51:48,319
+focused on here is the training design.
+
+1178
+00:51:46,800 --> 00:51:51,520
+So for example, you will still have one
+
+1179
+00:51:48,319 --> 00:51:53,520
+MLP for the whole 100 seconds, but for
+
+1180
+00:51:51,520 --> 00:51:54,960
+that 100 seconds, you may you may still
+
+1181
+00:51:53,520 --> 00:51:56,319
+have it, but you'll only focus on the
+
+1182
+00:51:54,960 --> 00:51:58,800
+first second, for example, in the
+
+1183
+00:51:56,319 --> 00:52:01,119
+curriculum design, but it's fully you
+
+1184
+00:51:58,800 --> 00:52:04,240
+fully have an architecture for any X and
+
+1185
+00:52:01,119 --> 00:52:06,160
+T. But there is, for example, you could
+
+1186
+00:52:04,240 --> 00:52:07,599
+think of a design that is recurrent,
+
+1187
+00:52:06,160 --> 00:52:09,280
+right? I mean, you could easily think of
+
+1188
+00:52:07,599 --> 00:52:11,119
+that and and derive it. So the thing
+
+1189
+00:52:09,280 --> 00:52:13,040
+with pins is it's sort of architecture
+
+1190
+00:52:11,119 --> 00:52:14,400
+independent, right? Because we're all
+
+1191
+00:52:13,040 --> 00:52:16,240
+talking about the loss function. We're
+
+1192
+00:52:14,400 --> 00:52:18,079
+talking about how to train. We're not
+
+1193
+00:52:16,240 --> 00:52:20,800
+really focused on the architecture
+
+1194
+00:52:18,079 --> 00:52:25,359
+design. Yeah,
+
+1195
+00:52:20,800 --> 00:52:29,119
+good question. Other questions
+
+1196
+00:52:25,359 --> 00:52:33,920
+make sense? Little trick here.
+
+1197
+00:52:29,119 --> 00:52:37,119
+Okay. All right. Uh the next question is
+
+1198
+00:52:33,920 --> 00:52:39,839
+for whoever asked how do we choose K? I
+
+1199
+00:52:37,119 --> 00:52:41,920
+think it was you, right? Yeah. It turns
+
+1200
+00:52:39,839 --> 00:52:44,880
+out this actually matters a lot. How do
+
+1201
+00:52:41,920 --> 00:52:46,640
+we choose not only K but the X of I's
+
+1202
+00:52:44,880 --> 00:52:50,960
+and T's of eyes that we try to evaluate
+
+1203
+00:52:46,640 --> 00:52:56,160
+our loss at really matters a lot. And
+
+1204
+00:52:50,960 --> 00:52:58,480
+the idea of this paper, okay, is to
+
+1205
+00:52:56,160 --> 00:53:01,040
+essentially focus on those points that
+
+1206
+00:52:58,480 --> 00:53:04,960
+I'm really bad at right now and sample a
+
+1207
+00:53:01,040 --> 00:53:07,760
+lot around them. Okay?
+
+1208
+00:53:04,960 --> 00:53:09,359
+And so, for example, imagine this is my
+
+1209
+00:53:07,760 --> 00:53:12,480
+equation loss. I'm going to represent it
+
+1210
+00:53:09,359 --> 00:53:15,920
+with this residual function let's say.
+
+1211
+00:53:12,480 --> 00:53:17,920
+Okay. So this equation loss is basically
+
+1212
+00:53:15,920 --> 00:53:19,920
+telling me okay here's how well I behave
+
+1213
+00:53:17,920 --> 00:53:21,040
+for the physics not including initial
+
+1214
+00:53:19,920 --> 00:53:22,800
+condition not including boundary
+
+1215
+00:53:21,040 --> 00:53:25,680
+conditions. And so the simplest thing
+
+1216
+00:53:22,800 --> 00:53:28,559
+you might do is uniform sampling right
+
+1217
+00:53:25,680 --> 00:53:31,200
+we agree that's you know pretty basic
+
+1218
+00:53:28,559 --> 00:53:34,960
+and it turns out that uniform sampling
+
+1219
+00:53:31,200 --> 00:53:37,359
+is not really going to work. Okay. And
+
+1220
+00:53:34,960 --> 00:53:39,119
+so what you can do instead is take
+
+1221
+00:53:37,359 --> 00:53:40,720
+advantage of what you know your solution
+
+1222
+00:53:39,119 --> 00:53:44,240
+might look like. Right? So here's a
+
+1223
+00:53:40,720 --> 00:53:46,800
+simple example. So here is my sampling.
+
+1224
+00:53:44,240 --> 00:53:50,559
+So blue, every blue dot you see is a
+
+1225
+00:53:46,800 --> 00:53:53,359
+uniform sample. Okay? And here's a
+
+1226
+00:53:50,559 --> 00:53:56,480
+little bit better sampling on the right
+
+1227
+00:53:53,359 --> 00:53:59,200
+knowing that my PTE has some shock
+
+1228
+00:53:56,480 --> 00:54:01,359
+across this line here. All right? And
+
+1229
+00:53:59,200 --> 00:54:03,839
+you might know this going in from the
+
+1230
+00:54:01,359 --> 00:54:07,520
+initial condition, for example. Okay?
+
+1231
+00:54:03,839 --> 00:54:10,000
+And so the point is that okay on the
+
+1232
+00:54:07,520 --> 00:54:14,079
+left here, it's hard to see because the
+
+1233
+00:54:10,000 --> 00:54:17,760
+the font is bad, but I have 8,000 points
+
+1234
+00:54:14,079 --> 00:54:21,200
+and on the right I actually only have
+
+1235
+00:54:17,760 --> 00:54:23,200
+300 points.
+
+1236
+00:54:21,200 --> 00:54:25,760
+Sorry, let me let me clarify it. So I
+
+1237
+00:54:23,200 --> 00:54:28,559
+have two sampling cases both in the PTE
+
+1238
+00:54:25,760 --> 00:54:30,880
+and on the boundary. So on within the PD
+
+1239
+00:54:28,559 --> 00:54:33,040
+I have 8,000 points and on the boundary
+
+1240
+00:54:30,880 --> 00:54:35,280
+I have 300 points. And here within the
+
+1241
+00:54:33,040 --> 00:54:38,079
+PD I have 5200 points and on the
+
+1242
+00:54:35,280 --> 00:54:39,520
+boundary I have 300. It's hard to read
+
+1243
+00:54:38,079 --> 00:54:41,760
+but you can trust me. So basically
+
+1244
+00:54:39,520 --> 00:54:44,880
+within the PTE I'm sampling much less
+
+1245
+00:54:41,760 --> 00:54:48,160
+over here. And it turns out even with
+
+1246
+00:54:44,880 --> 00:54:50,720
+much less sampling I get identical PTE
+
+1247
+00:54:48,160 --> 00:54:52,079
+solutions. That's the whole point. The
+
+1248
+00:54:50,720 --> 00:54:54,880
+whole point is that you shouldn't sample
+
+1249
+00:54:52,079 --> 00:54:58,599
+naively essentially. Okay? You should
+
+1250
+00:54:54,880 --> 00:54:58,599
+really think about your sampling.
+
+1251
+00:54:58,800 --> 00:55:03,200
+And so what can we do that's more
+
+1252
+00:55:01,839 --> 00:55:04,400
+interesting for the sampling? Well, we
+
+1253
+00:55:03,200 --> 00:55:07,680
+can do this kind of idea of called
+
+1254
+00:55:04,400 --> 00:55:09,520
+adaptive sampling. Okay. And adaptive
+
+1255
+00:55:07,680 --> 00:55:12,079
+sampling, it's really really simple.
+
+1256
+00:55:09,520 --> 00:55:14,480
+Pick the points of which I have high
+
+1257
+00:55:12,079 --> 00:55:17,359
+residuals in my loss term and sample
+
+1258
+00:55:14,480 --> 00:55:19,359
+around those more. Okay. And ignore sort
+
+1259
+00:55:17,359 --> 00:55:21,359
+of the points that I have already I'm
+
+1260
+00:55:19,359 --> 00:55:24,880
+doing well. Okay. So for example, I
+
+1261
+00:55:21,359 --> 00:55:28,240
+might train my pin for n steps on a set
+
+1262
+00:55:24,880 --> 00:55:30,079
+of points. Let's call it S. Okay. Then
+
+1263
+00:55:28,240 --> 00:55:32,960
+what I'm going to do is I'm going to say
+
+1264
+00:55:30,079 --> 00:55:34,400
+from let's say a candidate pool, I'm
+
+1265
+00:55:32,960 --> 00:55:36,800
+going to sample a bunch of points and
+
+1266
+00:55:34,400 --> 00:55:38,480
+see how well I'm doing essentially on
+
+1267
+00:55:36,800 --> 00:55:40,400
+those points in that candidate pool.
+
+1268
+00:55:38,480 --> 00:55:42,960
+That is I'm just going to evaluate my
+
+1269
+00:55:40,400 --> 00:55:44,240
+equation loss. And what I'm going to do
+
+1270
+00:55:42,960 --> 00:55:46,480
+is I'm going to say, okay, let's take
+
+1271
+00:55:44,240 --> 00:55:48,960
+the top m highest points that I did
+
+1272
+00:55:46,480 --> 00:55:50,480
+badly on in my equation loss and I'm
+
+1273
+00:55:48,960 --> 00:55:53,040
+going to add them to my sampling pool
+
+1274
+00:55:50,480 --> 00:55:54,799
+and start training.
+
+1275
+00:55:53,040 --> 00:55:58,000
+Very simple idea. Basically, you
+
+1276
+00:55:54,799 --> 00:56:00,000
+penalize the points that don't do well.
+
+1277
+00:55:58,000 --> 00:56:02,079
+It's called residualbased adaptive
+
+1278
+00:56:00,000 --> 00:56:04,880
+refinement. Some fancy name, but it's a
+
+1279
+00:56:02,079 --> 00:56:07,040
+really simple idea.
+
+1280
+00:56:04,880 --> 00:56:08,799
+All right? And so, you can imagine why
+
+1281
+00:56:07,040 --> 00:56:10,559
+this works, right? The network can
+
+1282
+00:56:08,799 --> 00:56:12,240
+identify regions that are hard because
+
+1283
+00:56:10,559 --> 00:56:15,640
+those are going to consistently be added
+
+1284
+00:56:12,240 --> 00:56:15,640
+back to S.
+
+1285
+00:56:15,680 --> 00:56:20,160
+Okay? And now there's about 50
+
+1286
+00:56:17,839 --> 00:56:22,960
+variations of this since how often do
+
+1287
+00:56:20,160 --> 00:56:24,880
+you resample? How often do you choose to
+
+1288
+00:56:22,960 --> 00:56:26,319
+kind of add points? How many points do
+
+1289
+00:56:24,880 --> 00:56:28,000
+you add? How do you choose this
+
+1290
+00:56:26,319 --> 00:56:29,599
+candidate pool? You can imagine there's
+
+1291
+00:56:28,000 --> 00:56:31,440
+quite a bit of hyperparameter tuning
+
+1292
+00:56:29,599 --> 00:56:33,040
+here.
+
+1293
+00:56:31,440 --> 00:56:34,559
+Okay.
+
+1294
+00:56:33,040 --> 00:56:36,400
+And
+
+1295
+00:56:34,559 --> 00:56:38,400
+the last sort of trick I want to tell
+
+1296
+00:56:36,400 --> 00:56:41,920
+you about before we start going into the
+
+1297
+00:56:38,400 --> 00:56:44,400
+details is here's some examples is
+
+1298
+00:56:41,920 --> 00:56:46,799
+actually your optimizer. So I would
+
+1299
+00:56:44,400 --> 00:56:49,119
+guess 99% of you have never touched
+
+1300
+00:56:46,799 --> 00:56:52,000
+anything other than atom in let's say
+
+1301
+00:56:49,119 --> 00:56:54,079
+torch. Okay, maybe some of you have
+
+1302
+00:56:52,000 --> 00:56:56,559
+played with like SOAP and muon second
+
+1303
+00:56:54,079 --> 00:56:59,599
+order operators. It turns out that for
+
+1304
+00:56:56,559 --> 00:57:01,680
+pins using a second order optimizer
+
+1305
+00:56:59,599 --> 00:57:04,160
+really helps. Okay, and we'll see this
+
+1306
+00:57:01,680 --> 00:57:06,720
+in a minute. So just an idea quick recap
+
+1307
+00:57:04,160 --> 00:57:08,319
+of what I mean by optimizer. So this is
+
+1308
+00:57:06,720 --> 00:57:11,359
+how you update our neural network
+
+1309
+00:57:08,319 --> 00:57:13,839
+weights. Okay, atom works very simply on
+
+1310
+00:57:11,359 --> 00:57:16,319
+first order gradient information. So
+
+1311
+00:57:13,839 --> 00:57:18,400
+it's only estimating for example this
+
+1312
+00:57:16,319 --> 00:57:20,400
+delta theta of L and of course it's
+
+1313
+00:57:18,400 --> 00:57:22,960
+derivative. It builds this two momentum
+
+1314
+00:57:20,400 --> 00:57:25,440
+terms and you can prove that this sort
+
+1315
+00:57:22,960 --> 00:57:27,359
+of design achieves a maximum first order
+
+1316
+00:57:25,440 --> 00:57:30,319
+rate of convergence.
+
+1317
+00:57:27,359 --> 00:57:32,559
+Okay, what is the problem with atom?
+
+1318
+00:57:30,319 --> 00:57:35,359
+Well, it's a little bit noisy, but it's
+
+1319
+00:57:32,559 --> 00:57:37,040
+really really cheap to run. Okay, so you
+
+1320
+00:57:35,359 --> 00:57:39,920
+you know you don't really want to spend
+
+1321
+00:57:37,040 --> 00:57:42,240
+too much time with your optimizer and
+
+1322
+00:57:39,920 --> 00:57:43,920
+it's pretty reasonable. You know, kind
+
+1323
+00:57:42,240 --> 00:57:45,760
+of dominates training for almost all
+
+1324
+00:57:43,920 --> 00:57:47,920
+neural networks.
+
+1325
+00:57:45,760 --> 00:57:50,559
+And what is this second order method?
+
+1326
+00:57:47,920 --> 00:57:53,440
+It's called LBFGS. So L stands for
+
+1327
+00:57:50,559 --> 00:57:55,359
+limited. BFGs are a bunch of names, last
+
+1328
+00:57:53,440 --> 00:57:57,599
+names. Okay? And this comes out of the
+
+1329
+00:57:55,359 --> 00:57:59,440
+optimization community and it's
+
+1330
+00:57:57,599 --> 00:58:01,200
+essentially what we call quasi Newton
+
+1331
+00:57:59,440 --> 00:58:03,040
+method. So a Newton's method just
+
+1332
+00:58:01,200 --> 00:58:06,000
+basically says we're going to use second
+
+1333
+00:58:03,040 --> 00:58:07,760
+order information of our derivative,
+
+1334
+00:58:06,000 --> 00:58:09,040
+right? So this would be the second
+
+1335
+00:58:07,760 --> 00:58:10,799
+derivative of L and of course we're
+
+1336
+00:58:09,040 --> 00:58:12,799
+going to get a matrix, right? Which we
+
+1337
+00:58:10,799 --> 00:58:14,319
+call the hessen.
+
+1338
+00:58:12,799 --> 00:58:15,599
+And essentially what we're going to do
+
+1339
+00:58:14,319 --> 00:58:17,760
+is we're going to approximate this
+
+1340
+00:58:15,599 --> 00:58:19,520
+matrix instead of computing it.
+
+1341
+00:58:17,760 --> 00:58:22,640
+and we'll get something that looks like
+
+1342
+00:58:19,520 --> 00:58:26,160
+this. Okay, where we now have this
+
+1343
+00:58:22,640 --> 00:58:28,160
+hesshen inverse times the gradient and
+
+1344
+00:58:26,160 --> 00:58:30,480
+it turns out this this optimizer will
+
+1345
+00:58:28,160 --> 00:58:33,280
+achieve a faster rate of convergence if
+
+1346
+00:58:30,480 --> 00:58:34,720
+I know my hessen. But the problem is for
+
+1347
+00:58:33,280 --> 00:58:37,359
+a neural network my hesshen is
+
+1348
+00:58:34,720 --> 00:58:39,680
+humongous. Okay, so what I'll do is I'll
+
+1349
+00:58:37,359 --> 00:58:42,559
+say for example I'll store a limited
+
+1350
+00:58:39,680 --> 00:58:45,359
+number of hessins sort of a truncation
+
+1351
+00:58:42,559 --> 00:58:47,839
+and I will essentially identify based on
+
+1352
+00:58:45,359 --> 00:58:49,040
+that. Okay, the point is that okay, yes,
+
+1353
+00:58:47,839 --> 00:58:52,000
+this method is better, but it's
+
+1354
+00:58:49,040 --> 00:58:53,599
+expensive. Super expensive, actually.
+
+1355
+00:58:52,000 --> 00:58:56,480
+And we'll see how much more expensive it
+
+1356
+00:58:53,599 --> 00:58:58,640
+is in a minute. All right, so little bit
+
+1357
+00:58:56,480 --> 00:59:00,960
+of review of optimizers, but the idea is
+
+1358
+00:58:58,640 --> 00:59:03,839
+the following for this optimizer for
+
+1359
+00:59:00,960 --> 00:59:05,920
+pins. So for what we're going to do is
+
+1360
+00:59:03,839 --> 00:59:08,000
+we're going to use atom at first, very
+
+1361
+00:59:05,920 --> 00:59:10,400
+cheap iterations, and we're going to do
+
+1362
+00:59:08,000 --> 00:59:12,079
+it for a while. Essentially what we're
+
+1363
+00:59:10,400 --> 00:59:13,599
+going to do is we're going to get we're
+
+1364
+00:59:12,079 --> 00:59:16,960
+going to treat atom as sort of a warm
+
+1365
+00:59:13,599 --> 00:59:20,000
+start for our BFGs.
+
+1366
+00:59:16,960 --> 00:59:22,240
+Okay. And you see atom we use for almost
+
+1367
+00:59:20,000 --> 00:59:24,480
+10 to 50 steps. We're only going to use
+
+1368
+00:59:22,240 --> 00:59:26,720
+maybe 300 in the example I show you in a
+
+1369
+00:59:24,480 --> 00:59:27,920
+minute for BFGs. And we also need to
+
+1370
+00:59:26,720 --> 00:59:30,480
+search for alpha, but I'm not going to
+
+1371
+00:59:27,920 --> 00:59:33,040
+talk about that too much. Okay. And the
+
+1372
+00:59:30,480 --> 00:59:34,400
+idea is okay, Adam was a warm start. It
+
+1373
+00:59:33,040 --> 00:59:37,520
+got our hash and approximation
+
+1374
+00:59:34,400 --> 00:59:38,640
+reasonable. We do BFGS to our bind. It's
+
+1375
+00:59:37,520 --> 00:59:40,960
+going to be expensive, but we're going
+
+1376
+00:59:38,640 --> 00:59:44,480
+to see huge improvements on learning our
+
+1377
+00:59:40,960 --> 00:59:46,400
+pin. Okay. And so why would you do this?
+
+1378
+00:59:44,480 --> 00:59:48,720
+Well, as you can imagine, since I'm
+
+1379
+00:59:46,400 --> 00:59:51,200
+using a limited BFGS, right, I'm only
+
+1380
+00:59:48,720 --> 00:59:53,520
+using an estimate of my hesshin from my
+
+1381
+00:59:51,200 --> 00:59:56,000
+last 10 updates in the beginning, this
+
+1382
+00:59:53,520 --> 00:59:58,000
+estimate's terrible,
+
+1383
+00:59:56,000 --> 00:59:59,599
+right? And so later, what we're going to
+
+1384
+00:59:58,000 --> 01:00:01,280
+do is we're going to say, okay, let's
+
+1385
+00:59:59,599 --> 01:00:03,040
+use Adam sort of as a warm start. And
+
+1386
+01:00:01,280 --> 01:00:06,040
+this is actually a pretty common idea in
+
+1387
+01:00:03,040 --> 01:00:06,040
+optimization.
+
+1388
+01:00:06,160 --> 01:00:10,720
+All right. And so let me give you a
+
+1389
+01:00:08,720 --> 01:00:13,040
+summary of all the things we talked
+
+1390
+01:00:10,720 --> 01:00:15,119
+about when it comes to thinking about
+
+1391
+01:00:13,040 --> 01:00:16,880
+how to training pins. So we talked about
+
+1392
+01:00:15,119 --> 01:00:18,559
+non-dimensionalization.
+
+1393
+01:00:16,880 --> 01:00:21,599
+We talked about using a specific
+
+1394
+01:00:18,559 --> 01:00:23,359
+initialization, specific activation,
+
+1395
+01:00:21,599 --> 01:00:26,640
+factorizing our weights, normalizing
+
+1396
+01:00:23,359 --> 01:00:29,440
+them. We talked about forear encoding
+
+1397
+01:00:26,640 --> 01:00:32,799
+loss balancing using this curriculum
+
+1398
+01:00:29,440 --> 01:00:35,119
+approach for the time dependency and two
+
+1399
+01:00:32,799 --> 01:00:36,720
+different optimizer schemes.
+
+1400
+01:00:35,119 --> 01:00:39,839
+We also talked about how to pick our
+
+1401
+01:00:36,720 --> 01:00:41,599
+collocation points. Okay? And now do you
+
+1402
+01:00:39,839 --> 01:00:44,960
+guys see why people say these things are
+
+1403
+01:00:41,599 --> 01:00:46,480
+hard to train, right? I mean, this is,
+
+1404
+01:00:44,960 --> 01:00:48,720
+you know, I talked about eight different
+
+1405
+01:00:46,480 --> 01:00:50,079
+things here that you need to think about
+
+1406
+01:00:48,720 --> 01:00:51,839
+before you start training. So these
+
+1407
+01:00:50,079 --> 01:00:56,400
+things don't really work out of the box
+
+1408
+01:00:51,839 --> 01:00:58,559
+as you can imagine. Okay? And so at
+
+1409
+01:00:56,400 --> 01:01:01,040
+minimum you're getting four plus you
+
+1410
+01:00:58,559 --> 01:01:04,040
+might have 30 more hyperparameters.
+
+1411
+01:01:01,040 --> 01:01:04,040
+Okay?
+
+1412
+01:01:04,079 --> 01:01:09,200
+All right. So, let me kind of show you
+
+1413
+01:01:07,760 --> 01:01:11,680
+the effect of each one of these things
+
+1414
+01:01:09,200 --> 01:01:13,520
+and you can judge whether or not we
+
+1415
+01:01:11,680 --> 01:01:15,280
+needed each one. All right. So, they're
+
+1416
+01:01:13,520 --> 01:01:17,200
+going to build on each other. So, this
+
+1417
+01:01:15,280 --> 01:01:18,880
+is a classic pin benchmark. It's a it's
+
+1418
+01:01:17,200 --> 01:01:21,200
+a burgers equation which basically
+
+1419
+01:01:18,880 --> 01:01:24,319
+generates a shock used to describe
+
+1420
+01:01:21,200 --> 01:01:26,960
+earthquakes. And the point is that okay,
+
+1421
+01:01:24,319 --> 01:01:29,200
+we have some action term here. The key
+
+1422
+01:01:26,960 --> 01:01:32,079
+is that okay when this new is small
+
+1423
+01:01:29,200 --> 01:01:34,240
+essentially okay we get that super
+
+1424
+01:01:32,079 --> 01:01:36,880
+strong shock it becomes hard when new is
+
+1425
+01:01:34,240 --> 01:01:38,880
+small you can imagine okay it's just
+
+1426
+01:01:36,880 --> 01:01:41,680
+it's just a PT we want to learn going to
+
+1427
+01:01:38,880 --> 01:01:43,920
+be our benchmark example right and
+
+1428
+01:01:41,680 --> 01:01:45,760
+here's what it looks like so here's for
+
+1429
+01:01:43,920 --> 01:01:47,599
+example our initial condition and here's
+
+1430
+01:01:45,760 --> 01:01:49,599
+how we sort of evolve on time as a heat
+
+1431
+01:01:47,599 --> 01:01:52,480
+map and here are various snapshots right
+
+1432
+01:01:49,599 --> 01:01:55,040
+so at t equals 0 we have a sine wave one
+
+1433
+01:01:52,480 --> 01:01:57,839
+period essentially normalized to minus1
+
+1434
+01:01:55,040 --> 01:01:59,839
+to one Right? And then slowly we sort of
+
+1435
+01:01:57,839 --> 01:02:01,680
+come into this discontinuous shock at
+
+1436
+01:01:59,839 --> 01:02:03,599
+zero.
+
+1437
+01:02:01,680 --> 01:02:05,760
+This is a true solution, you know, from
+
+1438
+01:02:03,599 --> 01:02:09,040
+OPD.
+
+1439
+01:02:05,760 --> 01:02:11,680
+And here's what happens when I try to
+
+1440
+01:02:09,040 --> 01:02:14,640
+train a pin to learn this problem over
+
+1441
+01:02:11,680 --> 01:02:16,720
+time. Okay, so if I just try to train a
+
+1442
+01:02:14,640 --> 01:02:19,359
+pin out of the box, imagine I'm just
+
+1443
+01:02:16,720 --> 01:02:22,079
+using an MLP, very simple network, you
+
+1444
+01:02:19,359 --> 01:02:23,920
+know, 100,000 parameters, nothing crazy.
+
+1445
+01:02:22,079 --> 01:02:27,280
+I get an L2 error that's basically
+
+1446
+01:02:23,920 --> 01:02:29,280
+useless. and I get essentially if the
+
+1447
+01:02:27,280 --> 01:02:31,280
+true solution is in black here, I get
+
+1448
+01:02:29,280 --> 01:02:32,880
+what's kind of happening in purple.
+
+1449
+01:02:31,280 --> 01:02:35,280
+Okay, so the shock is not in the right
+
+1450
+01:02:32,880 --> 01:02:36,960
+place at all. It's clearly to the left.
+
+1451
+01:02:35,280 --> 01:02:39,920
+And even over here, it's clearly to the
+
+1452
+01:02:36,960 --> 01:02:42,720
+left. Okay, and you can see though it's
+
+1453
+01:02:39,920 --> 01:02:44,720
+pretty fast. Takes 78 seconds to train
+
+1454
+01:02:42,720 --> 01:02:46,799
+on this laptop. Okay, trained it right
+
+1455
+01:02:44,720 --> 01:02:50,240
+before I came here.
+
+1456
+01:02:46,799 --> 01:02:52,240
+Meanwhile, if I add the lambda balancing
+
+1457
+01:02:50,240 --> 01:02:54,400
+using that gradient approach where I
+
+1458
+01:02:52,240 --> 01:02:56,240
+take the maximum norms, okay, I don't
+
+1459
+01:02:54,400 --> 01:02:59,040
+actually add too much computation time
+
+1460
+01:02:56,240 --> 01:03:01,520
+two seconds, but I reduced my L2 error
+
+1461
+01:02:59,040 --> 01:03:04,720
+significantly, you know, almost over
+
+1462
+01:03:01,520 --> 01:03:07,200
+half almost three three times.
+
+1463
+01:03:04,720 --> 01:03:08,720
+The next thing I tried was each one of
+
+1464
+01:03:07,200 --> 01:03:11,280
+these are additive. So, this includes
+
+1465
+01:03:08,720 --> 01:03:13,520
+the lambda balancing. I tried adding
+
+1466
+01:03:11,280 --> 01:03:17,119
+that causal waiting. Okay, so that
+
+1467
+01:03:13,520 --> 01:03:19,280
+epsilon I term in the loss function and
+
+1468
+01:03:17,119 --> 01:03:22,480
+that actually adds quite a bit of time
+
+1469
+01:03:19,280 --> 01:03:23,920
+fortunately um which is a little bit
+
+1470
+01:03:22,480 --> 01:03:27,039
+surprising to me. I didn't understand
+
+1471
+01:03:23,920 --> 01:03:31,440
+why but it added some time
+
+1472
+01:03:27,039 --> 01:03:33,119
+and it improved very slightly. Okay,
+
+1473
+01:03:31,440 --> 01:03:35,680
+the next thing I did was I said, "Okay,
+
+1474
+01:03:33,119 --> 01:03:39,119
+let me try and add that adaptive
+
+1475
+01:03:35,680 --> 01:03:42,160
+reweing." Okay, where I repick new
+
+1476
+01:03:39,119 --> 01:03:44,640
+collocation points and I add them every,
+
+1477
+01:03:42,160 --> 01:03:46,559
+you know, I think it was every 2,000
+
+1478
+01:03:44,640 --> 01:03:48,559
+epochs. These are about 10,000 epochs
+
+1479
+01:03:46,559 --> 01:03:50,079
+each. We'll see in a second exactly how
+
+1480
+01:03:48,559 --> 01:03:52,319
+many there are. And I ended up with
+
+1481
+01:03:50,079 --> 01:03:54,000
+3,400. So, I added 1,400 more
+
+1482
+01:03:52,319 --> 01:03:56,799
+collocation points based on the highest
+
+1483
+01:03:54,000 --> 01:03:59,119
+residuals. And I got pretty good
+
+1484
+01:03:56,799 --> 01:04:00,880
+improvement, right?
+
+1485
+01:03:59,119 --> 01:04:02,960
+But okay, you can imagine these training
+
+1486
+01:04:00,880 --> 01:04:05,200
+times are equivalent, right? Just due to
+
+1487
+01:04:02,960 --> 01:04:07,760
+warm start or whatever on the laptop.
+
+1488
+01:04:05,200 --> 01:04:10,480
+And lastly, I said, okay, let me take
+
+1489
+01:04:07,760 --> 01:04:12,720
+the output of this and add 300 steps of
+
+1490
+01:04:10,480 --> 01:04:14,559
+the second order optimizer.
+
+1491
+01:04:12,720 --> 01:04:16,400
+And what happens is I actually get
+
+1492
+01:04:14,559 --> 01:04:19,760
+almost three magnitudes improvement. Two
+
+1493
+01:04:16,400 --> 01:04:21,920
+magnitudes improvement. Okay? And I
+
+1494
+01:04:19,760 --> 01:04:23,440
+didn't actually end up using as many
+
+1495
+01:04:21,920 --> 01:04:26,000
+collocation points because we'll see I
+
+1496
+01:04:23,440 --> 01:04:28,400
+train this, okay, for less time than
+
+1497
+01:04:26,000 --> 01:04:30,640
+this one. You may ask why less and
+
+1498
+01:04:28,400 --> 01:04:32,240
+that's why. All right, so it turns out
+
+1499
+01:04:30,640 --> 01:04:35,039
+the second order optimizer really
+
+1500
+01:04:32,240 --> 01:04:37,520
+matters.
+
+1501
+01:04:35,039 --> 01:04:38,720
+Okay, and this will be hard to see, but
+
+1502
+01:04:37,520 --> 01:04:41,119
+let me just walk you through it. So
+
+1503
+01:04:38,720 --> 01:04:43,599
+here's the ground truth. Okay, here's
+
+1504
+01:04:41,119 --> 01:04:46,319
+what the output looks like of the naive.
+
+1505
+01:04:43,599 --> 01:04:49,039
+Here's after lambda rebalancing. Here's
+
+1506
+01:04:46,319 --> 01:04:50,960
+after causal. This is sort of the error.
+
+1507
+01:04:49,039 --> 01:04:52,160
+Here's after that residual. And here's
+
+1508
+01:04:50,960 --> 01:04:53,760
+what happens after I use the second
+
+1509
+01:04:52,160 --> 01:04:55,760
+order optimization. So you see these are
+
+1510
+01:04:53,760 --> 01:04:58,079
+all on the same scale on the bottom. So
+
+1511
+01:04:55,760 --> 01:04:59,920
+you see that on that scale I see no
+
+1512
+01:04:58,079 --> 01:05:01,359
+error compared to the scale earlier,
+
+1513
+01:04:59,920 --> 01:05:05,039
+right? Of course, there is still error
+
+1514
+01:05:01,359 --> 01:05:06,880
+here, but it's hidden by the scale.
+
+1515
+01:05:05,039 --> 01:05:09,280
+And here's actually what our loss
+
+1516
+01:05:06,880 --> 01:05:12,880
+functions look like for each term. Okay,
+
+1517
+01:05:09,280 --> 01:05:15,280
+I sorry I trained a 1500 epoch. And you
+
+1518
+01:05:12,880 --> 01:05:17,520
+see they're very noisy. They're what I
+
+1519
+01:05:15,280 --> 01:05:19,200
+would consider pretty gross to identify.
+
+1520
+01:05:17,520 --> 01:05:21,520
+Um so here's each one. This is the
+
+1521
+01:05:19,200 --> 01:05:23,520
+total. This is that equation loss,
+
+1522
+01:05:21,520 --> 01:05:26,160
+initial condition, and boundary. Okay, I
+
+1523
+01:05:23,520 --> 01:05:28,480
+had no data. no data for this problem.
+
+1524
+01:05:26,160 --> 01:05:31,359
+But I want you to notice this little
+
+1525
+01:05:28,480 --> 01:05:34,000
+green line here where we blow up. This
+
+1526
+01:05:31,359 --> 01:05:36,559
+is at 10,000 epochs. I started using
+
+1527
+01:05:34,000 --> 01:05:38,480
+that second order optimizer. And you can
+
+1528
+01:05:36,559 --> 01:05:39,920
+see that basically it outperforms
+
+1529
+01:05:38,480 --> 01:05:42,920
+everything. I think I only run 200 more
+
+1530
+01:05:39,920 --> 01:05:42,920
+bucks.
+
+1531
+01:10:09,120 --> 01:10:14,320
+When it comes to pins, the key is that
+
+1532
+01:10:11,760 --> 01:10:16,000
+we have an implicit soft constraint.
+
+1533
+01:10:14,320 --> 01:10:20,640
+That is, we're adding things to the
+
+1534
+01:10:16,000 --> 01:10:23,280
+loss. Okay? And it turns out in many
+
+1535
+01:10:20,640 --> 01:10:24,880
+cases we actually care about hard
+
+1536
+01:10:23,280 --> 01:10:28,640
+constraints. So for example, you have a
+
+1537
+01:10:24,880 --> 01:10:31,280
+robot and you really care about safety.
+
+1538
+01:10:28,640 --> 01:10:33,760
+This robot cannot hit a person no matter
+
+1539
+01:10:31,280 --> 01:10:35,679
+what happens. And how do you guarantee
+
+1540
+01:10:33,760 --> 01:10:37,920
+that happens? A soft constraint doesn't
+
+1541
+01:10:35,679 --> 01:10:40,000
+guarantee it. It certainly doesn't.
+
+1542
+01:10:37,920 --> 01:10:43,440
+Right? So what you might introduce is a
+
+1543
+01:10:40,000 --> 01:10:46,000
+safety filter for example. So in our
+
+1544
+01:10:43,440 --> 01:10:48,480
+realm of PTEES, one way to introduce for
+
+1545
+01:10:46,000 --> 01:10:51,360
+example a hard constraint is to modify
+
+1546
+01:10:48,480 --> 01:10:53,920
+the architecture a little bit. And so
+
+1547
+01:10:51,360 --> 01:10:55,360
+imagine I want to bake in an initial
+
+1548
+01:10:53,920 --> 01:10:57,520
+condition and a boundary condition. So
+
+1549
+01:10:55,360 --> 01:10:59,679
+what I might do is I might define my
+
+1550
+01:10:57,520 --> 01:11:01,600
+neural network architecture as the
+
+1551
+01:10:59,679 --> 01:11:04,080
+following. Right? So I have my initial
+
+1552
+01:11:01,600 --> 01:11:05,760
+condition G and then time times some
+
+1553
+01:11:04,080 --> 01:11:07,760
+neural network. Yeah, I can
+
+1554
+01:11:05,760 --> 01:11:11,040
+differentiate through this. And when T
+
+1555
+01:11:07,760 --> 01:11:13,920
+equals Z, okay, my estimate for my PD
+
+1556
+01:11:11,040 --> 01:11:15,760
+will always be G, right?
+
+1557
+01:11:13,920 --> 01:11:18,719
+So it kind of baked in that hard
+
+1558
+01:11:15,760 --> 01:11:20,960
+constraint naturally. And this is kind
+
+1559
+01:11:18,719 --> 01:11:22,000
+of a new sort of growing field. I
+
+1560
+01:11:20,960 --> 01:11:23,360
+actually talked with one of your
+
+1561
+01:11:22,000 --> 01:11:26,640
+classmates, he's in the back about
+
+1562
+01:11:23,360 --> 01:11:29,280
+hardnet, another idea here about baking
+
+1563
+01:11:26,640 --> 01:11:32,159
+in constraints. Okay. And so it turns
+
+1564
+01:11:29,280 --> 01:11:33,920
+out pins are a little bit the advantage
+
+1565
+01:11:32,159 --> 01:11:35,600
+of using a soft constraint is also its
+
+1566
+01:11:33,920 --> 01:11:37,760
+disadvantage. So the advantage is I
+
+1567
+01:11:35,600 --> 01:11:39,840
+don't need to re redo my architecture.
+
+1568
+01:11:37,760 --> 01:11:42,960
+The disadvantage is that I don't get
+
+1569
+01:11:39,840 --> 01:11:45,520
+guarantees all the time.
+
+1570
+01:11:42,960 --> 01:11:47,360
+All right. Okay. So let's talk about
+
+1571
+01:11:45,520 --> 01:11:48,960
+inverse problems. I promised you that we
+
+1572
+01:11:47,360 --> 01:11:51,360
+would get to them by the end of today.
+
+1573
+01:11:48,960 --> 01:11:53,679
+We have five minutes left. So imagine
+
+1574
+01:11:51,360 --> 01:11:55,360
+you have some low amount of data and you
+
+1575
+01:11:53,679 --> 01:11:56,960
+have K sensor measurements and you want
+
+1576
+01:11:55,360 --> 01:11:58,400
+to know the PTE from those measurements.
+
+1577
+01:11:56,960 --> 01:12:00,480
+So you have an earthquake, you measured
+
+1578
+01:11:58,400 --> 01:12:02,800
+a bunch of signals and you want to re uh
+
+1579
+01:12:00,480 --> 01:12:05,760
+reconstruct the earthquake. So what
+
+1580
+01:12:02,800 --> 01:12:08,480
+might you do? You might for example
+
+1581
+01:12:05,760 --> 01:12:10,640
+define something that looks like this.
+
+1582
+01:12:08,480 --> 01:12:12,800
+Okay, where you added those learnable
+
+1583
+01:12:10,640 --> 01:12:14,719
+parameters in. So remember we just
+
+1584
+01:12:12,800 --> 01:12:16,640
+talked about this idea, right? And so we
+
+1585
+01:12:14,719 --> 01:12:18,560
+say okay here's my sort of learnable
+
+1586
+01:12:16,640 --> 01:12:20,719
+parameters.
+
+1587
+01:12:18,560 --> 01:12:24,320
+Okay. And so for example, many places
+
+1588
+01:12:20,719 --> 01:12:26,400
+earthquake MRI acoustic images. Okay.
+
+1589
+01:12:24,320 --> 01:12:29,199
+And so here here's an example of where
+
+1590
+01:12:26,400 --> 01:12:31,120
+this may happen in GPU design. So why do
+
+1591
+01:12:29,199 --> 01:12:34,560
+I care about the Navier Stokes equations
+
+1592
+01:12:31,120 --> 01:12:37,520
+in GPU design? Well, for example, I have
+
+1593
+01:12:34,560 --> 01:12:39,440
+some chip here and I care about how the
+
+1594
+01:12:37,520 --> 01:12:41,679
+air flows over the chip. So it keeps it
+
+1595
+01:12:39,440 --> 01:12:44,159
+cool. And air flow is described by
+
+1596
+01:12:41,679 --> 01:12:46,800
+Navier Stokes. But I won't have for
+
+1597
+01:12:44,159 --> 01:12:48,400
+example sensor measurements anywhere. I
+
+1598
+01:12:46,800 --> 01:12:50,640
+have sensor measurements only at these
+
+1599
+01:12:48,400 --> 01:12:52,480
+green arrows. Okay. But I need to know
+
+1600
+01:12:50,640 --> 01:12:54,159
+the temperature field everywhere because
+
+1601
+01:12:52,480 --> 01:12:58,080
+I need to make sure my plastic doesn't
+
+1602
+01:12:54,159 --> 01:13:00,719
+melt or whatever in my GPU, right? Okay.
+
+1603
+01:12:58,080 --> 01:13:02,400
+And so how does this work? Well, let's
+
+1604
+01:13:00,719 --> 01:13:05,440
+consider this reconstruction from our
+
+1605
+01:13:02,400 --> 01:13:08,000
+pin. Uh on the left is the the true
+
+1606
+01:13:05,440 --> 01:13:10,159
+values, okay? And various constants we
+
+1607
+01:13:08,000 --> 01:13:13,360
+might want to know. And on the right is
+
+1608
+01:13:10,159 --> 01:13:17,199
+our pin estimate of those those values.
+
+1609
+01:13:13,360 --> 01:13:19,199
+Okay? And so, for example, here I'm
+
+1610
+01:13:17,199 --> 01:13:22,159
+interested in the theta parameter. It's
+
+1611
+01:13:19,199 --> 01:13:23,280
+just a parameter. Let's let's just, you
+
+1612
+01:13:22,159 --> 01:13:24,800
+know, we could talk about what each of
+
+1613
+01:13:23,280 --> 01:13:26,800
+these mean, but we have five minutes.
+
+1614
+01:13:24,800 --> 01:13:28,000
+So, let's trust me that these are the
+
+1615
+01:13:26,800 --> 01:13:30,159
+important parameters you would care
+
+1616
+01:13:28,000 --> 01:13:31,520
+about. And you see, okay, it does pretty
+
+1617
+01:13:30,159 --> 01:13:33,760
+well. It's a little bit sharper of a
+
+1618
+01:13:31,520 --> 01:13:36,000
+tail. It doesn't sort of capture this uh
+
+1619
+01:13:33,760 --> 01:13:38,159
+this little handoff.
+
+1620
+01:13:36,000 --> 01:13:40,000
+The pin end for the U parameter actually
+
+1621
+01:13:38,159 --> 01:13:42,400
+does pretty well. Though it misses the
+
+1622
+01:13:40,000 --> 01:13:44,800
+sort of inflection here, but it does
+
+1623
+01:13:42,400 --> 01:13:46,480
+capture this one on the corner. And
+
+1624
+01:13:44,800 --> 01:13:48,560
+likewise here, we sort of miss this
+
+1625
+01:13:46,480 --> 01:13:49,920
+inner inflection.
+
+1626
+01:13:48,560 --> 01:13:52,320
+And down here, we actually do pretty
+
+1627
+01:13:49,920 --> 01:13:54,480
+poorly. Okay, you see the pin kind of
+
+1628
+01:13:52,320 --> 01:13:56,480
+doesn't capture the airflow physics at
+
+1629
+01:13:54,480 --> 01:13:58,400
+all. For example, of the pressure. So P
+
+1630
+01:13:56,480 --> 01:14:00,480
+is pressure, you could imagine. So we're
+
+1631
+01:13:58,400 --> 01:14:05,040
+really missing the pressure here. So you
+
+1632
+01:14:00,480 --> 01:14:07,520
+can see this pin kind of works. Okay,
+
+1633
+01:14:05,040 --> 01:14:10,480
+I want to give you another example and
+
+1634
+01:14:07,520 --> 01:14:13,600
+this is in imaging for MRIs. Okay,
+
+1635
+01:14:10,480 --> 01:14:16,880
+imagine I have an an flowing through an
+
+1636
+01:14:13,600 --> 01:14:18,640
+artery. Okay, and I can measure it at a
+
+1637
+01:14:16,880 --> 01:14:20,800
+bunch of points. For example, I can
+
+1638
+01:14:18,640 --> 01:14:22,880
+measure it here and I want to know how
+
+1639
+01:14:20,800 --> 01:14:25,199
+this blood splits across these two
+
+1640
+01:14:22,880 --> 01:14:26,400
+artery this across this branch. And
+
+1641
+01:14:25,199 --> 01:14:29,440
+let's say I can measure the velocity
+
+1642
+01:14:26,400 --> 01:14:31,440
+here and here. Okay. And I want to know
+
+1643
+01:14:29,440 --> 01:14:34,000
+the velocity and pressure along the
+
+1644
+01:14:31,440 --> 01:14:35,360
+whole artery. You could imagine why you
+
+1645
+01:14:34,000 --> 01:14:37,440
+would want to know this from a
+
+1646
+01:14:35,360 --> 01:14:39,199
+reconstruction standpoint. For example,
+
+1647
+01:14:37,440 --> 01:14:40,480
+imagine you have a small tear here,
+
+1648
+01:14:39,199 --> 01:14:41,920
+right? And then your blood pressure is
+
+1649
+01:14:40,480 --> 01:14:44,560
+going to change and we need to be able
+
+1650
+01:14:41,920 --> 01:14:47,840
+to detect that, right? And so here's the
+
+1651
+01:14:44,560 --> 01:14:50,320
+idea. Okay, essentially everything in
+
+1652
+01:14:47,840 --> 01:14:53,360
+blue I have, okay, are collocation
+
+1653
+01:14:50,320 --> 01:14:56,719
+points. Red is where I can evaluate my
+
+1654
+01:14:53,360 --> 01:14:59,360
+velocity data, okay? and black. Let's
+
+1655
+01:14:56,719 --> 01:15:00,800
+say I can evaluate my pressure data. It
+
+1656
+01:14:59,360 --> 01:15:02,320
+says area but you could think of it as
+
+1657
+01:15:00,800 --> 01:15:04,640
+pressure. So I can evaluate these two
+
+1658
+01:15:02,320 --> 01:15:06,239
+things and I want to know where it is at
+
+1659
+01:15:04,640 --> 01:15:09,760
+this junction. That is I want to know if
+
+1660
+01:15:06,239 --> 01:15:11,280
+I have a tear here. All right.
+
+1661
+01:15:09,760 --> 01:15:12,880
+And you could see okay here they
+
+1662
+01:15:11,280 --> 01:15:15,440
+consider a couple different cases of of
+
+1663
+01:15:12,880 --> 01:15:17,760
+where the data is. All right. But here
+
+1664
+01:15:15,440 --> 01:15:21,520
+is actually the reconstruction at the
+
+1665
+01:15:17,760 --> 01:15:23,679
+green case for both pressure and my
+
+1666
+01:15:21,520 --> 01:15:26,239
+velocity. And you see it's almost
+
+1667
+01:15:23,679 --> 01:15:28,640
+perfect. Okay. except for a little bit
+
+1668
+01:15:26,239 --> 01:15:31,440
+of jumps here that we miss. You can see
+
+1669
+01:15:28,640 --> 01:15:33,120
+on both cases. Okay, we're missing some
+
+1670
+01:15:31,440 --> 01:15:35,199
+jumps,
+
+1671
+01:15:33,120 --> 01:15:36,560
+but it's pretty good. All right, so you
+
+1672
+01:15:35,199 --> 01:15:39,280
+can for example learn a pin for
+
+1673
+01:15:36,560 --> 01:15:40,880
+reconstructing this inverse problem.
+
+1674
+01:15:39,280 --> 01:15:43,360
+And so with that, some future
+
+1675
+01:15:40,880 --> 01:15:46,080
+directions. Training is still not easy.
+
+1676
+01:15:43,360 --> 01:15:48,080
+We talked about those hybrid models and
+
+1677
+01:15:46,080 --> 01:15:53,080
+next time we'll kind of talk about a
+
+1678
+01:15:48,080 --> 01:15:53,080
+different paradigm in foundation models.
+

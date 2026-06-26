@@ -1,0 +1,341 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CertFigure from '../components/CertFigure.astro';
+import site from '../data/site.json';
+const { researchPage: rp } = site;
+const scholar = 'https://scholar.google.com/citations?user=T-djo_0AAAAJ&hl=en';
+const title = 'Research · Luke Bhan';
+const description = 'Luke Bhan’s research: scientific machine learning with the structure of control theory, yielding controllers that are both deployable and certifiable, across foundations, robots, and applications.';
+---
+<Base title={title} description={description}>
+  <Nav base="/" />
+  <main>
+    <article class="rs">
+      <div class="wrap">
+        <div class="rs-hero">
+          <header class="rs-head">
+            <p class="eyebrow">{rp.eyebrow}</p>
+            <h1 set:html={rp.title}></h1>
+            <p class="rs-lead" set:html={rp.lead}></p>
+          </header>
+          <CertFigure />
+        </div>
+
+        <div class="themes">
+          {rp.thrusts.map((t) => (
+            <section class="theme">
+              <figure class="theme-media carousel" data-title={t.title} data-aspect={t.result.aspect} data-bg={t.result.bg} data-media={JSON.stringify(t.result.items)}>
+                <div class="car-stage" style={`--asp:${t.result.aspect};--bg:${t.result.bg}`}>
+                  <div class="car-view">
+                    {t.result.items[0].type === 'demo' ? (
+                      <div class="demo-row">
+                        <div class="demo-cell"><span class={`demo-tag ${t.result.items[0].left.state}`}>{t.result.items[0].left.label}</span><video src={t.result.items[0].left.src} autoplay loop muted playsinline preload="metadata"></video></div>
+                        <div class="demo-cell"><span class={`demo-tag ${t.result.items[0].right.state}`}>{t.result.items[0].right.label}</span><video src={t.result.items[0].right.src} autoplay loop muted playsinline preload="metadata"></video></div>
+                      </div>
+                    ) : t.result.items[0].type === 'video' ? (
+                      <video src={t.result.items[0].src} muted loop playsinline autoplay preload="metadata"></video>
+                    ) : (
+                      <img src={t.result.items[0].src} alt={t.title} loading="lazy" decoding="async" />
+                    )}
+                    {t.result.items[0].label && <span class="tm-tag">{t.result.items[0].label}</span>}
+                  </div>
+                  {t.result.items.length > 1 && (
+                    <>
+                      <button class="car-nav car-prev" type="button" aria-label="Previous">‹</button>
+                      <button class="car-nav car-next" type="button" aria-label="Next">›</button>
+                    </>
+                  )}
+                  <div class="car-top">
+                    {t.result.items.length > 1 && (
+                      <div class="car-dots">
+                        {t.result.items.map((_, idx) => (
+                          <button class="dot" type="button" data-go={idx} aria-label={`Show item ${idx + 1}`}></button>
+                        ))}
+                      </div>
+                    )}
+                    <button class="car-expand" type="button" aria-label="Expand">⤢</button>
+                  </div>
+                </div>
+                <p class="car-cap">{t.result.items[0].caption}</p>
+              </figure>
+              <div class="theme-text">
+                <p class="t-kicker">{t.kicker}</p>
+                <h2>{t.title}</h2>
+                <p class="t-idea">{t.idea}</p>
+                <ul class="t-papers">
+                  {t.papers.map((p) => (
+                    <li>
+                      <a href={`/publications?q=${encodeURIComponent(p.title)}`}>{p.title}</a>
+                      <span class="p-meta">{p.venue} {p.year}{p.award ? <> · <span class="p-award">{p.award}</span></> : ''}{p.status ? ` · ${p.status}` : ''}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <div class="rs-cta">
+          <a href="/publications">All publications →</a>
+          <a href={scholar} target="_blank" rel="noopener">Google Scholar ↗</a>
+          <a href="/cv.pdf" target="_blank" rel="noopener">CV ↗</a>
+        </div>
+        <p class="rs-back"><a href="/#top">← Back to home</a></p>
+      </div>
+    </article>
+
+    <div class="lightbox" id="rlb" hidden>
+      <div class="lb-card">
+        <div class="lb-head">
+          <p class="lb-title" id="rlbTitle"></p>
+          <button class="lb-close" id="rlbClose" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="lb-stage">
+          <button class="lb-nav lb-prev" id="rlbPrev" type="button" aria-label="Previous">‹</button>
+          <div class="lb-frame" id="rlbFrame"></div>
+          <button class="lb-nav lb-next" id="rlbNext" type="button" aria-label="Next">›</button>
+        </div>
+        <div class="lb-foot">
+          <p class="lb-count" id="rlbCount"></p>
+          <div class="lb-capwrap" id="rlbCapWrap">
+            <p class="cb-label" id="rlbLabel"></p>
+            <p class="cb-cap" id="rlbCap"></p>
+            <a class="cb-paper" id="rlbPaper" href="#"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .rs { padding: 44px 0 0; }
+  .rs-hero { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  .rs-hero > * { min-width: 0; }
+  .rs-hero .certfig { justify-self: start; }
+  .rs-head { max-width: 40em; }
+  @media (min-width: 880px) {
+    .rs-hero { grid-template-columns: 1.25fr .75fr; gap: 46px; align-items: center; }
+    .rs-hero .certfig { justify-self: end; }
+  }
+  .rs-head h1 {
+    font-family: var(--display); font-weight: 500;
+    font-size: clamp(26px, 5vw, 34px); line-height: 1.14;
+    letter-spacing: -.015em; margin: 12px 0 0; color: var(--ink);
+  }
+  .rs-head h1 :global(.hl) { font-style: italic; color: var(--teal); }
+  .rs-lead { font-size: 17px; line-height: 1.62; margin: 18px 0 0; color: var(--muted); }
+  .rs-lead :global(b) { color: var(--ink); font-weight: 500; }
+
+  /* research themes */
+  .themes { margin-top: 16px; }
+  .theme { padding: 40px 0; border-top: 1px solid var(--hair); display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .theme:first-child { border-top: 0; }
+
+  .theme-media { margin: 0; }
+  .car-stage { position: relative; aspect-ratio: var(--asp, 16 / 10); background: var(--bg, #fff); border: 1px solid var(--hair); border-radius: 10px; overflow: hidden; }
+  .car-view { position: absolute; inset: 0; }
+  .car-view img, .car-view video { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .tm-tag { position: absolute; left: 8px; bottom: 8px; font-family: var(--mono); font-size: 10.5px; color: #fff; background: rgba(24,43,73,.8); padding: 3px 8px; border-radius: 6px; }
+  .car-top { position: absolute; top: 8px; right: 8px; z-index: 3; display: flex; align-items: center; gap: 8px; }
+  .car-dots { display: flex; gap: 5px; align-items: center; background: rgba(21,23,28,.5); padding: 6px 8px; border-radius: 999px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.45); cursor: pointer; transition: background .14s; }
+  .dot.on { background: #fff; }
+  .car-expand { width: 26px; height: 26px; border: 0; border-radius: 7px; background: rgba(21,23,28,.5); color: #fff; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+  .car-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 3; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(21,23,28,.42); color: #fff; cursor: pointer; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background .14s; }
+  .car-prev { left: 8px; } .car-next { right: 8px; }
+  .car-cap { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.5; margin: 10px 0 0; }
+
+  .t-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin: 0; }
+  .theme-text h2 { font-family: var(--display); font-weight: 500; font-size: clamp(19px, 3vw, 22px); color: var(--ink); margin: 7px 0 0; line-height: 1.2; }
+  .t-idea { font-size: 16px; line-height: 1.6; color: var(--ink); margin: 12px 0 18px; }
+  .t-papers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .t-papers li { display: flex; flex-direction: column; gap: 2px; }
+  .t-papers a { font-size: 14.5px; line-height: 1.4; color: var(--ink); text-decoration: none; }
+  .p-meta { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .p-award { color: var(--amber); }
+
+  /* cta */
+  .rs-cta { display: flex; flex-wrap: wrap; gap: 18px; padding-top: 18px; border-top: 1px solid var(--hair); }
+  .rs-cta a { font-family: var(--mono); font-size: 13px; color: var(--ink); text-decoration: none; }
+  .rs-back { font-family: var(--mono); font-size: 13px; margin: 22px 0 8px; color: var(--muted); }
+
+  /* lightbox: carousel */
+  .lightbox { position: fixed; inset: 0; z-index: 1000; padding: 4vmin; background: rgba(36,28,26,.5); backdrop-filter: blur(7px) saturate(115%); -webkit-backdrop-filter: blur(7px) saturate(115%); display: flex; align-items: center; justify-content: center; }
+  .lightbox[hidden] { display: none; }
+  .lb-card { position: relative; display: flex; flex-direction: column; width: min(1040px, 94vw); max-height: 90vh; overflow: hidden; background: var(--paper); border: 1px solid var(--hair); border-radius: 14px; box-shadow: 0 40px 100px -30px rgba(0,0,0,.5); }
+  .lb-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--hair); }
+  .lb-title { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin: 0; }
+  .lb-close { flex: none; cursor: pointer; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(21,23,28,.08); color: var(--ink); font-size: 21px; line-height: 1; }
+  .lb-stage { position: relative; display: flex; align-items: center; justify-content: center; background: var(--lbbg, #fff); padding: 20px 60px; min-height: 0; }
+  .lb-frame { aspect-ratio: var(--asp, 16 / 10); max-height: 60vh; max-width: 100%; display: flex; align-items: center; justify-content: center; }
+  .lb-frame img, .lb-frame video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(21,23,28,.5); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .14s; }
+  .lb-prev { left: 12px; } .lb-next { right: 12px; }
+  .lb-nav[hidden] { display: none; }
+  .lb-foot { padding: 13px 20px 18px; border-top: 1px solid var(--hair); text-align: center; }
+  .lb-count { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+  .cb-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); margin: 0 0 6px; }
+  .cb-label:empty { display: none; }
+  .cb-cap { font-family: var(--serif); font-size: 15.5px; line-height: 1.6; color: var(--ink); margin: 0 auto; max-width: 82ch; }
+  .cb-paper { display: inline-block; margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none; max-width: 82ch; }
+  .cb-paper:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .lb-stage { padding: 16px 46px; } .lb-frame img, .lb-frame video { max-height: 46vh; } }
+
+  @media (min-width: 760px) {
+    .theme { grid-template-columns: 42% 1fr; gap: 38px; align-items: start; }
+  }
+  @media (hover: hover) {
+    .t-papers a:hover { color: var(--teal); text-decoration: underline; }
+    .rs-cta a:hover { color: var(--teal); }
+    .car-expand:hover { background: var(--accent); }
+    .car-nav:hover { background: var(--accent); }
+    .lb-nav:hover { background: var(--accent); }
+    .lb-close:hover { background: rgba(21,23,28,.16); }
+  }
+</style>
+
+<script>
+  function vid(src) {
+    const v = document.createElement('video');
+    v.src = src; v.muted = true; v.loop = true; v.autoplay = true;
+    v.setAttribute('playsinline', ''); v.preload = 'metadata';
+    return v;
+  }
+  function mediaEl(it, alt, controls) {
+    if (it.type === 'demo') {
+      const row = document.createElement('div');
+      row.className = 'demo-row';
+      [it.left, it.right].forEach((side) => {
+        const cell = document.createElement('div');
+        cell.className = 'demo-cell';
+        const tag = document.createElement('span');
+        tag.className = 'demo-tag ' + (side.state || '');
+        tag.textContent = side.label || '';
+        cell.appendChild(tag);
+        cell.appendChild(vid(side.src));
+        row.appendChild(cell);
+      });
+      row.style.width = '100%';
+      return row;
+    }
+    let el;
+    if (it.type === 'video') {
+      el = vid(it.src);
+      if (controls) el.controls = true;
+    } else {
+      el = document.createElement('img');
+      el.src = it.src; el.alt = alt || ''; el.loading = 'lazy';
+    }
+    el.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+    return el;
+  }
+
+  // ---------- lightbox (one media, one caption; caption cell reserved to tallest) ----------
+  const lb = document.getElementById('rlb');
+  const stage = lb.querySelector('.lb-stage');
+  const frame = document.getElementById('rlbFrame');
+  const titleEl = document.getElementById('rlbTitle');
+  const labelEl = document.getElementById('rlbLabel');
+  const capEl = document.getElementById('rlbCap');
+  const paperEl = document.getElementById('rlbPaper');
+  const capWrap = document.getElementById('rlbCapWrap');
+  const countEl = document.getElementById('rlbCount');
+  const prevB = document.getElementById('rlbPrev');
+  const nextB = document.getElementById('rlbNext');
+  let cur = { items: [], i: 0, title: '' };
+
+  function setFoot(it) {
+    labelEl.textContent = it.label || '';
+    capEl.textContent = it.caption || '';
+    if (it.paper) {
+      paperEl.style.display = '';
+      paperEl.href = '/publications?q=' + encodeURIComponent(it.paper);
+      paperEl.textContent = '→ ' + it.paper;
+    } else { paperEl.style.display = 'none'; }
+  }
+  function renderLb() {
+    const it = cur.items[cur.i];
+    if (!it) return;
+    titleEl.textContent = cur.title;
+    frame.innerHTML = '';
+    frame.appendChild(mediaEl(it, it.label || cur.title, true));
+    setFoot(it);
+    countEl.textContent = (cur.i + 1) + ' / ' + cur.items.length;
+    const multi = cur.items.length > 1;
+    prevB.hidden = !multi; nextB.hidden = !multi;
+  }
+  function reserveFoot() {
+    capWrap.style.minHeight = '';
+    let max = 0;
+    cur.items.forEach((it) => { setFoot(it); if (capWrap.offsetHeight > max) max = capWrap.offsetHeight; });
+    capWrap.style.minHeight = max + 'px';
+  }
+  function openLb(items, title, start, asp, bg) {
+    cur = { items: items, i: start || 0, title: title };
+    frame.style.aspectRatio = asp || 'auto';
+    stage.style.setProperty('--lbbg', bg || '#fff');
+    lb.hidden = false;
+    reserveFoot();
+    renderLb();
+  }
+  function closeLb() { lb.hidden = true; frame.innerHTML = ''; }
+  function step(d) { const n = cur.items.length; if (!n) return; cur.i = (cur.i + d + n) % n; renderLb(); }
+
+  // ---------- inline carousels (one media swapped; caption cell reserved to tallest) ----------
+  document.querySelectorAll('.carousel').forEach((car) => {
+    let items = [];
+    try { items = JSON.parse(car.dataset.media); } catch (e) {}
+    const view = car.querySelector('.car-view');
+    const cap = car.querySelector('.car-cap');
+    const dots = Array.from(car.querySelectorAll('.dot'));
+    let ci = 0;
+    function render(n) {
+      ci = n;
+      const it = items[n];
+      if (!it) return;
+      view.innerHTML = '';
+      view.appendChild(mediaEl(it, car.dataset.title, false));
+      if (it.label) {
+        const tag = document.createElement('span');
+        tag.className = 'tm-tag'; tag.textContent = it.label;
+        view.appendChild(tag);
+      }
+      cap.textContent = it.caption || '';
+      dots.forEach((d, k) => d.classList.toggle('on', k === n));
+    }
+    function reserve() {
+      cap.style.minHeight = '';
+      let max = 0;
+      items.forEach((it) => { cap.textContent = it.caption || ''; if (cap.offsetHeight > max) max = cap.offsetHeight; });
+      cap.style.minHeight = max + 'px';
+      if (items[ci]) cap.textContent = items[ci].caption || '';
+    }
+    dots.forEach((d, k) => d.addEventListener('click', () => render(k)));
+    const carStep = (d) => { const n = items.length; if (n) render((ci + d + n) % n); };
+    const pv = car.querySelector('.car-prev');
+    const nx = car.querySelector('.car-next');
+    if (pv) pv.addEventListener('click', () => carStep(-1));
+    if (nx) nx.addEventListener('click', () => carStep(1));
+    const exp = car.querySelector('.car-expand');
+    if (exp) exp.addEventListener('click', () => openLb(items, car.dataset.title, ci, car.dataset.aspect, car.dataset.bg));
+    reserve();
+    render(0);
+    let rt;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(reserve, 150); });
+  });
+
+  prevB.addEventListener('click', () => step(-1));
+  nextB.addEventListener('click', () => step(1));
+  document.getElementById('rlbClose').addEventListener('click', closeLb);
+  lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', (e) => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') closeLb();
+    else if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'ArrowRight') step(1);
+  });
+</script>

@@ -1,0 +1,19 @@
+% shared preamble for lecture topic figures (compile from beamer/ with xelatex)
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,positioning,calc,backgrounds,fit,decorations.pathmorphing}
+\setsansfont{SpaceGrotesk}[Path=fonts/,Extension=.ttf,UprightFont=*-400,BoldFont=*-700,FontFace={md}{n}{*-500}]
+\renewcommand{\familydefault}{\sfdefault}
+\definecolor{navy}{HTML}{182B49}
+\definecolor{gold}{HTML}{C8881E}
+\definecolor{teal}{HTML}{1F6F86}
+\definecolor{green}{HTML}{157E6B}
+\definecolor{stone}{HTML}{F7F6F2}
+\definecolor{ink}{HTML}{182B49}
+\tikzset{
+  card/.style={fill=white, rounded corners=4pt, draw=navy!15, line width=0.5pt},
+  flow/.style={-{Stealth[length=4pt]}, navy, line width=0.9pt},
+  lab/.style={text=navy, font=\sffamily\fontsize{8}{9}\selectfont},
+  toplab/.style={text=navy!65, font=\sffamily\fontsize{8.5}{10}\selectfont},
+}

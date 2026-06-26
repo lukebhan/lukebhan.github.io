@@ -1,0 +1,13 @@
+---
+import site from '../data/site.json';
+const year = new Date().getFullYear();
+---
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="mono" style="color:var(--teal);letter-spacing:.08em;text-transform:uppercase">Contact</div>
+      <div><a href={`mailto:${site.email}`}>{site.email}</a> &middot; {site.location}</div>
+    </div>
+    <div class="mono">&copy; {year} {site.name}</div>
+  </div>
+</footer>

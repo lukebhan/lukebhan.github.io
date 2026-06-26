@@ -1,0 +1,149 @@
+---
+import site from '../data/site.json';
+const { homeVision: hv } = site;
+const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
+---
+<section id="research">
+  <div class="wrap">
+    <div class="sec-head"><h2>Research</h2></div>
+    <p class="program-lead" set:html={hv.lead}></p>
+
+    <div class="vision-clips">
+      {hv.clips.map((c) => (
+        <figure class="vclip">
+          <div class="vclip-text">
+            <div class="vclip-label">{c.label}</div>
+            <p class="vclip-blurb">{c.blurb}</p>
+            <ul class="vclip-papers">
+              {c.papers.map((p) => (
+                <li>
+                  <a class="vclip-paper" href={paperHref(p.title)}>
+                    <span class="vclip-paper-title">{p.title}</span>
+                    <span class="vclip-paper-meta">{p.venue} {p.year}{p.award ? <> · <span class="vclip-award">{p.award}</span></> : ''}{p.status ? ` · ${p.status}` : ''}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="vclip-media">
+            {c.demo ? (
+              <div class="demo-row">
+                <div class="demo-cell"><span class={`demo-tag ${c.demo.left.state}`}>{c.demo.left.label}</span><video src={c.demo.left.src} autoplay loop muted playsinline preload="metadata"></video></div>
+                <div class="demo-cell"><span class={`demo-tag ${c.demo.right.state}`}>{c.demo.right.label}</span><video src={c.demo.right.src} autoplay loop muted playsinline preload="metadata"></video></div>
+              </div>
+            ) : c.image ? (
+              <img src={c.image} alt={c.label} loading="lazy" decoding="async" />
+            ) : (
+              <video src={c.src} autoplay loop muted playsinline preload="metadata"></video>
+            )}
+            <button class="vclip-expand" type="button"
+              data-src={c.src}
+              data-img={c.image ? c.image : null}
+              data-demo={c.demo ? '1' : null}
+              data-left={c.demo ? c.demo.left.src : null}
+              data-left-label={c.demo ? c.demo.left.label : null}
+              data-left-state={c.demo ? c.demo.left.state : null}
+              data-right={c.demo ? c.demo.right.src : null}
+              data-right-label={c.demo ? c.demo.right.label : null}
+              data-right-state={c.demo ? c.demo.right.state : null}
+              aria-label="Expand video">⤢</button>
+          </div>
+        </figure>
+      ))}
+    </div>
+
+    <p class="research-cta"><a href={hv.cta.href}>{hv.cta.label} →</a></p>
+  </div>
+</section>
+
+<div class="hv-lb" id="hvlb" hidden>
+  <button class="hv-lb-close" id="hvlbClose" type="button" aria-label="Close">×</button>
+  <div class="hv-lb-frame" id="hvlbFrame"></div>
+</div>
+
+<style>
+  .program-lead :global(.hl) { color: var(--teal); font-style: italic; }
+
+  .vision-clips { display: grid; gap: 24px; margin: 26px 0 8px; }
+  .vclip { margin: 0; display: grid; grid-template-columns: 1fr; gap: 14px; align-items: center; }
+  .vclip + .vclip { border-top: 2px dashed rgba(92,97,107,.4); padding-top: 24px; }
+  .vclip-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+  .vclip-blurb { font-size: 15.5px; line-height: 1.55; color: var(--ink); margin: 8px 0 0; }
+  .vclip-papers { list-style: none; margin: 13px 0 0; padding: 0; display: grid; gap: 10px; }
+  .vclip-paper { display: block; text-decoration: none; }
+  .vclip-paper-title { display: block; font-size: 14px; line-height: 1.4; color: var(--ink); }
+  .vclip-paper-meta { display: block; margin-top: 2px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+  .vclip-award { color: var(--amber); }
+  .vclip-media { position: relative; border: 1px solid var(--hair); border-radius: 10px; overflow: hidden; background: var(--paper); }
+  .vclip-media video, .vclip-media img { width: 100%; height: auto; display: block; }
+  .vclip-expand { position: absolute; top: 8px; right: 8px; z-index: 2; width: 28px; height: 28px; border: 0; border-radius: 7px; background: rgba(21,23,28,.5); color: #fff; cursor: pointer; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background .14s; }
+
+  @media (min-width: 760px) {
+    .vclip { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 32px; }
+  }
+  @media (hover: hover) {
+    .vclip-paper:hover .vclip-paper-title { color: var(--teal); text-decoration: underline; }
+  }
+
+  /* caption-less lightbox */
+  .hv-lb { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 4vmin; background: rgba(36,28,26,.55); backdrop-filter: blur(7px) saturate(115%); -webkit-backdrop-filter: blur(7px) saturate(115%); }
+  .hv-lb[hidden] { display: none; }
+  .hv-lb-frame { width: min(940px, 94vw); display: flex; }
+  .hv-lb-frame :global(.hv-lb-inner) { width: 100%; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 40px 100px -30px rgba(0,0,0,.5); }
+  .hv-lb-frame :global(video), .hv-lb-frame :global(img) { display: block; width: 100%; height: auto; }
+  .hv-lb-close { position: absolute; top: 18px; right: 20px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
+
+  @media (hover: hover) {
+    .vclip-expand:hover { background: var(--accent); }
+    .vclip-paper:hover { color: var(--ink); }
+    .hv-lb-close:hover { background: rgba(255,255,255,.26); }
+  }
+</style>
+
+<script>
+  const lb = document.getElementById('hvlb');
+  const frame = document.getElementById('hvlbFrame');
+  function mkVideo(src) {
+    const v = document.createElement('video');
+    v.src = src; v.autoplay = true; v.loop = true; v.muted = true;
+    v.setAttribute('playsinline', '');
+    return v;
+  }
+  function cell(src, label, state) {
+    const c = document.createElement('div');
+    c.className = 'demo-cell';
+    const t = document.createElement('span');
+    t.className = 'demo-tag ' + (state || '');
+    t.textContent = label || '';
+    c.appendChild(t); c.appendChild(mkVideo(src));
+    return c;
+  }
+  function openLb(b) {
+    frame.innerHTML = '';
+    const inner = document.createElement('div');
+    inner.className = 'hv-lb-inner';
+    if (b.dataset.demo) {
+      const row = document.createElement('div');
+      row.className = 'demo-row';
+      row.appendChild(cell(b.dataset.left, b.dataset.leftLabel, b.dataset.leftState));
+      row.appendChild(cell(b.dataset.right, b.dataset.rightLabel, b.dataset.rightState));
+      inner.appendChild(row);
+    } else if (b.dataset.img) {
+      const img = document.createElement('img');
+      img.src = b.dataset.img; img.alt = '';
+      inner.appendChild(img);
+    } else {
+      const v = mkVideo(b.dataset.src); v.controls = true;
+      inner.appendChild(v);
+    }
+    frame.appendChild(inner);
+    lb.hidden = false;
+  }
+  function closeLb() { lb.hidden = true; frame.innerHTML = ''; }
+  document.querySelectorAll('.vclip-expand').forEach((b) => {
+    b.addEventListener('click', () => openLb(b));
+  });
+  document.getElementById('hvlbClose').addEventListener('click', closeLb);
+  lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', (e) => { if (!lb.hidden && e.key === 'Escape') closeLb(); });
+</script>

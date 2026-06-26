@@ -1,0 +1,39 @@
+---
+// Hero certificate: train your network to ε*  ⟹  guaranteed closed-loop performance.
+---
+<figure class="certfig">
+  <svg viewBox="0 0 360 232" role="img" aria-label="Train your network to accuracy epsilon-star, which guarantees performance in closed loop.">
+    <defs>
+      <marker id="cfarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#5C616B"></path>
+      </marker>
+    </defs>
+    <rect x="24" y="14" width="312" height="66" rx="13" class="cf-box a"></rect>
+    <text x="180" y="44" text-anchor="middle" class="cf-t">Train your network to</text>
+    <text x="180" y="68" text-anchor="middle" class="cf-big">accuracy <tspan class="eps">ε*</tspan></text>
+
+    <line x1="180" y1="84" x2="180" y2="120" class="cf-line" marker-end="url(#cfarrow)"></line>
+    <text x="192" y="106" class="cf-imp">guarantees</text>
+
+    <rect x="24" y="124" width="312" height="70" rx="13" class="cf-box b"></rect>
+    <text x="180" y="154" text-anchor="middle" class="cf-t2">Guaranteed performance</text>
+    <text x="180" y="178" text-anchor="middle" class="cf-t2"><tspan class="ok">in closed loop</tspan></text>
+  </svg>
+  <figcaption>the certificate at the core of my research</figcaption>
+</figure>
+
+<style>
+  .certfig { margin: 0; width: 100%; max-width: 380px; min-width: 0; }
+  .certfig svg { width: 100%; height: auto; display: block; }
+  .cf-box { fill: none; stroke-width: 1.6; }
+  .cf-box.a { stroke: var(--teal); }
+  .cf-box.b { stroke: var(--accent); fill: var(--accent); fill-opacity: .05; }
+  .cf-t { font-family: var(--display); font-weight: 500; font-size: 14px; fill: var(--muted); }
+  .cf-big { font-family: var(--display); font-weight: 600; font-size: 19px; fill: var(--ink); }
+  .cf-big .eps { fill: var(--amber); }
+  .cf-line { stroke: var(--muted); stroke-width: 1.4; }
+  .cf-imp { font-family: var(--mono); font-size: 11px; fill: var(--teal); }
+  .cf-t2 { font-family: var(--display); font-weight: 600; font-size: 16px; fill: var(--ink); }
+  .cf-t2 .ok { fill: var(--accent); }
+  .certfig figcaption { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 11px; text-align: center; }
+</style>

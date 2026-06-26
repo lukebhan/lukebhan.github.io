@@ -1,0 +1,7 @@
+[
+  { "year": "2026", "org": "Microsoft", "logo": "/logos/microsoft.svg", "icon": "/logos/ms-icon.svg", "role": "Research Scientist Intern", "topic": "Power grid", "detail": "developing foundation models for the power grid." },
+  { "year": "2025", "org": "Amazon", "logo": "/logos/amazon.svg", "icon": "/logos/amazon-icon.svg", "role": "Applied Scientist Intern", "topic": "Demand forecasting", "detail": "custom LLMs adjusting time-series demand forecasts across 30M+ products; work led to an internal AMLC paper." },
+  { "year": "2024", "org": "Lawrence Berkeley National Laboratory", "logo": "/logos/lbnl.svg", "icon": "/logos/lbnl-icon.svg", "role": "Research Intern", "topic": "Distributed optimization", "detail": "randomized linear-algebra solvers for distributed nonconvex optimization, enabling real-time parallel optimization for control of dynamical systems." },
+  { "year": "2021", "org": "MongoDB", "logo": "/logos/mongodb.svg", "icon": "/logos/mongodb-icon.svg", "role": "Software Engineering Intern", "topic": "Time-series compression", "detail": "compression algorithm for the time-series database." },
+  { "year": "2020", "org": "T-Mobile", "logo": "/logos/tmobile.svg", "icon": "/logos/tmobile-icon.svg", "role": "Machine Learning Intern", "topic": "Network analytics", "detail": "analytics API for visualizing network load to anticipate downtime." }
+]

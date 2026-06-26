@@ -1,0 +1,5944 @@
+1
+00:00:00,080 --> 00:00:03,679
+All right, so let's get started. Today
+
+2
+00:00:02,000 --> 00:00:05,920
+we're going to be talking about some
+
+3
+00:00:03,679 --> 00:00:08,400
+very recent results in foundation
+
+4
+00:00:05,920 --> 00:00:10,800
+models. This lecture is not going to be
+
+5
+00:00:08,400 --> 00:00:12,240
+super focused on like an architecture
+
+6
+00:00:10,800 --> 00:00:14,880
+design that we've kind of been doing,
+
+7
+00:00:12,240 --> 00:00:16,720
+but more so a paradigm and we're going
+
+8
+00:00:14,880 --> 00:00:19,039
+to see some tricks and examples about
+
+9
+00:00:16,720 --> 00:00:22,160
+how to think about this. Um, most of the
+
+10
+00:00:19,039 --> 00:00:24,880
+results here are a year or less old
+
+11
+00:00:22,160 --> 00:00:26,640
+actually. So um, for those who I think
+
+12
+00:00:24,880 --> 00:00:29,119
+one of you asked about pins and said
+
+13
+00:00:26,640 --> 00:00:30,800
+that pins are getting old. Well, I
+
+14
+00:00:29,119 --> 00:00:33,760
+promise you this is not nothing here is
+
+15
+00:00:30,800 --> 00:00:36,239
+that old. So, okay. So, what have we
+
+16
+00:00:33,760 --> 00:00:38,320
+been doing so far on this design of
+
+17
+00:00:36,239 --> 00:00:40,160
+scientific machine learning? Well, we've
+
+18
+00:00:38,320 --> 00:00:41,920
+been looking at different architectures,
+
+19
+00:00:40,160 --> 00:00:44,879
+right? So, we looked at this this neural
+
+20
+00:00:41,920 --> 00:00:47,520
+OD where we basically learn a flow field
+
+21
+00:00:44,879 --> 00:00:50,000
+and we embed in our OD solver and we saw
+
+22
+00:00:47,520 --> 00:00:52,079
+with this architecture, one of the key
+
+23
+00:00:50,000 --> 00:00:54,079
+ideas was learning the gradients via the
+
+24
+00:00:52,079 --> 00:00:56,399
+adjoint method, right? So, we design an
+
+25
+00:00:54,079 --> 00:00:59,440
+OD for the back propagation and we
+
+26
+00:00:56,399 --> 00:01:01,600
+propagate. We also saw two forms of
+
+27
+00:00:59,440 --> 00:01:03,840
+neural operators kind of in detail. We
+
+28
+00:01:01,600 --> 00:01:05,920
+saw this dep depot deep on net where we
+
+29
+00:01:03,840 --> 00:01:08,400
+assumed some sort of separable kernel
+
+30
+00:01:05,920 --> 00:01:11,040
+and we tried to learn a truncated basis
+
+31
+00:01:08,400 --> 00:01:13,760
+mapping for our operator and then we saw
+
+32
+00:01:11,040 --> 00:01:16,479
+this fn where we essentially apply a
+
+33
+00:01:13,760 --> 00:01:19,280
+forier transform learn in frequency
+
+34
+00:01:16,479 --> 00:01:22,400
+space and then inverse forier transform
+
+35
+00:01:19,280 --> 00:01:24,479
+right and then okay we saw these
+
+36
+00:01:22,400 --> 00:01:26,560
+paradigms and highlighted a little bit
+
+37
+00:01:24,479 --> 00:01:28,400
+of of why we would use them and then we
+
+38
+00:01:26,560 --> 00:01:31,360
+saw okay what happens if we don't have
+
+39
+00:01:28,400 --> 00:01:33,200
+any data right so we have no data
+
+40
+00:01:31,360 --> 00:01:36,880
+what can we try to do? And we kind of
+
+41
+00:01:33,200 --> 00:01:39,759
+introduce this idea of a pin where we
+
+42
+00:01:36,880 --> 00:01:42,079
+basically encode the loss function with
+
+43
+00:01:39,759 --> 00:01:43,840
+a soft regularization term. And that
+
+44
+00:01:42,079 --> 00:01:46,640
+soft regularization term essentially
+
+45
+00:01:43,840 --> 00:01:48,880
+enforces our equation, right? And does
+
+46
+00:01:46,640 --> 00:01:51,360
+anyone remember what the problem was
+
+47
+00:01:48,880 --> 00:01:55,000
+with pins?
+
+48
+00:01:51,360 --> 00:01:55,000
+Just any problem.
+
+49
+00:01:58,960 --> 00:02:02,320
+Exactly. Okay. So you have to retrain
+
+50
+00:02:00,719 --> 00:02:04,719
+them for example every time you want to
+
+51
+00:02:02,320 --> 00:02:06,240
+do a new equation. Great. We also saw
+
+52
+00:02:04,719 --> 00:02:09,759
+that they require quite a bit of
+
+53
+00:02:06,240 --> 00:02:12,080
+fine-tuning, right? And so today we kind
+
+54
+00:02:09,759 --> 00:02:14,640
+of are going to ask a different
+
+55
+00:02:12,080 --> 00:02:16,879
+question. We're going to go into what
+
+56
+00:02:14,640 --> 00:02:18,720
+actually should we train on and how
+
+57
+00:02:16,879 --> 00:02:21,040
+should we sort of think about this this
+
+58
+00:02:18,720 --> 00:02:26,560
+training paradigm maybe at a broader
+
+59
+00:02:21,040 --> 00:02:29,120
+scale. Okay. All right. And so
+
+60
+00:02:26,560 --> 00:02:30,959
+for example, so far we've kind of been
+
+61
+00:02:29,120 --> 00:02:32,480
+tight in scope in what we're trying to
+
+62
+00:02:30,959 --> 00:02:35,280
+learn. So for example, we said, okay, a
+
+63
+00:02:32,480 --> 00:02:38,160
+neurode is going to learn one dynamical
+
+64
+00:02:35,280 --> 00:02:39,920
+system, but you can't take it, you know,
+
+65
+00:02:38,160 --> 00:02:41,840
+one dynamical system for a robot and
+
+66
+00:02:39,920 --> 00:02:44,720
+then go try to use it on a fluid
+
+67
+00:02:41,840 --> 00:02:48,239
+mechanics problem, right? And we saw
+
+68
+00:02:44,720 --> 00:02:50,640
+okay neural operators they might be
+
+69
+00:02:48,239 --> 00:02:52,239
+trained on a family of PTEES. So for
+
+70
+00:02:50,640 --> 00:02:54,080
+example on the advection diffusion
+
+71
+00:02:52,239 --> 00:02:56,400
+equation but they're not going to be
+
+72
+00:02:54,080 --> 00:02:59,599
+useful for Schroinger's equation or wave
+
+73
+00:02:56,400 --> 00:03:01,360
+PTEs right and we also saw that we might
+
+74
+00:02:59,599 --> 00:03:04,159
+have a bunch of different parameters on
+
+75
+00:03:01,360 --> 00:03:06,720
+those neural operators and those
+
+76
+00:03:04,159 --> 00:03:11,280
+parameters are going to really change
+
+77
+00:03:06,720 --> 00:03:14,720
+how our PTE behaves. Okay. And so the
+
+78
+00:03:11,280 --> 00:03:16,400
+idea is and okay yes we saw for example
+
+79
+00:03:14,720 --> 00:03:19,360
+pin needs retraining as our friend said
+
+80
+00:03:16,400 --> 00:03:22,800
+here. So the idea is what if we wanted
+
+81
+00:03:19,360 --> 00:03:24,560
+one model that kind of works across all
+
+82
+00:03:22,800 --> 00:03:27,360
+of these different problems. So we can
+
+83
+00:03:24,560 --> 00:03:31,120
+train on batch diffusion PTEs Navier
+
+84
+00:03:27,360 --> 00:03:33,680
+Stokes Burger's equation and this
+
+85
+00:03:31,120 --> 00:03:35,519
+paradigm is not new. I think that's kind
+
+86
+00:03:33,680 --> 00:03:37,440
+of the chat GPT paradigm and we'll we'll
+
+87
+00:03:35,519 --> 00:03:40,720
+make some connections. So how are we
+
+88
+00:03:37,440 --> 00:03:43,760
+going to do this? Well, around let's say
+
+89
+00:03:40,720 --> 00:03:47,280
+2018, maybe even a little bit earlier,
+
+90
+00:03:43,760 --> 00:03:48,959
+the way that NLP was working at the time
+
+91
+00:03:47,280 --> 00:03:51,280
+was that people were designing a
+
+92
+00:03:48,959 --> 00:03:52,879
+specific model for a specific task.
+
+93
+00:03:51,280 --> 00:03:55,200
+Okay? So, you might design one neural
+
+94
+00:03:52,879 --> 00:03:57,840
+network that gives me the sentiment of a
+
+95
+00:03:55,200 --> 00:04:00,080
+sentence. So, how happy, sad, mad, angry
+
+96
+00:03:57,840 --> 00:04:02,080
+the sentence is, right? Another one
+
+97
+00:04:00,080 --> 00:04:04,560
+might extract important features. So,
+
+98
+00:04:02,080 --> 00:04:06,799
+this is NE stands for named entity
+
+99
+00:04:04,560 --> 00:04:09,760
+recognition. Essentially what this is is
+
+100
+00:04:06,799 --> 00:04:11,920
+okay I have a sentence you know Bob
+
+101
+00:04:09,760 --> 00:04:14,319
+jumped out of the tree it might
+
+102
+00:04:11,920 --> 00:04:16,720
+recognize okay the name Bob is the
+
+103
+00:04:14,319 --> 00:04:19,040
+subject of the noun and for example a
+
+104
+00:04:16,720 --> 00:04:22,240
+tree is where he jumped out of and
+
+105
+00:04:19,040 --> 00:04:24,320
+lastly people also had models okay let's
+
+106
+00:04:22,240 --> 00:04:26,400
+say for translation so you know I have
+
+107
+00:04:24,320 --> 00:04:29,360
+Deutski's crime and punishment in
+
+108
+00:04:26,400 --> 00:04:30,960
+Russian can I translate that to English
+
+109
+00:04:29,360 --> 00:04:33,440
+okay
+
+110
+00:04:30,960 --> 00:04:37,600
+what happened basically well as you guys
+
+111
+00:04:33,440 --> 00:04:39,919
+know around let's say 2018 2019 a series
+
+112
+00:04:37,600 --> 00:04:42,960
+of models came out called BERT have any
+
+113
+00:04:39,919 --> 00:04:46,080
+of you guys heard of BERT models
+
+114
+00:04:42,960 --> 00:04:48,240
+okay actually a few of you right so BERT
+
+115
+00:04:46,080 --> 00:04:51,199
+at the time was invented at Google and
+
+116
+00:04:48,240 --> 00:04:53,040
+it was basically this idea that we could
+
+117
+00:04:51,199 --> 00:04:55,680
+do things from sort of a pre-training
+
+118
+00:04:53,040 --> 00:04:58,800
+standpoint and ultimately this got spun
+
+119
+00:04:55,680 --> 00:05:02,400
+out into what you guys know today as GPT
+
+120
+00:04:58,800 --> 00:05:04,240
+so for example I think GPT code GPT2
+
+121
+00:05:02,400 --> 00:05:06,400
+code is fully publicly available
+
+122
+00:05:04,240 --> 00:05:09,120
+actually um so you can implement it
+
+123
+00:05:06,400 --> 00:05:10,720
+yourself but the idea was okay GPT we're
+
+124
+00:05:09,120 --> 00:05:13,280
+going to stand for generative
+
+125
+00:05:10,720 --> 00:05:15,440
+pre-trained transformer right so the
+
+126
+00:05:13,280 --> 00:05:17,919
+idea is okay we pre-train it on a corpus
+
+127
+00:05:15,440 --> 00:05:20,560
+of data and then later we're going to
+
+128
+00:05:17,919 --> 00:05:23,440
+let's say fine-tune or adjust depending
+
+129
+00:05:20,560 --> 00:05:25,600
+on our task all right and so the goal is
+
+130
+00:05:23,440 --> 00:05:27,600
+okay instead of you know having to train
+
+131
+00:05:25,600 --> 00:05:30,000
+an individual model each time we train
+
+132
+00:05:27,600 --> 00:05:32,320
+one model once at scale and then let's
+
+133
+00:05:30,000 --> 00:05:34,000
+say fine-tuning is usually easy in some
+
+134
+00:05:32,320 --> 00:05:37,120
+way all
+
+135
+00:05:34,000 --> 00:05:38,960
+And so nowadays in machine learning
+
+136
+00:05:37,120 --> 00:05:41,280
+basically everyone is trying to do some
+
+137
+00:05:38,960 --> 00:05:43,039
+form of this this foundation model.
+
+138
+00:05:41,280 --> 00:05:45,520
+Okay. Whether you work on robots,
+
+139
+00:05:43,039 --> 00:05:48,000
+computer vision or in this case
+
+140
+00:05:45,520 --> 00:05:50,400
+scientific machine learning. Okay. And
+
+141
+00:05:48,000 --> 00:05:53,919
+so what we're going to look at is some
+
+142
+00:05:50,400 --> 00:05:57,440
+examples about how this recipe can kind
+
+143
+00:05:53,919 --> 00:05:59,039
+of be implemented and also why you know
+
+144
+00:05:57,440 --> 00:06:01,199
+natural language processing is actually
+
+145
+00:05:59,039 --> 00:06:04,080
+a really easy case study for foundation
+
+146
+00:06:01,199 --> 00:06:06,800
+models compared to let's say physics or
+
+147
+00:06:04,080 --> 00:06:09,120
+PDS.
+
+148
+00:06:06,800 --> 00:06:11,199
+And so at the end of the day hopefully
+
+149
+00:06:09,120 --> 00:06:13,680
+you'll have some idea of what the world
+
+150
+00:06:11,199 --> 00:06:17,280
+looks like right now on can we have a
+
+151
+00:06:13,680 --> 00:06:21,440
+GPT for some PTE architecture.
+
+152
+00:06:17,280 --> 00:06:23,919
+Okay. Uh I assume that most of you have
+
+153
+00:06:21,440 --> 00:06:26,080
+heard of foundation models before given
+
+154
+00:06:23,919 --> 00:06:28,319
+the popularity, but it actually was
+
+155
+00:06:26,080 --> 00:06:30,960
+pretty recently, you know, 21 where
+
+156
+00:06:28,319 --> 00:06:33,199
+people have defined a foundation model,
+
+157
+00:06:30,960 --> 00:06:35,280
+right? And this idea is very simple.
+
+158
+00:06:33,199 --> 00:06:37,919
+We're going to pre-train on a huge
+
+159
+00:06:35,280 --> 00:06:40,319
+amount of data. The data quality needs
+
+160
+00:06:37,919 --> 00:06:44,560
+to be good, but let's say, you know, it
+
+161
+00:06:40,319 --> 00:06:47,199
+can be a very diverse kind. Okay? And
+
+162
+00:06:44,560 --> 00:06:49,759
+then we're going to you know downstream
+
+163
+00:06:47,199 --> 00:06:52,240
+for for our target tasks for example you
+
+164
+00:06:49,759 --> 00:06:54,080
+know solving the Navier Stokes PTE or
+
+165
+00:06:52,240 --> 00:06:54,960
+let's say the advction diffusion PD
+
+166
+00:06:54,080 --> 00:06:58,720
+we're going to do some sort of
+
+167
+00:06:54,960 --> 00:07:02,080
+adaptation okay some sort of fine-tuning
+
+168
+00:06:58,720 --> 00:07:05,599
+right and the key is that okay our data
+
+169
+00:07:02,080 --> 00:07:08,720
+needs to be very diverse so the
+
+170
+00:07:05,599 --> 00:07:11,840
+underlying principle here is that
+
+171
+00:07:08,720 --> 00:07:13,599
+there's some sort of there's some value
+
+172
+00:07:11,840 --> 00:07:15,840
+in let's say learning
+
+173
+00:07:13,599 --> 00:07:18,080
+a Navi learning from Navier Stokes
+
+174
+00:07:15,840 --> 00:07:20,560
+equations that can help the Helm Holtz
+
+175
+00:07:18,080 --> 00:07:23,120
+PTE later which is not obvious right
+
+176
+00:07:20,560 --> 00:07:25,759
+like it's not obvious that if I trained
+
+177
+00:07:23,120 --> 00:07:28,400
+on a bunch of data from let's say news
+
+178
+00:07:25,759 --> 00:07:31,440
+reporters that's actually useful for
+
+179
+00:07:28,400 --> 00:07:33,759
+let's say making haikus right it's the
+
+180
+00:07:31,440 --> 00:07:35,599
+same kind of idea here so essentially
+
+181
+00:07:33,759 --> 00:07:38,000
+there's some structure in physical
+
+182
+00:07:35,599 --> 00:07:39,599
+systems that's universal
+
+183
+00:07:38,000 --> 00:07:41,599
+okay
+
+184
+00:07:39,599 --> 00:07:43,039
+then we're going to consider adaptation
+
+185
+00:07:41,599 --> 00:07:45,599
+so how do we adapt
+
+186
+00:07:43,039 --> 00:07:48,400
+I think the easiest way is actually you
+
+187
+00:07:45,599 --> 00:07:50,319
+don't. So that's called zero shot
+
+188
+00:07:48,400 --> 00:07:51,840
+tuning. Basically you don't update the
+
+189
+00:07:50,319 --> 00:07:53,840
+weights at all and you see how well you
+
+190
+00:07:51,840 --> 00:07:56,080
+do on a new task. And this is sort of
+
+191
+00:07:53,840 --> 00:07:57,840
+the holy grail. For example, in time
+
+192
+00:07:56,080 --> 00:08:00,800
+series analysis, everybody tries to
+
+193
+00:07:57,840 --> 00:08:02,720
+claim that LLMs are what we call zerosot
+
+194
+00:08:00,800 --> 00:08:04,560
+time series forecasters, which just
+
+195
+00:08:02,720 --> 00:08:07,440
+basically means they can predict the
+
+196
+00:08:04,560 --> 00:08:09,440
+future time series. Well, and it turns
+
+197
+00:08:07,440 --> 00:08:12,240
+out that's actually not so easy. As you
+
+198
+00:08:09,440 --> 00:08:14,960
+can imagine, zeros is a pretty tricky
+
+199
+00:08:12,240 --> 00:08:17,680
+paradigm. But what does considerably
+
+200
+00:08:14,960 --> 00:08:20,720
+help is something called fshot or
+
+201
+00:08:17,680 --> 00:08:23,039
+incontext learning. So for example,
+
+202
+00:08:20,720 --> 00:08:24,879
+imagine I have this huge corpus of PTEs
+
+203
+00:08:23,039 --> 00:08:28,560
+and I want to do something let's say
+
+204
+00:08:24,879 --> 00:08:30,639
+with the Helmholds PTE. So I might pick
+
+205
+00:08:28,560 --> 00:08:32,640
+three parameters for my Helmholds PTE
+
+206
+00:08:30,639 --> 00:08:35,360
+and three initial conditions, you know,
+
+207
+00:08:32,640 --> 00:08:38,159
+nine solves with my classical solver.
+
+208
+00:08:35,360 --> 00:08:40,479
+And okay, it'll take let's say a day.
+
+209
+00:08:38,159 --> 00:08:43,200
+But if I show those solves to my
+
+210
+00:08:40,479 --> 00:08:47,360
+pre-trained model, I might save, you
+
+211
+00:08:43,200 --> 00:08:48,959
+know, 100x on training time later. Okay.
+
+212
+00:08:47,360 --> 00:08:51,440
+And lastly, of course, we can do
+
+213
+00:08:48,959 --> 00:08:54,240
+fine-tuning. So fine-tuning, you guys
+
+214
+00:08:51,440 --> 00:08:55,839
+heard of Laura before.
+
+215
+00:08:54,240 --> 00:08:58,320
+Yeah, same people. Okay. Yeah,
+
+216
+00:08:55,839 --> 00:08:59,839
+fine-tuning most commonly done with with
+
+217
+00:08:58,320 --> 00:09:02,080
+something like Laura where you have a
+
+218
+00:08:59,839 --> 00:09:04,240
+huge number of weights and you need to
+
+219
+00:09:02,080 --> 00:09:06,160
+update them sort of in a in a smart way.
+
+220
+00:09:04,240 --> 00:09:07,839
+But let's say you have a small corpus of
+
+221
+00:09:06,160 --> 00:09:10,959
+of training data. Let's say 200
+
+222
+00:09:07,839 --> 00:09:13,360
+examples. Okay. So these are kind of our
+
+223
+00:09:10,959 --> 00:09:15,279
+three different paradigms for adapting.
+
+224
+00:09:13,360 --> 00:09:17,360
+We need a broad set of training data.
+
+225
+00:09:15,279 --> 00:09:19,680
+And this whole sort of idea is is
+
+226
+00:09:17,360 --> 00:09:22,160
+wrapped in this word called foundation
+
+227
+00:09:19,680 --> 00:09:26,800
+model.
+
+228
+00:09:22,160 --> 00:09:29,200
+Okay. And so as you can imagine it's not
+
+229
+00:09:26,800 --> 00:09:31,680
+so easy to adapt foundation models to
+
+230
+00:09:29,200 --> 00:09:33,519
+every problem in physics. It's actually
+
+231
+00:09:31,680 --> 00:09:37,120
+much harder than what you would imagine
+
+232
+00:09:33,519 --> 00:09:39,360
+in NLP. And the reason is that there's
+
+233
+00:09:37,120 --> 00:09:42,640
+not as much structure for example as
+
+234
+00:09:39,360 --> 00:09:45,200
+there is in language that is universal.
+
+235
+00:09:42,640 --> 00:09:47,600
+So we talked about for example Navia
+
+236
+00:09:45,200 --> 00:09:49,519
+Stokes on 3D takes 10 billion points
+
+237
+00:09:47,600 --> 00:09:52,000
+give or take.
+
+238
+00:09:49,519 --> 00:09:54,560
+If I want to sort of modify that and
+
+239
+00:09:52,000 --> 00:09:56,800
+work on let's say a regular sized grid
+
+240
+00:09:54,560 --> 00:09:59,279
+you know a square grid I would have to
+
+241
+00:09:56,800 --> 00:10:01,680
+let's say resolve right we have some
+
+242
+00:09:59,279 --> 00:10:03,920
+sort of different geometry and so
+
+243
+00:10:01,680 --> 00:10:06,880
+whereas in you know NLP we just have
+
+244
+00:10:03,920 --> 00:10:09,200
+this unifying token of a word right or
+
+245
+00:10:06,880 --> 00:10:12,320
+even a sentence let's say for example
+
+246
+00:10:09,200 --> 00:10:14,079
+it's pretty consistent throughout let's
+
+247
+00:10:12,320 --> 00:10:16,959
+say if we stay in the English language
+
+248
+00:10:14,079 --> 00:10:19,440
+we always have a consistent token but
+
+249
+00:10:16,959 --> 00:10:21,200
+the way you encode the heat equation
+
+250
+00:10:19,440 --> 00:10:23,440
+on let's say a square grid compared to
+
+251
+00:10:21,200 --> 00:10:25,040
+the Navia Stokes is very different and
+
+252
+00:10:23,440 --> 00:10:27,680
+it's also different from let's say we
+
+253
+00:10:25,040 --> 00:10:29,600
+get some sensor data from weather which
+
+254
+00:10:27,680 --> 00:10:32,480
+is typically represented in a point
+
+255
+00:10:29,600 --> 00:10:35,360
+cloud. So the point is that these data
+
+256
+00:10:32,480 --> 00:10:37,279
+representations are not uniform and
+
+257
+00:10:35,360 --> 00:10:40,079
+there's no kind of concept of what a
+
+258
+00:10:37,279 --> 00:10:44,959
+token is in physics. We'll sort of talk
+
+259
+00:10:40,079 --> 00:10:47,279
+about this more later. Okay. And so
+
+260
+00:10:44,959 --> 00:10:49,680
+as you can also imagine kind of one
+
+261
+00:10:47,279 --> 00:10:51,760
+thing I I haven't really told you about
+
+262
+00:10:49,680 --> 00:10:55,279
+too much is we we talked a little bit
+
+263
+00:10:51,760 --> 00:10:58,560
+about chaotic systems. And so if you
+
+264
+00:10:55,279 --> 00:11:00,959
+change one token in a sentence, okay,
+
+265
+00:10:58,560 --> 00:11:03,519
+95% of you will actually still read the
+
+266
+00:11:00,959 --> 00:11:05,519
+sentence ignoring that token change. But
+
+267
+00:11:03,519 --> 00:11:08,320
+if we change let's say the viscosity
+
+268
+00:11:05,519 --> 00:11:10,000
+parameter in a in a PTE, we know that
+
+269
+00:11:08,320 --> 00:11:12,880
+like for example chaotic systems will
+
+270
+00:11:10,000 --> 00:11:14,720
+yield very different trajectories. Okay.
+
+271
+00:11:12,880 --> 00:11:16,160
+And so this this is also a little bit
+
+272
+00:11:14,720 --> 00:11:19,160
+tricky. It's a more diverse
+
+273
+00:11:16,160 --> 00:11:19,160
+representation.
+
+274
+00:11:19,680 --> 00:11:24,959
+All right. And so let's take a step back
+
+275
+00:11:22,800 --> 00:11:29,360
+and kind of go into what the training
+
+276
+00:11:24,959 --> 00:11:31,600
+pipeline might look like for a PTE.
+
+277
+00:11:29,360 --> 00:11:34,079
+Nowadays there is more and more data
+
+278
+00:11:31,600 --> 00:11:35,920
+sets coming out. For example, this well
+
+279
+00:11:34,079 --> 00:11:38,720
+data set. There's also a data set called
+
+280
+00:11:35,920 --> 00:11:41,200
+PTE bench that just sort of take a bunch
+
+281
+00:11:38,720 --> 00:11:44,560
+of solves let's say from our national
+
+282
+00:11:41,200 --> 00:11:46,959
+lab solvers and put them together. Okay.
+
+283
+00:11:44,560 --> 00:11:48,800
+And so what you might do is you might,
+
+284
+00:11:46,959 --> 00:11:51,440
+you know, concatenate all these data
+
+285
+00:11:48,800 --> 00:11:53,680
+sets and build, let's say, some large
+
+286
+00:11:51,440 --> 00:11:55,279
+pre-trained corpus.
+
+287
+00:11:53,680 --> 00:11:57,519
+Then we're going to pre-train this
+
+288
+00:11:55,279 --> 00:12:00,480
+model. This part is a little bit tricky
+
+289
+00:11:57,519 --> 00:12:02,480
+because it's not so simple how we're
+
+290
+00:12:00,480 --> 00:12:03,680
+going to build this data set and how
+
+291
+00:12:02,480 --> 00:12:05,040
+we're going to kind of design this
+
+292
+00:12:03,680 --> 00:12:07,839
+model. We'll talk about this, right?
+
+293
+00:12:05,040 --> 00:12:10,320
+Because for example, if PTE bench solved
+
+294
+00:12:07,839 --> 00:12:13,519
+all their PTEs looking for a target time
+
+295
+00:12:10,320 --> 00:12:16,320
+of let's say 10 seconds and let's say
+
+296
+00:12:13,519 --> 00:12:18,639
+the well here solved their PTEs for 15
+
+297
+00:12:16,320 --> 00:12:20,959
+seconds. How do you use both of those
+
+298
+00:12:18,639 --> 00:12:22,800
+data? You have to be a little bit smart,
+
+299
+00:12:20,959 --> 00:12:26,320
+right? Because one of them you have more
+
+300
+00:12:22,800 --> 00:12:27,920
+time that you solve for, right?
+
+301
+00:12:26,320 --> 00:12:30,320
+The next thing we talked about is
+
+302
+00:12:27,920 --> 00:12:33,120
+adaptation and then deployment, right?
+
+303
+00:12:30,320 --> 00:12:34,959
+And so the kind of cost here that we're
+
+304
+00:12:33,120 --> 00:12:38,160
+selling is is very simple actually to
+
+305
+00:12:34,959 --> 00:12:40,399
+the FNO. You have some offline cost
+
+306
+00:12:38,160 --> 00:12:42,800
+that's very expensive upfront. So this
+
+307
+00:12:40,399 --> 00:12:44,800
+pre-training cost, you can imagine it
+
+308
+00:12:42,800 --> 00:12:48,079
+might take a week to pre-train, you
+
+309
+00:12:44,800 --> 00:12:50,800
+know, one to 8 billion parameter model
+
+310
+00:12:48,079 --> 00:12:52,639
+and then it might take two hours to
+
+311
+00:12:50,800 --> 00:12:55,519
+fine-tune later. Okay. And we'll see
+
+312
+00:12:52,639 --> 00:12:57,600
+kind of what this scaling law looks like
+
+313
+00:12:55,519 --> 00:13:00,000
+an idea.
+
+314
+00:12:57,600 --> 00:13:02,000
+So any questions about what the paradigm
+
+315
+00:13:00,000 --> 00:13:03,839
+for foundation models is right. So we
+
+316
+00:13:02,000 --> 00:13:06,959
+pre-train on a big courses we're going
+
+317
+00:13:03,839 --> 00:13:10,399
+to fine-tune later.
+
+318
+00:13:06,959 --> 00:13:13,519
+Great. All right. And so I want to start
+
+319
+00:13:10,399 --> 00:13:16,399
+with a a very simple example of one of
+
+320
+00:13:13,519 --> 00:13:19,200
+the first papers. This came out in 23
+
+321
+00:13:16,399 --> 00:13:20,800
+about foundation models. Okay. And so
+
+322
+00:13:19,200 --> 00:13:23,360
+what they consider here we have an
+
+323
+00:13:20,800 --> 00:13:26,160
+action diffusion equation. Okay. with
+
+324
+00:13:23,360 --> 00:13:28,399
+parameters K and new and a source
+
+325
+00:13:26,160 --> 00:13:31,360
+parameter F. And so what they did is
+
+326
+00:13:28,399 --> 00:13:34,639
+they said, okay, let's take snapshots of
+
+327
+00:13:31,360 --> 00:13:36,480
+FK and new almost as images. We're going
+
+328
+00:13:34,639 --> 00:13:38,720
+to pass them to a neural operator and
+
+329
+00:13:36,480 --> 00:13:41,040
+we're going to get some set of outputs U
+
+330
+00:13:38,720 --> 00:13:42,880
+the target solution of the PTE at some
+
+331
+00:13:41,040 --> 00:13:45,440
+later time.
+
+332
+00:13:42,880 --> 00:13:49,120
+And then they down they basically said
+
+333
+00:13:45,440 --> 00:13:52,800
+okay this works great for you know our
+
+334
+00:13:49,120 --> 00:13:54,560
+train set but let's consider for example
+
+335
+00:13:52,800 --> 00:13:56,720
+values of FK and new that we haven't
+
+336
+00:13:54,560 --> 00:13:58,240
+seen before. Okay so this was kind of
+
+337
+00:13:56,720 --> 00:14:00,800
+what you were asking about if we have
+
+338
+00:13:58,240 --> 00:14:02,720
+some parameter right in the pin and they
+
+339
+00:14:00,800 --> 00:14:05,920
+showed okay this this pre-trained neural
+
+340
+00:14:02,720 --> 00:14:07,839
+operator basically if you fine-tune it
+
+341
+00:14:05,920 --> 00:14:10,639
+and we'll see how much fine-tuning you
+
+342
+00:14:07,839 --> 00:14:12,320
+need you can do pretty much the same as
+
+343
+00:14:10,639 --> 00:14:14,959
+if you trained from scratch. actually
+
+344
+00:14:12,320 --> 00:14:18,639
+you can do a little bit better without
+
+345
+00:14:14,959 --> 00:14:22,720
+the same cost of training again.
+
+346
+00:14:18,639 --> 00:14:24,480
+All right. And so the problem here is
+
+347
+00:14:22,720 --> 00:14:25,760
+three-fold.
+
+348
+00:14:24,480 --> 00:14:27,279
+Like I mentioned, we had different
+
+349
+00:14:25,760 --> 00:14:29,760
+geometries, different scales. We had
+
+350
+00:14:27,279 --> 00:14:33,199
+chaotic dynamics. We also don't know
+
+351
+00:14:29,760 --> 00:14:35,920
+what a token is. Okay? And we have no
+
+352
+00:14:33,199 --> 00:14:37,760
+huge corpus of data. Okay? So for
+
+353
+00:14:35,920 --> 00:14:40,800
+example, you guys know GPT is basically
+
+354
+00:14:37,760 --> 00:14:42,480
+trained on the whole internet. And here
+
+355
+00:14:40,800 --> 00:14:45,279
+we don't have a whole internet
+
+356
+00:14:42,480 --> 00:14:47,760
+equivalent for solutions of PTEs. Let's
+
+357
+00:14:45,279 --> 00:14:50,079
+say for example, okay, it's kind of an
+
+358
+00:14:47,760 --> 00:14:51,839
+ongoing study, but you can imagine how
+
+359
+00:14:50,079 --> 00:14:53,600
+easy is it for you to create a sentence.
+
+360
+00:14:51,839 --> 00:14:56,000
+It's pretty easy, right? You know, you
+
+361
+00:14:53,600 --> 00:14:59,760
+can make your Facebook post or Instagram
+
+362
+00:14:56,000 --> 00:15:02,320
+post in five minutes. To solve a PTE, it
+
+363
+00:14:59,760 --> 00:15:05,120
+takes a quite a bit of time. And so this
+
+364
+00:15:02,320 --> 00:15:07,440
+this corpus here is a huge limitation
+
+365
+00:15:05,120 --> 00:15:09,920
+actually that we have to the scale of
+
+366
+00:15:07,440 --> 00:15:12,639
+our problem. and we'll see kind of some
+
+367
+00:15:09,920 --> 00:15:15,440
+tricks that we can do to sort of build a
+
+368
+00:15:12,639 --> 00:15:16,959
+bigger data set with the data we have.
+
+369
+00:15:15,440 --> 00:15:19,120
+We also talked about okay we have no
+
+370
+00:15:16,959 --> 00:15:21,680
+idea of what some token means. What is a
+
+371
+00:15:19,120 --> 00:15:24,000
+token? Not really obvious here. For
+
+372
+00:15:21,680 --> 00:15:25,680
+example, what we're going to use
+
+373
+00:15:24,000 --> 00:15:29,880
+essentially is these parameters that we
+
+374
+00:15:25,680 --> 00:15:29,880
+saw on the previous slide as tokens
+
+375
+00:15:30,160 --> 00:15:33,680
+and then chaotic dynamics. So I talked
+
+376
+00:15:32,160 --> 00:15:35,680
+about this fact that physics can be
+
+377
+00:15:33,680 --> 00:15:37,760
+chaotic, right? So we have these
+
+378
+00:15:35,680 --> 00:15:39,279
+trajectories. you change some small
+
+379
+00:15:37,760 --> 00:15:43,199
+parameter and they diverge
+
+380
+00:15:39,279 --> 00:15:46,959
+significantly. All right. And so
+
+381
+00:15:43,199 --> 00:15:48,399
+up until the last year and a half and
+
+382
+00:15:46,959 --> 00:15:50,800
+there's quite a few startups actually
+
+383
+00:15:48,399 --> 00:15:52,399
+betting on this. Foundation models
+
+384
+00:15:50,800 --> 00:15:55,120
+really haven't been shown to work for
+
+385
+00:15:52,399 --> 00:15:56,560
+physical problems. Okay? And we'll see
+
+386
+00:15:55,120 --> 00:15:58,480
+where they do work and where they don't
+
+387
+00:15:56,560 --> 00:16:00,880
+work. But it's really still an open
+
+388
+00:15:58,480 --> 00:16:03,920
+question today.
+
+389
+00:16:00,880 --> 00:16:06,160
+Um, and maybe you know by the end of the
+
+390
+00:16:03,920 --> 00:16:08,720
+the lecture, one second. By the end of
+
+391
+00:16:06,160 --> 00:16:12,920
+the lecture, you'll believe that they
+
+392
+00:16:08,720 --> 00:16:12,920
+have some promise. Go ahead.
+
+393
+00:16:13,040 --> 00:16:16,600
+Sorry. For what?
+
+394
+00:16:16,800 --> 00:16:20,880
+For NLP.
+
+395
+00:16:18,720 --> 00:16:22,560
+Okay. So, like I was saying, so back in
+
+396
+00:16:20,880 --> 00:16:26,000
+the day, everybody trained individual
+
+397
+00:16:22,560 --> 00:16:29,199
+models for each NLP task, right? So for
+
+398
+00:16:26,000 --> 00:16:31,600
+example, I may train a model that is
+
+399
+00:16:29,199 --> 00:16:33,839
+let's say very I'm a stock broker. Okay,
+
+400
+00:16:31,600 --> 00:16:35,440
+I want to predict the output of stocks.
+
+401
+00:16:33,839 --> 00:16:38,639
+So I might train a model that's very
+
+402
+00:16:35,440 --> 00:16:41,120
+good at reading the news. Okay, but then
+
+403
+00:16:38,639 --> 00:16:44,079
+you know I want that model to maybe work
+
+404
+00:16:41,120 --> 00:16:45,759
+in some other environment. Let's say,
+
+405
+00:16:44,079 --> 00:16:47,759
+you know, I'm a biologist. I want it to
+
+406
+00:16:45,759 --> 00:16:50,079
+be interested in helping me design drugs
+
+407
+00:16:47,759 --> 00:16:51,680
+for pharma. So what it will do is it'll
+
+408
+00:16:50,079 --> 00:16:53,680
+read my design docs, let's say, for
+
+409
+00:16:51,680 --> 00:16:55,920
+example, and give me an idea. So these
+
+410
+00:16:53,680 --> 00:16:57,839
+two used to be separate but then the
+
+411
+00:16:55,920 --> 00:17:00,320
+whole chat GBT paradigm basically said
+
+412
+00:16:57,839 --> 00:17:02,240
+that this is the wrong way to do this.
+
+413
+00:17:00,320 --> 00:17:04,079
+That's where it kind of came out of.
+
+414
+00:17:02,240 --> 00:17:07,720
+Okay. And then would you agree that GPT
+
+415
+00:17:04,079 --> 00:17:07,720
+is pretty great today?
+
+416
+00:17:20,799 --> 00:17:25,520
+Why did you need multiple models? Oh, I
+
+417
+00:17:23,199 --> 00:17:27,360
+mean that's kind of what people are it's
+
+418
+00:17:25,520 --> 00:17:30,640
+it's nice to say that in hindsight,
+
+419
+00:17:27,360 --> 00:17:32,960
+right? But like if you are two reasons
+
+420
+00:17:30,640 --> 00:17:34,720
+first, okay, you're 2018, you have
+
+421
+00:17:32,960 --> 00:17:38,160
+significantly less compute than you have
+
+422
+00:17:34,720 --> 00:17:39,520
+today actually. So building a 8 billion
+
+423
+00:17:38,160 --> 00:17:42,400
+parameter model, you don't really get
+
+424
+00:17:39,520 --> 00:17:44,720
+the emergent effects yet, right? So back
+
+425
+00:17:42,400 --> 00:17:47,840
+then a huge model was in the millions of
+
+426
+00:17:44,720 --> 00:17:49,440
+parameters, right? So that might be why
+
+427
+00:17:47,840 --> 00:17:51,520
+you can only do certain tasks because
+
+428
+00:17:49,440 --> 00:17:54,160
+you can't scale that much. Basically the
+
+429
+00:17:51,520 --> 00:17:56,880
+whole NLP idea is about scale saying as
+
+430
+00:17:54,160 --> 00:17:58,640
+you scale more things look better. But
+
+431
+00:17:56,880 --> 00:18:00,640
+if you're in 2018 you didn't have the
+
+432
+00:17:58,640 --> 00:18:03,919
+scale that we have today. So that's kind
+
+433
+00:18:00,640 --> 00:18:06,080
+of where why why people did things like
+
+434
+00:18:03,919 --> 00:18:11,080
+that. But it was it was six years ago.
+
+435
+00:18:06,080 --> 00:18:11,080
+No, eight years ago. Right. So
+
+436
+00:18:28,880 --> 00:18:32,720
+both both. So, okay. So, so the first
+
+437
+00:18:31,600 --> 00:18:35,440
+paradigm that you're describing is
+
+438
+00:18:32,720 --> 00:18:37,600
+called zero shot. Okay. So, it works on
+
+439
+00:18:35,440 --> 00:18:39,200
+something it's never seen. The second
+
+440
+00:18:37,600 --> 00:18:42,160
+paradigm you're describing is sort of
+
+441
+00:18:39,200 --> 00:18:45,600
+this fine-tuning paradigm. Okay. where
+
+442
+00:18:42,160 --> 00:18:48,000
+and it's also it can be in two kind of
+
+443
+00:18:45,600 --> 00:18:50,080
+flavors. So the first flavor could be
+
+444
+00:18:48,000 --> 00:18:52,320
+you want it to work on parameters but it
+
+445
+00:18:50,080 --> 00:18:53,760
+still has the same PD structure, right?
+
+446
+00:18:52,320 --> 00:18:56,480
+The second is you could want it to work
+
+447
+00:18:53,760 --> 00:18:58,799
+on PTEs that it hasn't seen before. The
+
+448
+00:18:56,480 --> 00:19:01,799
+latter flavor is where people are going.
+
+449
+00:18:58,799 --> 00:19:01,799
+Okay.
+
+450
+00:19:17,760 --> 00:19:24,960
+Yeah, I think so. But text does have
+
+451
+00:19:22,400 --> 00:19:26,480
+problems where for they have their own
+
+452
+00:19:24,960 --> 00:19:27,919
+unique set of challenges. So you might
+
+453
+00:19:26,480 --> 00:19:30,320
+say, okay, we have sensor measurements
+
+454
+00:19:27,919 --> 00:19:33,360
+and those sensor measurements are noisy.
+
+455
+00:19:30,320 --> 00:19:36,960
+Text can argue, okay, we have this world
+
+456
+00:19:33,360 --> 00:19:38,880
+where context matters, for example.
+
+457
+00:19:36,960 --> 00:19:41,039
+Another thing text might have is that,
+
+458
+00:19:38,880 --> 00:19:43,200
+you know, you have the word u spelled
+
+459
+00:19:41,039 --> 00:19:45,120
+three different ways, right? So like
+
+460
+00:19:43,200 --> 00:19:46,880
+it's spelled yo u or it could just be
+
+461
+00:19:45,120 --> 00:19:48,160
+spelled with the letter u. That's
+
+462
+00:19:46,880 --> 00:19:51,039
+actually a little bit tricky to
+
+463
+00:19:48,160 --> 00:19:53,039
+distinguish, right? So yes, I would say
+
+464
+00:19:51,039 --> 00:19:54,559
+that you you definitely have noise in
+
+465
+00:19:53,039 --> 00:19:57,280
+that sense, but you could think of noise
+
+466
+00:19:54,559 --> 00:20:01,320
+also in a text way, in a similar way.
+
+467
+00:19:57,280 --> 00:20:01,320
+Yeah. But yeah.
+
+468
+00:20:02,080 --> 00:20:07,280
+Okay. All right. So the main one we're
+
+469
+00:20:05,679 --> 00:20:10,640
+going to look at today was this study
+
+470
+00:20:07,280 --> 00:20:13,760
+that came out in NERURPS in 2024
+
+471
+00:20:10,640 --> 00:20:16,080
+called Poseidon and it's from a group in
+
+472
+00:20:13,760 --> 00:20:18,799
+Zurich that actually works a little bit
+
+473
+00:20:16,080 --> 00:20:21,679
+on neural operators but but not too much
+
+474
+00:20:18,799 --> 00:20:23,760
+and the idea is kind of answering your
+
+475
+00:20:21,679 --> 00:20:25,520
+question. They wanted to ask not just if
+
+476
+00:20:23,760 --> 00:20:27,600
+you could do parameter transfer but if
+
+477
+00:20:25,520 --> 00:20:29,840
+you could do equation to equation
+
+478
+00:20:27,600 --> 00:20:33,120
+transfer so in this case they're going
+
+479
+00:20:29,840 --> 00:20:36,000
+to train on some set of fluid dynamics.
+
+480
+00:20:33,120 --> 00:20:37,840
+Okay, let's say 15 different ones. Okay,
+
+481
+00:20:36,000 --> 00:20:39,840
+different variations of the Navia Stokes
+
+482
+00:20:37,840 --> 00:20:42,000
+equations essentially. And they're going
+
+483
+00:20:39,840 --> 00:20:44,240
+to ask whether or not this model that's
+
+484
+00:20:42,000 --> 00:20:46,960
+trained on fluid dynamics can work for
+
+485
+00:20:44,240 --> 00:20:48,720
+let's say advection diffusion PTE,
+
+486
+00:20:46,960 --> 00:20:52,799
+right? So different PTE designs
+
+487
+00:20:48,720 --> 00:20:55,280
+completely. All right. Um and so the
+
+488
+00:20:52,799 --> 00:20:58,000
+whole kind of idea here is kind of
+
+489
+00:20:55,280 --> 00:21:00,080
+summarized in this this this sort of
+
+490
+00:20:58,000 --> 00:21:02,240
+diagram. So basically you have some set
+
+491
+00:21:00,080 --> 00:21:03,840
+of fluid flows uh compressible or
+
+492
+00:21:02,240 --> 00:21:06,000
+incompressible. If you don't know what
+
+493
+00:21:03,840 --> 00:21:08,000
+these are, just assume that they are a
+
+494
+00:21:06,000 --> 00:21:12,080
+set of PTEs that have pretty rich
+
+495
+00:21:08,000 --> 00:21:13,919
+dynamics and you train just on these
+
+496
+00:21:12,080 --> 00:21:16,480
+PDEs and then you want to see okay, how
+
+497
+00:21:13,919 --> 00:21:18,000
+well do we do on out of distribution
+
+498
+00:21:16,480 --> 00:21:20,559
+downstream task that is completely new
+
+499
+00:21:18,000 --> 00:21:22,480
+PDS okay and we'll go into detail here
+
+500
+00:21:20,559 --> 00:21:24,480
+in a minute but for here you can see
+
+501
+00:21:22,480 --> 00:21:27,120
+okay imagine that you compare their
+
+502
+00:21:24,480 --> 00:21:29,919
+architecture to just a flatout FNO you
+
+503
+00:21:27,120 --> 00:21:33,280
+see that as we see more fine-tuned
+
+504
+00:21:29,919 --> 00:21:34,799
+examples we do better which is you as
+
+505
+00:21:33,280 --> 00:21:38,400
+you would expect. We'll talk about this
+
+506
+00:21:34,799 --> 00:21:42,320
+in detail. Okay. And so the kind of
+
+507
+00:21:38,400 --> 00:21:45,679
+weird or not natural part is like why
+
+508
+00:21:42,320 --> 00:21:48,000
+does a model trained on Navia Stokes
+
+509
+00:21:45,679 --> 00:21:50,559
+tell us something about other PTEEs?
+
+510
+00:21:48,000 --> 00:21:53,039
+Okay. And I kind of want you guys to
+
+511
+00:21:50,559 --> 00:21:56,159
+maybe spend 60 seconds sort of talking
+
+512
+00:21:53,039 --> 00:21:58,159
+about this. So like why is fluids a good
+
+513
+00:21:56,159 --> 00:22:00,400
+idea? Why do they choose fluids let's
+
+514
+00:21:58,159 --> 00:22:03,440
+say? And and do you think this will
+
+515
+00:22:00,400 --> 00:22:05,440
+actually work in the long run? So spend
+
+516
+00:22:03,440 --> 00:22:07,840
+60 seconds talking with your partner and
+
+517
+00:22:05,440 --> 00:22:12,440
+we'll reconvene.
+
+518
+00:22:07,840 --> 00:22:12,440
+So I can be your partner. Okay.
+
+519
+00:25:55,679 --> 00:25:59,279
+There we go. All right. So, hopefully
+
+520
+00:25:57,600 --> 00:26:01,279
+you guys had some conversation. So, do
+
+521
+00:25:59,279 --> 00:26:04,320
+you guys think this should like is this
+
+522
+00:26:01,279 --> 00:26:07,039
+intuitive? Advantages, disadvantages,
+
+523
+00:26:04,320 --> 00:26:08,720
+ideas? So, we had a a little group over
+
+524
+00:26:07,039 --> 00:26:10,480
+here. Some of you thought it wasn't
+
+525
+00:26:08,720 --> 00:26:12,720
+intuitive at all. Yeah. What do you guys
+
+526
+00:26:10,480 --> 00:26:14,480
+think? Maybe we could go over here. Our
+
+527
+00:26:12,720 --> 00:26:16,720
+favorite friends. I see you guys have
+
+528
+00:26:14,480 --> 00:26:21,000
+moved back to hide from me. How about
+
+529
+00:26:16,720 --> 00:26:21,000
+you guys? What did you guys talk about,
+
+530
+00:26:26,880 --> 00:26:30,799
+right? But what if you don't use it on a
+
+531
+00:26:29,120 --> 00:26:33,840
+fluid dynamics problem? Does it make any
+
+532
+00:26:30,799 --> 00:26:35,760
+sense? It doesn't make sense, right? No.
+
+533
+00:26:33,840 --> 00:26:39,200
+No.
+
+534
+00:26:35,760 --> 00:26:41,600
+What if there was some argument that
+
+535
+00:26:39,200 --> 00:26:44,799
+fluid dynamics tells us something
+
+536
+00:26:41,600 --> 00:26:48,360
+fundamental about all PDS? Would you
+
+537
+00:26:44,799 --> 00:26:48,360
+agree with that argument?
+
+538
+00:26:49,520 --> 00:26:53,520
+You're hesitant.
+
+539
+00:26:51,279 --> 00:26:55,679
+You're not convinced.
+
+540
+00:26:53,520 --> 00:26:57,279
+Yeah, I don't think it's obvious either
+
+541
+00:26:55,679 --> 00:26:58,880
+actually. And so that's basically what
+
+542
+00:26:57,279 --> 00:27:03,120
+these guys tried to set out to figure
+
+543
+00:26:58,880 --> 00:27:06,240
+out. So 2024 we've seen probably chatbt
+
+544
+00:27:03,120 --> 00:27:08,880
+not widely adopted but in the CS
+
+545
+00:27:06,240 --> 00:27:10,640
+community it's well known and so these
+
+546
+00:27:08,880 --> 00:27:12,960
+guys basically said like can I do the
+
+547
+00:27:10,640 --> 00:27:15,360
+same thing but for for their area of
+
+548
+00:27:12,960 --> 00:27:19,559
+expertise machine learning right once
+
+549
+00:27:15,360 --> 00:27:19,559
+this loads we'll talk about it
+
+550
+00:27:24,799 --> 00:27:32,799
+okay and so here might be some reasons
+
+551
+00:27:29,120 --> 00:27:34,640
+why this this would be valuable. So we
+
+552
+00:27:32,799 --> 00:27:36,799
+agree that fluids are well understood.
+
+553
+00:27:34,640 --> 00:27:39,440
+We have some clean data. We know how to
+
+554
+00:27:36,799 --> 00:27:42,240
+do them. And you would agree that fluids
+
+555
+00:27:39,440 --> 00:27:43,919
+have rich rich dynamics, right? So we
+
+556
+00:27:42,240 --> 00:27:46,960
+talked about they're chaotic. They have
+
+557
+00:27:43,919 --> 00:27:48,880
+shocks. These types of things. Okay? And
+
+558
+00:27:46,960 --> 00:27:50,480
+you know we have a bunch of operators to
+
+559
+00:27:48,880 --> 00:27:53,919
+learn actually. Let's say in this case
+
+560
+00:27:50,480 --> 00:27:56,240
+they chose six operators. Okay.
+
+561
+00:27:53,919 --> 00:27:58,000
+Why would it not make sense? Well, it's
+
+562
+00:27:56,240 --> 00:27:59,200
+exactly what you said. Yeah. Then it
+
+563
+00:27:58,000 --> 00:28:02,880
+doesn't make sense that this would work
+
+564
+00:27:59,200 --> 00:28:04,640
+for some elliptic PTE, right? And the
+
+565
+00:28:02,880 --> 00:28:07,919
+analog that we kind of talked about is
+
+566
+00:28:04,640 --> 00:28:09,760
+you you pre-trained on news and you
+
+567
+00:28:07,919 --> 00:28:11,679
+tried to work on let's say poetry or
+
+568
+00:28:09,760 --> 00:28:14,720
+something like that. So it's it's not
+
+569
+00:28:11,679 --> 00:28:16,799
+obvious unless news and poetry have some
+
+570
+00:28:14,720 --> 00:28:19,600
+underlying structure they agree on, for
+
+571
+00:28:16,799 --> 00:28:21,600
+example, language, right? And so it's
+
+572
+00:28:19,600 --> 00:28:24,320
+not obvious that this will work kind of
+
+573
+00:28:21,600 --> 00:28:27,360
+off the top of of your head, but it
+
+574
+00:28:24,320 --> 00:28:29,360
+turns out it will work. And the first
+
+575
+00:28:27,360 --> 00:28:32,559
+thing we need to sort of think about is
+
+576
+00:28:29,360 --> 00:28:35,279
+how to solve that data problem. Okay?
+
+577
+00:28:32,559 --> 00:28:36,960
+And so basically imagine that we have a
+
+578
+00:28:35,279 --> 00:28:40,240
+bunch of pairs, a bunch of snapshots
+
+579
+00:28:36,960 --> 00:28:42,799
+from our solver and we need to collect
+
+580
+00:28:40,240 --> 00:28:44,799
+more data somehow from the snapshots and
+
+581
+00:28:42,799 --> 00:28:46,159
+and I promise that you know GPT is
+
+582
+00:28:44,799 --> 00:28:48,399
+trained on the whole internet. You can
+
+583
+00:28:46,159 --> 00:28:50,480
+imagine that's quite a bit of data. So
+
+584
+00:28:48,399 --> 00:28:52,799
+in physics we have a limited data set
+
+585
+00:28:50,480 --> 00:28:55,520
+and so what might you do? Well you might
+
+586
+00:28:52,799 --> 00:28:59,039
+build this sort of mapping. So you might
+
+587
+00:28:55,520 --> 00:29:00,799
+say okay an input output pair for my
+
+588
+00:28:59,039 --> 00:29:04,000
+pre-trained corpus is the mapping from
+
+589
+00:29:00,799 --> 00:29:06,640
+t0 to t1. It's also the mapping from T0
+
+590
+00:29:04,000 --> 00:29:09,679
+to T2, T0 to T3, so on and so forth
+
+591
+00:29:06,640 --> 00:29:11,840
+based on all my snapshots, right? And so
+
+592
+00:29:09,679 --> 00:29:14,480
+this for example, if I had, you know,
+
+593
+00:29:11,840 --> 00:29:17,600
+this would build me capital T data sets,
+
+594
+00:29:14,480 --> 00:29:19,840
+right? Or capital T pairs. Okay? And I
+
+595
+00:29:17,600 --> 00:29:22,559
+can do the same thing with T1 for all
+
+596
+00:29:19,840 --> 00:29:25,360
+future times. So my input now is going
+
+597
+00:29:22,559 --> 00:29:27,840
+to be the data at T1. So that is the PD
+
+598
+00:29:25,360 --> 00:29:29,679
+snapshot at T1. And my output will be
+
+599
+00:29:27,840 --> 00:29:32,480
+let's say an example of T2, an example
+
+600
+00:29:29,679 --> 00:29:34,640
+of T3, so on and so forth. I can do this
+
+601
+00:29:32,480 --> 00:29:36,799
+over and over and over again. And let's
+
+602
+00:29:34,640 --> 00:29:39,919
+say for example I had five data pairs. I
+
+603
+00:29:36,799 --> 00:29:42,640
+actually turned five snapshots
+
+604
+00:29:39,919 --> 00:29:44,799
+into essentially 15.
+
+605
+00:29:42,640 --> 00:29:47,120
+Okay. So this is a little bit of way
+
+606
+00:29:44,799 --> 00:29:51,360
+okay you might imagine I had now
+
+607
+00:29:47,120 --> 00:29:53,600
+building this corpus and there's one
+
+608
+00:29:51,360 --> 00:29:55,360
+little trick that we have. So for k
+
+609
+00:29:53,600 --> 00:29:57,600
+snapshots you can essentially do the
+
+610
+00:29:55,360 --> 00:30:01,840
+common cominatorics problem and you get
+
+611
+00:29:57,600 --> 00:30:03,600
+basically k square data pairs. Okay, but
+
+612
+00:30:01,840 --> 00:30:06,320
+the thing that we didn't talk about is
+
+613
+00:30:03,600 --> 00:30:08,399
+that these snapshots obviously are going
+
+614
+00:30:06,320 --> 00:30:12,320
+to depend on how much distance is
+
+615
+00:30:08,399 --> 00:30:13,840
+between the data pairs, right? And so if
+
+616
+00:30:12,320 --> 00:30:16,080
+we're going to build this data set, we
+
+617
+00:30:13,840 --> 00:30:18,399
+might need to encode this distance into
+
+618
+00:30:16,080 --> 00:30:20,799
+our model. For example, choosing the
+
+619
+00:30:18,399 --> 00:30:23,200
+model to have delta t as input. All
+
+620
+00:30:20,799 --> 00:30:25,360
+right, so this is the first little trick
+
+621
+00:30:23,200 --> 00:30:27,919
+that we can do to build out a lot more
+
+622
+00:30:25,360 --> 00:30:29,279
+data. It was introduced in this Poseidon
+
+623
+00:30:27,919 --> 00:30:31,039
+paper. It's I think pretty
+
+624
+00:30:29,279 --> 00:30:34,399
+straightforward.
+
+625
+00:30:31,039 --> 00:30:35,440
+Okay. The second thing is that what are
+
+626
+00:30:34,399 --> 00:30:38,559
+we going to think about our
+
+627
+00:30:35,440 --> 00:30:41,600
+architecture? And there's a pretty big
+
+628
+00:30:38,559 --> 00:30:43,919
+deep dive that we could go down in this
+
+629
+00:30:41,600 --> 00:30:45,440
+direction. But we're going to just stay
+
+630
+00:30:43,919 --> 00:30:46,640
+present here and do something very
+
+631
+00:30:45,440 --> 00:30:49,200
+simple. But we're going to say that we
+
+632
+00:30:46,640 --> 00:30:52,159
+have a bunch of transformers and those
+
+633
+00:30:49,200 --> 00:30:54,880
+transformers get that input snapshot
+
+634
+00:30:52,159 --> 00:30:57,520
+some TK and they output that output
+
+635
+00:30:54,880 --> 00:31:00,799
+snapshot at whatever my target time is
+
+636
+00:30:57,520 --> 00:31:04,080
+and they get let's say at every layer
+
+637
+00:31:00,799 --> 00:31:06,080
+some delta t and we'll talk about this
+
+638
+00:31:04,080 --> 00:31:07,440
+design about how we should feed in these
+
+639
+00:31:06,080 --> 00:31:09,679
+snapshots because that's kind of the
+
+640
+00:31:07,440 --> 00:31:12,320
+main point of this paper actually. They
+
+641
+00:31:09,679 --> 00:31:14,000
+take a pre-existing transformer model,
+
+642
+00:31:12,320 --> 00:31:16,000
+not pre-existing but like a an
+
+643
+00:31:14,000 --> 00:31:18,559
+architecture that's sort of wellknown
+
+644
+00:31:16,000 --> 00:31:22,159
+and they ask about how to kind of
+
+645
+00:31:18,559 --> 00:31:24,240
+augment our data. Okay. And so how are
+
+646
+00:31:22,159 --> 00:31:26,960
+we going to do this? It turns out it's
+
+647
+00:31:24,240 --> 00:31:30,000
+in a pretty unintuitive way. So
+
+648
+00:31:26,960 --> 00:31:31,440
+essentially what we have is in each
+
+649
+00:31:30,000 --> 00:31:33,760
+transformer we're going to have a layer
+
+650
+00:31:31,440 --> 00:31:35,039
+norm, right? I assume you're all
+
+651
+00:31:33,760 --> 00:31:36,799
+familiar with this layer norm.
+
+652
+00:31:35,039 --> 00:31:40,320
+Basically, this ensures that our
+
+653
+00:31:36,799 --> 00:31:42,320
+gradients don't blow up. And the idea is
+
+654
+00:31:40,320 --> 00:31:44,559
+the following. Okay, let's say our input
+
+655
+00:31:42,320 --> 00:31:48,000
+vector from our previous layer to the
+
+656
+00:31:44,559 --> 00:31:51,679
+layer norm is V. I'm going to normalize
+
+657
+00:31:48,000 --> 00:31:54,000
+V based on its mean and variance. Okay,
+
+658
+00:31:51,679 --> 00:31:56,799
+with two parameters, let's call them
+
+659
+00:31:54,000 --> 00:31:58,640
+alpha and beta. Okay, so this is a
+
+660
+00:31:56,799 --> 00:32:00,320
+standard layer norm architecture. I
+
+661
+00:31:58,640 --> 00:32:02,720
+think most of you are familiar with it.
+
+662
+00:32:00,320 --> 00:32:05,360
+Alpha and beta sort of control the the
+
+663
+00:32:02,720 --> 00:32:07,200
+scaling and shift of the norm. Okay. And
+
+664
+00:32:05,360 --> 00:32:10,080
+so what did Poseidon do? Well, they
+
+665
+00:32:07,200 --> 00:32:12,880
+actually just did this very simple thing
+
+666
+00:32:10,080 --> 00:32:15,279
+in the layer norm. They basically
+
+667
+00:32:12,880 --> 00:32:18,799
+changed alpha and beta these parameters
+
+668
+00:32:15,279 --> 00:32:22,080
+to be functions of delta t. Okay. And
+
+669
+00:32:18,799 --> 00:32:24,799
+then for example, you have a shift on
+
+670
+00:32:22,080 --> 00:32:27,039
+how large your layer norm is based on
+
+671
+00:32:24,799 --> 00:32:29,360
+this delta t.
+
+672
+00:32:27,039 --> 00:32:31,440
+This is kind of a weird trick. uh it
+
+673
+00:32:29,360 --> 00:32:33,519
+doesn't actually make sense to me at
+
+674
+00:32:31,440 --> 00:32:36,799
+least why how you would come up with
+
+675
+00:32:33,519 --> 00:32:38,320
+this idea off the top of my head but
+
+676
+00:32:36,799 --> 00:32:41,200
+essentially what they're saying is that
+
+677
+00:32:38,320 --> 00:32:44,080
+the size of your normalization okay
+
+678
+00:32:41,200 --> 00:32:46,399
+should depend on how many steps you're
+
+679
+00:32:44,080 --> 00:32:49,200
+trying to predict in the future all
+
+680
+00:32:46,399 --> 00:32:52,919
+right anyone have any intuition for why
+
+681
+00:32:49,200 --> 00:32:52,919
+this may work
+
+682
+00:32:53,840 --> 00:32:59,039
+yeah I also didn't have any at the same
+
+683
+00:32:56,000 --> 00:33:01,519
+time it turns out basically is that you
+
+684
+00:32:59,039 --> 00:33:04,000
+need to inject this delta t at every
+
+685
+00:33:01,519 --> 00:33:05,919
+layer. And we'll see why in a second.
+
+686
+00:33:04,000 --> 00:33:07,120
+And this is just a very simple way to do
+
+687
+00:33:05,919 --> 00:33:09,360
+it, but there's about a 50 different
+
+688
+00:33:07,120 --> 00:33:14,080
+others that they did that also work.
+
+689
+00:33:09,360 --> 00:33:16,240
+Okay. Okay. And so, like I was saying,
+
+690
+00:33:14,080 --> 00:33:19,279
+why do we need to do this? It turns out
+
+691
+00:33:16,240 --> 00:33:21,840
+that essentially by reminding the neural
+
+692
+00:33:19,279 --> 00:33:24,159
+network at each transformer layer, you
+
+693
+00:33:21,840 --> 00:33:26,480
+can actually get better performance than
+
+694
+00:33:24,159 --> 00:33:30,600
+let's say if you concatenated your input
+
+695
+00:33:26,480 --> 00:33:30,600
+with delta t at the start.
+
+696
+00:33:30,880 --> 00:33:36,960
+So this is a a unique little finding.
+
+697
+00:33:34,000 --> 00:33:38,880
+I'm not sure exactly
+
+698
+00:33:36,960 --> 00:33:41,039
+what to make of it to be honest with you
+
+699
+00:33:38,880 --> 00:33:43,279
+guys because there's like about a
+
+700
+00:33:41,039 --> 00:33:45,440
+billion different ways I could decide to
+
+701
+00:33:43,279 --> 00:33:48,480
+inject this delta t that I think would
+
+702
+00:33:45,440 --> 00:33:50,799
+work. Um, but this is the way they chose
+
+703
+00:33:48,480 --> 00:33:52,399
+and I think it's kind of a little trick
+
+704
+00:33:50,799 --> 00:33:54,799
+that you probably haven't seen before
+
+705
+00:33:52,399 --> 00:33:57,840
+that I thought was interesting.
+
+706
+00:33:54,799 --> 00:33:59,440
+Any questions here?
+
+707
+00:33:57,840 --> 00:34:03,159
+Yes. Let's go in the front and then
+
+708
+00:33:59,440 --> 00:34:03,159
+we'll go in the back. Go ahead.
+
+709
+00:34:13,359 --> 00:34:20,000
+So the positional encoding is typically
+
+710
+00:34:16,000 --> 00:34:22,480
+over x in this case and so like okay the
+
+711
+00:34:20,000 --> 00:34:25,359
+way they define the data set for example
+
+712
+00:34:22,480 --> 00:34:27,520
+the positional encoding will be u at a
+
+713
+00:34:25,359 --> 00:34:29,119
+bunch of points with where I've written
+
+714
+00:34:27,520 --> 00:34:31,119
+this dot represents a bunch of points in
+
+715
+00:34:29,119 --> 00:34:32,879
+x and so then that will be augmented
+
+716
+00:34:31,119 --> 00:34:35,760
+with a set of positional encodings that
+
+717
+00:34:32,879 --> 00:34:38,480
+learnable. Okay. But what isn't sort of
+
+718
+00:34:35,760 --> 00:34:40,480
+encoded is actually this this time. So
+
+719
+00:34:38,480 --> 00:34:41,440
+they don't treat the time as like you
+
+720
+00:34:40,480 --> 00:34:43,440
+know how you would do positional
+
+721
+00:34:41,440 --> 00:34:45,760
+encoding for a token for an NLP. They
+
+722
+00:34:43,440 --> 00:34:47,599
+don't treat it like that actually. Okay.
+
+723
+00:34:45,760 --> 00:34:50,960
+They treat time as sort of your input
+
+724
+00:34:47,599 --> 00:34:53,280
+and output and that's it. Flat. And so
+
+725
+00:34:50,960 --> 00:34:54,960
+the way they kind of do this is Yeah.
+
+726
+00:34:53,280 --> 00:34:56,240
+It's but it's weird, right? Like why
+
+727
+00:34:54,960 --> 00:34:58,960
+wouldn't you just treat time as a
+
+728
+00:34:56,240 --> 00:35:00,720
+position encoding? I agree. I'm not sure
+
+729
+00:34:58,960 --> 00:35:05,040
+to be honest with you. I I assume it
+
+730
+00:35:00,720 --> 00:35:08,200
+didn't work. Yeah, but good question in
+
+731
+00:35:05,040 --> 00:35:08,200
+the back.
+
+732
+00:35:11,920 --> 00:35:15,839
+I think that could be probably where
+
+733
+00:35:13,520 --> 00:35:17,760
+it's inspired from. I'm not so familiar
+
+734
+00:35:15,839 --> 00:35:19,599
+with the adaptive layer norm idea in
+
+735
+00:35:17,760 --> 00:35:22,640
+diffusion models to be honest. We can
+
+736
+00:35:19,599 --> 00:35:23,920
+talk after but okay actually it makes
+
+737
+00:35:22,640 --> 00:35:25,520
+sense. So diffusion model you're
+
+738
+00:35:23,920 --> 00:35:27,119
+basically iterating a bunch of times
+
+739
+00:35:25,520 --> 00:35:29,280
+with some small time step adding and
+
+740
+00:35:27,119 --> 00:35:32,880
+denoising and I guess they add this sort
+
+741
+00:35:29,280 --> 00:35:32,880
+of delta t in that
+
+742
+00:35:37,040 --> 00:35:41,119
+I see. Yeah, I think then probably
+
+743
+00:35:39,440 --> 00:35:44,520
+that's where it's from if I had to
+
+744
+00:35:41,119 --> 00:35:44,520
+guess. Yeah.
+
+745
+00:35:44,880 --> 00:35:50,160
+Okay. All right. And so how does this
+
+746
+00:35:47,599 --> 00:35:52,320
+actually work? Well, let's say, okay, we
+
+747
+00:35:50,160 --> 00:35:53,839
+picked 15 downstream tasks. Some of
+
+748
+00:35:52,320 --> 00:35:56,320
+them, everything I'll show you today in
+
+749
+00:35:53,839 --> 00:35:57,839
+images is not a fluid. Okay. And
+
+750
+00:35:56,320 --> 00:36:01,040
+basically what they do is they take this
+
+751
+00:35:57,839 --> 00:36:05,280
+Poseidon which was just trained on let's
+
+752
+00:36:01,040 --> 00:36:07,359
+say you know this huge corpus of
+
+753
+00:36:05,280 --> 00:36:10,640
+fluid dynamic data and then they're
+
+754
+00:36:07,359 --> 00:36:13,200
+going to slowly give it a small number
+
+755
+00:36:10,640 --> 00:36:15,119
+of data from the actual PTE that they
+
+756
+00:36:13,200 --> 00:36:16,720
+want to learn. Let's say that data is
+
+757
+00:36:15,119 --> 00:36:18,960
+generated by varying an initial
+
+758
+00:36:16,720 --> 00:36:20,400
+condition or parameter.
+
+759
+00:36:18,960 --> 00:36:22,560
+And then they're going to compare about
+
+760
+00:36:20,400 --> 00:36:25,760
+this against an FNL which was trained
+
+761
+00:36:22,560 --> 00:36:28,960
+from scratch. Okay. Basically, this
+
+762
+00:36:25,760 --> 00:36:32,640
+tells you how much effect that
+
+763
+00:36:28,960 --> 00:36:34,720
+pre-training has, right? And you know
+
+764
+00:36:32,640 --> 00:36:37,280
+the problems are exactly the same as you
+
+765
+00:36:34,720 --> 00:36:39,520
+might imagine. So we have six PTE but
+
+766
+00:36:37,280 --> 00:36:40,960
+the exact initial conditions are
+
+767
+00:36:39,520 --> 00:36:43,760
+different. So this would be that
+
+768
+00:36:40,960 --> 00:36:45,280
+parameter modification and then they
+
+769
+00:36:43,760 --> 00:36:48,480
+also consider the case where we have new
+
+770
+00:36:45,280 --> 00:36:49,839
+PTEES, right? Okay. And so what was the
+
+771
+00:36:48,480 --> 00:36:51,440
+the headline? And we'll look at some
+
+772
+00:36:49,839 --> 00:36:54,240
+qualitative examples in a second, but
+
+773
+00:36:51,440 --> 00:36:57,520
+the headline was that it takes about 20
+
+774
+00:36:54,240 --> 00:36:59,760
+samples for the largest Poseidon model
+
+775
+00:36:57,520 --> 00:37:02,960
+about a 1 billion model. We'll see to
+
+776
+00:36:59,760 --> 00:37:06,880
+match what FNO does when it takes 1,024
+
+777
+00:37:02,960 --> 00:37:09,920
+samples. Okay, so the idea here is that
+
+778
+00:37:06,880 --> 00:37:12,480
+okay, if I have this pre-trained model
+
+779
+00:37:09,920 --> 00:37:14,480
+and I try to start training it from n
+
+780
+00:37:12,480 --> 00:37:17,280
+equals 1, it's only going to take 20
+
+781
+00:37:14,480 --> 00:37:18,720
+different PTE samples to do well
+
+782
+00:37:17,280 --> 00:37:20,880
+compared to if I've trained it from
+
+783
+00:37:18,720 --> 00:37:23,200
+scratch. So basically saying that this
+
+784
+00:37:20,880 --> 00:37:26,000
+pre-trained MA model actually helped us
+
+785
+00:37:23,200 --> 00:37:30,160
+for some weird reason on the downstream
+
+786
+00:37:26,000 --> 00:37:32,400
+task. Okay. And so here's an example of
+
+787
+00:37:30,160 --> 00:37:34,240
+what this looks like. So here on the
+
+788
+00:37:32,400 --> 00:37:37,920
+left I have the ground truth solution of
+
+789
+00:37:34,240 --> 00:37:40,560
+an elliptic PTE. Okay. And here is
+
+790
+00:37:37,920 --> 00:37:42,960
+Poseidon the pre-trained models output
+
+791
+00:37:40,560 --> 00:37:45,520
+as I fine-tune it slowly and slowly over
+
+792
+00:37:42,960 --> 00:37:47,680
+more models. And you see at first it
+
+793
+00:37:45,520 --> 00:37:50,000
+actually sucks. Like it's exactly as you
+
+794
+00:37:47,680 --> 00:37:52,720
+would imagine. Uh why would something
+
+795
+00:37:50,000 --> 00:37:55,119
+that's trained on fluids work on an
+
+796
+00:37:52,720 --> 00:37:58,400
+elliptic and it and it doesn't, right?
+
+797
+00:37:55,119 --> 00:38:00,400
+But it only takes fewer samples down the
+
+798
+00:37:58,400 --> 00:38:02,079
+line to fine-tune.
+
+799
+00:38:00,400 --> 00:38:06,320
+That's the essential argument that they
+
+800
+00:38:02,079 --> 00:38:08,800
+made here. Okay. And the next question
+
+801
+00:38:06,320 --> 00:38:11,280
+you may ask and it's a common question
+
+802
+00:38:08,800 --> 00:38:13,920
+is that okay maybe I just needed more
+
+803
+00:38:11,280 --> 00:38:16,480
+compute like how much does that benefit
+
+804
+00:38:13,920 --> 00:38:19,040
+my system just like in NLP. And so they
+
+805
+00:38:16,480 --> 00:38:22,400
+explored this problem with three models
+
+806
+00:38:19,040 --> 00:38:25,680
+they call it tiny, big and large. Okay.
+
+807
+00:38:22,400 --> 00:38:27,359
+And here's exactly what their training
+
+808
+00:38:25,680 --> 00:38:29,280
+error is going to look like over the
+
+809
+00:38:27,359 --> 00:38:32,079
+whole corpus. So there's not many epochs
+
+810
+00:38:29,280 --> 00:38:34,480
+here, but it's a huge corpus, 77,000
+
+811
+00:38:32,079 --> 00:38:37,520
+trajectories. And so what you see is
+
+812
+00:38:34,480 --> 00:38:40,000
+okay, the smallest model does not do
+
+813
+00:38:37,520 --> 00:38:42,480
+nearly as well as let's say, you know,
+
+814
+00:38:40,000 --> 00:38:44,000
+the largest model. And the left is the
+
+815
+00:38:42,480 --> 00:38:46,480
+training, the right is your testing
+
+816
+00:38:44,000 --> 00:38:48,079
+error. Okay,
+
+817
+00:38:46,480 --> 00:38:50,640
+so what does this tell us? Well, it
+
+818
+00:38:48,079 --> 00:38:52,480
+tells us the scale still does matter.
+
+819
+00:38:50,640 --> 00:38:55,040
+And scale really matters when we
+
+820
+00:38:52,480 --> 00:38:58,599
+consider pre-training. Okay, so we need
+
+821
+00:38:55,040 --> 00:38:58,599
+a larger model.
+
+822
+00:39:02,320 --> 00:39:05,760
+The next finding that they sort of
+
+823
+00:39:04,400 --> 00:39:10,079
+investigated is actually a pretty
+
+824
+00:39:05,760 --> 00:39:13,920
+interesting one is how much does data
+
+825
+00:39:10,079 --> 00:39:16,480
+matter? And it turns out like the
+
+826
+00:39:13,920 --> 00:39:18,720
+question is does more data help? Does
+
+827
+00:39:16,480 --> 00:39:21,520
+the type of data help? What matters
+
+828
+00:39:18,720 --> 00:39:22,960
+more? Okay. And so this would imagine
+
+829
+00:39:21,520 --> 00:39:24,240
+you know it's very important for a
+
+830
+00:39:22,960 --> 00:39:26,320
+physicist, right? Because we talked
+
+831
+00:39:24,240 --> 00:39:27,440
+about how data was expensive to get,
+
+832
+00:39:26,320 --> 00:39:31,839
+right? Right? We even did that little
+
+833
+00:39:27,440 --> 00:39:35,280
+trick to build kar data. And here's what
+
+834
+00:39:31,839 --> 00:39:38,000
+they found. So on the left, these are
+
+835
+00:39:35,280 --> 00:39:40,640
+both on the same scale. On the left,
+
+836
+00:39:38,000 --> 00:39:43,280
+this is for example the median relative
+
+837
+00:39:40,640 --> 00:39:46,000
+L1 error over all of the downstream
+
+838
+00:39:43,280 --> 00:39:47,839
+tasks. Okay? So as they show more
+
+839
+00:39:46,000 --> 00:39:50,160
+trajectories of the downstream task,
+
+840
+00:39:47,839 --> 00:39:52,240
+this is the sort of error. And what they
+
+841
+00:39:50,160 --> 00:39:54,800
+said is, okay, here's what happens if
+
+842
+00:39:52,240 --> 00:39:57,359
+you pre-train on the full data set. you
+
+843
+00:39:54,800 --> 00:40:00,640
+do, you know, pretty well. Okay, it's
+
+844
+00:39:57,359 --> 00:40:02,560
+log scale. And then if you just train on
+
+845
+00:40:00,640 --> 00:40:04,640
+1/8 of the data set, what are you giving
+
+846
+00:40:02,560 --> 00:40:06,400
+up? How much are you giving up? And
+
+847
+00:40:04,640 --> 00:40:09,359
+you're actually not giving up too too
+
+848
+00:40:06,400 --> 00:40:12,640
+much. This is probably at max one
+
+849
+00:40:09,359 --> 00:40:14,720
+magnitude difference. Okay, then they
+
+850
+00:40:12,640 --> 00:40:16,800
+asked, okay, but what if I only train on
+
+851
+00:40:14,720 --> 00:40:19,359
+half of the data set? It turns out I
+
+852
+00:40:16,800 --> 00:40:22,000
+repeat the same results as the full one.
+
+853
+00:40:19,359 --> 00:40:25,359
+Okay, but then they said, okay, what if
+
+854
+00:40:22,000 --> 00:40:27,280
+I take out one class of the PTEES? Okay,
+
+855
+00:40:25,359 --> 00:40:30,160
+so I don't show it for example that
+
+856
+00:40:27,280 --> 00:40:33,760
+fifth operator and it and it turns out
+
+857
+00:40:30,160 --> 00:40:37,200
+this this diversity basically
+
+858
+00:40:33,760 --> 00:40:39,280
+also significantly limits your problems.
+
+859
+00:40:37,200 --> 00:40:40,960
+And so what is the the the result here?
+
+860
+00:40:39,280 --> 00:40:43,520
+Well, the result is the following. So
+
+861
+00:40:40,960 --> 00:40:45,359
+once you have enough data, okay, so
+
+862
+00:40:43,520 --> 00:40:48,079
+between full and a half data set, we see
+
+863
+00:40:45,359 --> 00:40:50,720
+no difference. the diversity of the data
+
+864
+00:40:48,079 --> 00:40:52,560
+set starts to really matter. Okay, so
+
+865
+00:40:50,720 --> 00:40:55,040
+for example, this data set's still the
+
+866
+00:40:52,560 --> 00:40:56,560
+same size, but you lost half the
+
+867
+00:40:55,040 --> 00:40:58,560
+results.
+
+868
+00:40:56,560 --> 00:41:00,079
+This is kind of a a nice result
+
+869
+00:40:58,560 --> 00:41:02,160
+actually. It's it's one that's
+
+870
+00:41:00,079 --> 00:41:04,240
+encouraging for physicists or or people
+
+871
+00:41:02,160 --> 00:41:06,720
+in scientific machine learning because
+
+872
+00:41:04,240 --> 00:41:10,640
+we have a problem with data, but we can
+
+873
+00:41:06,720 --> 00:41:12,960
+choose how we generate it typically. So,
+
+874
+00:41:10,640 --> 00:41:14,560
+it's kind of an opposite of NLP where
+
+875
+00:41:12,960 --> 00:41:15,920
+they don't actually have a problem with
+
+876
+00:41:14,560 --> 00:41:18,240
+data. they can train on the whole
+
+877
+00:41:15,920 --> 00:41:19,920
+internet. But they didn't choose how
+
+878
+00:41:18,240 --> 00:41:22,319
+they generated that internet data
+
+879
+00:41:19,920 --> 00:41:26,240
+actually, right? It was generated sort
+
+880
+00:41:22,319 --> 00:41:29,760
+of out of by someone else. Okay. All
+
+881
+00:41:26,240 --> 00:41:33,280
+right. And the third lesson is is how
+
+882
+00:41:29,760 --> 00:41:35,040
+good is fine-tuning. And what I'm going
+
+883
+00:41:33,280 --> 00:41:37,040
+to show you here is exactly what you
+
+884
+00:41:35,040 --> 00:41:38,960
+would expect. So in this case, let's
+
+885
+00:41:37,040 --> 00:41:41,119
+just consider FNL and let's just
+
+886
+00:41:38,960 --> 00:41:42,720
+consider the Poseidon large and big
+
+887
+00:41:41,119 --> 00:41:45,040
+models. Ignore you can ignore the other
+
+888
+00:41:42,720 --> 00:41:46,720
+architectures. Okay, just just for this
+
+889
+00:41:45,040 --> 00:41:48,560
+purpose. And so what we see is okay,
+
+890
+00:41:46,720 --> 00:41:52,079
+this is what FNO looks like trained from
+
+891
+00:41:48,560 --> 00:41:54,560
+scratch. Okay, before this this is 64.
+
+892
+00:41:52,079 --> 00:41:57,280
+Before 64, it's basically off the screen
+
+893
+00:41:54,560 --> 00:41:59,440
+and it ruins the whole point.
+
+894
+00:41:57,280 --> 00:42:02,079
+And what you see is that okay, this is
+
+895
+00:41:59,440 --> 00:42:04,720
+just fine-tuning and we actually
+
+896
+00:42:02,079 --> 00:42:07,280
+outperform the FNO when trained from
+
+897
+00:42:04,720 --> 00:42:08,640
+scratch. And this is kind of a a
+
+898
+00:42:07,280 --> 00:42:10,960
+shocking result because basically what
+
+899
+00:42:08,640 --> 00:42:13,280
+it says is that this pre-trained model
+
+900
+00:42:10,960 --> 00:42:15,680
+can actually do better from scratch on
+
+901
+00:42:13,280 --> 00:42:18,079
+the same number of trajectories when
+
+902
+00:42:15,680 --> 00:42:19,839
+it's given physics that it's not
+
+903
+00:42:18,079 --> 00:42:22,560
+necessarily
+
+904
+00:42:19,839 --> 00:42:25,119
+relevant to the problem, right? So this
+
+905
+00:42:22,560 --> 00:42:27,920
+kind of answers your question about like
+
+906
+00:42:25,119 --> 00:42:30,240
+why does this work? Well, it turns out
+
+907
+00:42:27,920 --> 00:42:31,839
+it kind of doesn't work in the
+
+908
+00:42:30,240 --> 00:42:34,240
+beginning, but it gives you this sort of
+
+909
+00:42:31,839 --> 00:42:36,319
+prior that's a good set of weights to
+
+910
+00:42:34,240 --> 00:42:40,079
+sort of learn quickly. That's kind of
+
+911
+00:42:36,319 --> 00:42:41,760
+the idea. Um, yeah, this idea is
+
+912
+00:42:40,079 --> 00:42:43,359
+actually not new. It's been developed
+
+913
+00:42:41,760 --> 00:42:44,560
+for a long time. Have any of you guys
+
+914
+00:42:43,359 --> 00:42:47,599
+heard about the lottery ticket
+
+915
+00:42:44,560 --> 00:42:50,079
+hypothesis paper?
+
+916
+00:42:47,599 --> 00:42:52,560
+It's basically this idea that certain
+
+917
+00:42:50,079 --> 00:42:55,280
+sets of weights are much better to start
+
+918
+00:42:52,560 --> 00:42:57,119
+training from than others. And finding
+
+919
+00:42:55,280 --> 00:42:59,200
+these sets of weights that are good is
+
+920
+00:42:57,119 --> 00:43:01,440
+equivalent to finding a lottery ticket.
+
+921
+00:42:59,200 --> 00:43:02,960
+But once you find that lottery ticket,
+
+922
+00:43:01,440 --> 00:43:07,359
+you should just reuse it over and over
+
+923
+00:43:02,960 --> 00:43:12,160
+and over again. Okay. All right. And so
+
+924
+00:43:07,359 --> 00:43:13,839
+yeah, the question is, okay, uh I have a
+
+925
+00:43:12,160 --> 00:43:17,119
+question for you all. So imagine I was
+
+926
+00:43:13,839 --> 00:43:20,160
+given this set of pairs, okay? And I was
+
+927
+00:43:17,119 --> 00:43:24,400
+given it up to this kar some final time.
+
+928
+00:43:20,160 --> 00:43:27,599
+All right? And at inference, I ask you
+
+929
+00:43:24,400 --> 00:43:31,119
+for some t that's much larger than seen
+
+930
+00:43:27,599 --> 00:43:32,240
+during training. All right? Because you
+
+931
+00:43:31,119 --> 00:43:33,440
+know, we're building this foundation
+
+932
+00:43:32,240 --> 00:43:35,520
+model. It's supposed to solve every
+
+933
+00:43:33,440 --> 00:43:37,040
+problem downstream, but you know, our
+
+934
+00:43:35,520 --> 00:43:40,240
+architecture didn't see very long
+
+935
+00:43:37,040 --> 00:43:42,400
+horizon correlations, right? So any
+
+936
+00:43:40,240 --> 00:43:44,079
+ideas about how we would sort of work
+
+937
+00:43:42,400 --> 00:43:45,920
+this out and and maybe you could talk to
+
+938
+00:43:44,079 --> 00:43:48,079
+the person next to you, but I would say
+
+939
+00:43:45,920 --> 00:43:51,280
+think about some ideas from what they
+
+940
+00:43:48,079 --> 00:43:53,760
+did in NLP to generate long sequences of
+
+941
+00:43:51,280 --> 00:43:57,400
+text. All right, so take 60 seconds and
+
+942
+00:43:53,760 --> 00:43:57,400
+we'll come back to it.
+
+943
+00:46:55,520 --> 00:47:00,400
+Great. All right. Any ideas here? Maybe
+
+944
+00:46:58,640 --> 00:47:02,400
+not from you guys because we we kind of
+
+945
+00:47:00,400 --> 00:47:06,400
+got there over here. What did you guys
+
+946
+00:47:02,400 --> 00:47:10,319
+Any ideas? Yeah. What's up?
+
+947
+00:47:06,400 --> 00:47:12,640
+Yep. So essentially we could do it in an
+
+948
+00:47:10,319 --> 00:47:15,280
+auto reggressive format. That's exactly
+
+949
+00:47:12,640 --> 00:47:18,319
+what you're saying, right? So you take
+
+950
+00:47:15,280 --> 00:47:19,760
+the first k steps and you pass it
+
+951
+00:47:18,319 --> 00:47:22,880
+through the model and you would get some
+
+952
+00:47:19,760 --> 00:47:25,040
+output U1 and then you treat that as an
+
+953
+00:47:22,880 --> 00:47:26,880
+input back to your model again. You can
+
+954
+00:47:25,040 --> 00:47:28,800
+do this over and over and over again.
+
+955
+00:47:26,880 --> 00:47:31,520
+And so this auto reggressive design is
+
+956
+00:47:28,800 --> 00:47:34,800
+is pretty common I would say whenever
+
+957
+00:47:31,520 --> 00:47:36,079
+you have large time dependencies. Okay.
+
+958
+00:47:34,800 --> 00:47:38,000
+And I think the advantages or
+
+959
+00:47:36,079 --> 00:47:40,160
+disadvantages are pretty clear. So for
+
+960
+00:47:38,000 --> 00:47:42,160
+example, the advantage is that you do
+
+961
+00:47:40,160 --> 00:47:44,960
+get some long horizon output without
+
+962
+00:47:42,160 --> 00:47:46,640
+retraining. The disadvantage is of
+
+963
+00:47:44,960 --> 00:47:49,520
+course that your errors are going to
+
+964
+00:47:46,640 --> 00:47:51,119
+compound every time you sort of do this,
+
+965
+00:47:49,520 --> 00:47:53,599
+right? So if we have some small error in
+
+966
+00:47:51,119 --> 00:47:55,440
+U1, that's going to lead to some little
+
+967
+00:47:53,599 --> 00:47:57,520
+bit bigger error in U2 and so on. So you
+
+968
+00:47:55,440 --> 00:47:58,880
+can't really do this too too far. And
+
+969
+00:47:57,520 --> 00:48:01,680
+actually, this is a problem with all
+
+970
+00:47:58,880 --> 00:48:03,359
+auto reggressive models, including in
+
+971
+00:48:01,680 --> 00:48:04,800
+natural language processing. And that's
+
+972
+00:48:03,359 --> 00:48:06,960
+kind of
+
+973
+00:48:04,800 --> 00:48:08,560
+a hot topic actually about whether or
+
+974
+00:48:06,960 --> 00:48:10,240
+not things should be auto reggressive
+
+975
+00:48:08,560 --> 00:48:13,760
+and turns out they kind of moved away
+
+976
+00:48:10,240 --> 00:48:16,079
+from this but this is the idea and so
+
+977
+00:48:13,760 --> 00:48:18,720
+the question is does this work and how
+
+978
+00:48:16,079 --> 00:48:22,400
+good does it work and so what they did
+
+979
+00:48:18,720 --> 00:48:25,440
+is they compared these two models okay
+
+980
+00:48:22,400 --> 00:48:29,040
+on a set of number of trajectories here
+
+981
+00:48:25,440 --> 00:48:31,280
+on the left and on the right okay and
+
+982
+00:48:29,040 --> 00:48:34,720
+these are for two different problems
+
+983
+00:48:31,280 --> 00:48:36,559
+okay and so what we see is that or sorry
+
+984
+00:48:34,720 --> 00:48:38,720
+not two different problems on the left
+
+985
+00:48:36,559 --> 00:48:41,359
+is the training problem and on the right
+
+986
+00:48:38,720 --> 00:48:43,119
+is actually the testing problem and so
+
+987
+00:48:41,359 --> 00:48:47,280
+you actually get this really really
+
+988
+00:48:43,119 --> 00:48:50,240
+weird phenomenon really weird so on the
+
+989
+00:48:47,280 --> 00:48:52,079
+left your FNO when done auto
+
+990
+00:48:50,240 --> 00:48:53,920
+reggressively actually trains better
+
+991
+00:48:52,079 --> 00:48:57,920
+than if you try to just learn the long
+
+992
+00:48:53,920 --> 00:48:59,839
+time dependency directly okay whereas
+
+993
+00:48:57,920 --> 00:49:02,559
+okay your Poseidon when you're
+
+994
+00:48:59,839 --> 00:49:05,520
+fine-tuning it turns out that it does
+
+995
+00:49:02,559 --> 00:49:07,200
+better again auto reggressively during
+
+996
+00:49:05,520 --> 00:49:09,599
+training but when you try to learn
+
+997
+00:49:07,200 --> 00:49:12,000
+directly there's sort of a a loss right
+
+998
+00:49:09,599 --> 00:49:16,160
+so during training it's clear that auto
+
+999
+00:49:12,000 --> 00:49:19,359
+reggressive works better you agree
+
+1000
+00:49:16,160 --> 00:49:22,079
+but during testing it turns out that the
+
+1001
+00:49:19,359 --> 00:49:24,480
+direct method really looks better that
+
+1002
+00:49:22,079 --> 00:49:26,480
+is somehow in this training set we were
+
+1003
+00:49:24,480 --> 00:49:28,480
+overfitting a little bit with the auto
+
+1004
+00:49:26,480 --> 00:49:30,720
+reggressive model and you see there's a
+
+1005
+00:49:28,480 --> 00:49:32,880
+huge magnitude of drop off between
+
+1006
+00:49:30,720 --> 00:49:35,520
+training and testing for both models
+
+1007
+00:49:32,880 --> 00:49:38,400
+Okay. And so does the auto reggressive
+
+1008
+00:49:35,520 --> 00:49:41,040
+design actually work? This plot would
+
+1009
+00:49:38,400 --> 00:49:42,960
+tell you don't. Okay. So just something
+
+1010
+00:49:41,040 --> 00:49:45,200
+to keep in mind because we were talking
+
+1011
+00:49:42,960 --> 00:49:47,200
+about okay this you know transformer can
+
+1012
+00:49:45,200 --> 00:49:49,119
+work for very long time dependency for
+
+1013
+00:49:47,200 --> 00:49:51,359
+any problem you want. It's sort of an
+
+1014
+00:49:49,119 --> 00:49:55,559
+overselling. Um it turns out it's
+
+1015
+00:49:51,359 --> 00:49:55,559
+actually not so easy to do this.
+
+1016
+00:49:56,000 --> 00:50:02,480
+Okay. So a little recap of this this
+
+1017
+00:49:58,480 --> 00:50:04,559
+first scientific PTE model. We took 15
+
+1018
+00:50:02,480 --> 00:50:06,319
+tasks. Nine are downstream. Six are
+
+1019
+00:50:04,559 --> 00:50:09,599
+fluid dynamics which were our
+
+1020
+00:50:06,319 --> 00:50:11,520
+pre-trained corpus. Okay. And four
+
+1021
+00:50:09,599 --> 00:50:13,839
+design choices really mattered. So the
+
+1022
+00:50:11,520 --> 00:50:16,800
+first one is that they did a
+
+1023
+00:50:13,839 --> 00:50:18,559
+pre-training on fluid dynamics. And it
+
+1024
+00:50:16,800 --> 00:50:20,559
+turns out that fluid dynamics is the
+
+1025
+00:50:18,559 --> 00:50:23,119
+right type of PTE problem to do
+
+1026
+00:50:20,559 --> 00:50:24,960
+pre-training on. So for example, if you
+
+1027
+00:50:23,119 --> 00:50:27,200
+tried to do pre-training on advection
+
+1028
+00:50:24,960 --> 00:50:29,119
+diffusion and then go to fluid dynamics,
+
+1029
+00:50:27,200 --> 00:50:30,240
+they found it didn't work. Okay? So
+
+1030
+00:50:29,119 --> 00:50:31,359
+that's what kind of we were talking
+
+1031
+00:50:30,240 --> 00:50:34,000
+about.
+
+1032
+00:50:31,359 --> 00:50:36,720
+The second thing is that
+
+1033
+00:50:34,000 --> 00:50:38,400
+we need some way to generate more data
+
+1034
+00:50:36,720 --> 00:50:39,839
+and we have these snapshots but
+
+1035
+00:50:38,400 --> 00:50:43,040
+basically they introduce this little
+
+1036
+00:50:39,839 --> 00:50:45,440
+trick okay to make every single snapshot
+
+1037
+00:50:43,040 --> 00:50:47,119
+pair training example and then they
+
+1038
+00:50:45,440 --> 00:50:51,119
+introduce this sort of delta t in the
+
+1039
+00:50:47,119 --> 00:50:53,200
+layer norm. Okay. And so what we need to
+
+1040
+00:50:51,119 --> 00:50:54,960
+kind of think about is it's important to
+
+1041
+00:50:53,200 --> 00:50:56,960
+design our architecture with some
+
+1042
+00:50:54,960 --> 00:51:01,359
+physical principles in mind from our
+
+1043
+00:50:56,960 --> 00:51:03,119
+data set. And lastly, we saw that if
+
+1044
+00:51:01,359 --> 00:51:05,760
+they fine-tune on each downstream's
+
+1045
+00:51:03,119 --> 00:51:08,800
+task, we actually did better than let's
+
+1046
+00:51:05,760 --> 00:51:11,040
+say FNO trained on that test directly,
+
+1047
+00:51:08,800 --> 00:51:13,760
+right? And so the three lessons are
+
+1048
+00:51:11,040 --> 00:51:16,720
+scaling is going to help. We care a lot
+
+1049
+00:51:13,760 --> 00:51:20,160
+about that data set diversity and we saw
+
+1050
+00:51:16,720 --> 00:51:22,720
+that fine-tuning really works.
+
+1051
+00:51:20,160 --> 00:51:24,720
+And so the kind of surprise of this is
+
+1052
+00:51:22,720 --> 00:51:26,640
+this was the first result published that
+
+1053
+00:51:24,720 --> 00:51:29,839
+I know of that actually did this sort of
+
+1054
+00:51:26,640 --> 00:51:32,240
+learning from let's say fluid dynamics
+
+1055
+00:51:29,839 --> 00:51:35,680
+to other PTEs and it's it's not that old
+
+1056
+00:51:32,240 --> 00:51:38,960
+you know two years ago.
+
+1057
+00:51:35,680 --> 00:51:41,839
+All right since then new approaches have
+
+1058
+00:51:38,960 --> 00:51:45,280
+came out. So this approach is called
+
+1059
+00:51:41,839 --> 00:51:47,280
+walrus very similar idea. Has anyone
+
+1060
+00:51:45,280 --> 00:51:50,800
+heard of walrus?
+
+1061
+00:51:47,280 --> 00:51:52,960
+Anyone heard of Polymathic?
+
+1062
+00:51:50,800 --> 00:51:54,480
+Okay, it's a small little startup that
+
+1063
+00:51:52,960 --> 00:51:56,720
+probably offers quite a bit of money for
+
+1064
+00:51:54,480 --> 00:51:59,280
+you to join. And it was invented by this
+
+1065
+00:51:56,720 --> 00:52:01,280
+girl, her name is Shirley Hoe. She was a
+
+1066
+00:51:59,280 --> 00:52:02,400
+physicist actually who's kind of into
+
+1067
+00:52:01,280 --> 00:52:05,680
+machine learning. And so what did they
+
+1068
+00:52:02,400 --> 00:52:07,920
+do? So they first have about double the
+
+1069
+00:52:05,680 --> 00:52:10,079
+size of the model. Okay, so remember the
+
+1070
+00:52:07,920 --> 00:52:12,480
+largest model we saw for Poseidon was
+
+1071
+00:52:10,079 --> 00:52:15,119
+600 million parameters. Here it's a 1.3
+
+1072
+00:52:12,480 --> 00:52:18,160
+billion parameter model. The second
+
+1073
+00:52:15,119 --> 00:52:21,760
+thing they did is that they didn't
+
+1074
+00:52:18,160 --> 00:52:24,480
+restrict their initial corpus to just
+
+1075
+00:52:21,760 --> 00:52:28,000
+fluid dynamics. Okay. So they took a
+
+1076
+00:52:24,480 --> 00:52:30,960
+bunch of problems all over and they
+
+1077
+00:52:28,000 --> 00:52:33,359
+built a set of data sets a set of data
+
+1078
+00:52:30,960 --> 00:52:36,240
+based on these you know problems from a
+
+1079
+00:52:33,359 --> 00:52:38,400
+bunch of different domains. Okay. And
+
+1080
+00:52:36,240 --> 00:52:42,319
+the key is that they had varying domains
+
+1081
+00:52:38,400 --> 00:52:44,319
+here. So in the previous example we
+
+1082
+00:52:42,319 --> 00:52:46,880
+talked about okay the tokens being
+
+1083
+00:52:44,319 --> 00:52:48,559
+inputed into the neural network as just
+
+1084
+00:52:46,880 --> 00:52:51,440
+a set of X of eyes and it turns out
+
+1085
+00:52:48,559 --> 00:52:53,839
+those were all on nice square grids.
+
+1086
+00:52:51,440 --> 00:52:56,319
+Here they actually considered grids that
+
+1087
+00:52:53,839 --> 00:53:00,160
+are you know an air foil flow or a
+
+1088
+00:52:56,319 --> 00:53:03,440
+circle oval random shapes. Okay.
+
+1089
+00:53:00,160 --> 00:53:05,280
+And the key thing they introduced is
+
+1090
+00:53:03,440 --> 00:53:08,720
+they said that instead of trying to do
+
+1091
+00:53:05,280 --> 00:53:10,720
+this t all at once as a snapshot, we're
+
+1092
+00:53:08,720 --> 00:53:12,559
+just going to predict small changes at
+
+1093
+00:53:10,720 --> 00:53:14,559
+every time step and then we're going to
+
+1094
+00:53:12,559 --> 00:53:16,319
+use this auto reggressive roll out.
+
+1095
+00:53:14,559 --> 00:53:18,800
+Okay, the same idea as kind of a neural
+
+1096
+00:53:16,319 --> 00:53:20,160
+OD, right? So a neural OD kind of
+
+1097
+00:53:18,800 --> 00:53:21,920
+predicts the vector field you're going
+
+1098
+00:53:20,160 --> 00:53:23,680
+to go from every single place. And when
+
+1099
+00:53:21,920 --> 00:53:27,359
+we put it into an OD solver, we take
+
+1100
+00:53:23,680 --> 00:53:29,760
+really really small steps.
+
+1101
+00:53:27,359 --> 00:53:31,920
+And the last thing we're going to see is
+
+1102
+00:53:29,760 --> 00:53:34,559
+that they introduced this convol stride
+
+1103
+00:53:31,920 --> 00:53:37,200
+convolutional stride modulation.
+
+1104
+00:53:34,559 --> 00:53:38,640
+It sounds fancy. It's really simple. And
+
+1105
+00:53:37,200 --> 00:53:40,720
+the reason they had to do this is
+
+1106
+00:53:38,640 --> 00:53:42,400
+because they changed the domain of their
+
+1107
+00:53:40,720 --> 00:53:44,319
+input. We'll see what that looks like.
+
+1108
+00:53:42,400 --> 00:53:46,000
+So what is this idea? Basically they
+
+1109
+00:53:44,319 --> 00:53:48,720
+said, okay, we have a bunch of different
+
+1110
+00:53:46,000 --> 00:53:51,520
+resolution grids. So you might have, for
+
+1111
+00:53:48,720 --> 00:53:54,240
+example, data sets with, you know, 64
+
+1112
+00:53:51,520 --> 00:53:56,720
+cubed, a 3D data set, 64 points per
+
+1113
+00:53:54,240 --> 00:53:59,440
+grid. Or you might have something that's
+
+1114
+00:53:56,720 --> 00:54:02,079
+non-symmetric, right? So, you know, a 2D
+
+1115
+00:53:59,440 --> 00:54:04,559
+data set, but over the Y-axis we have a
+
+1116
+00:54:02,079 --> 00:54:06,880
+fourth of the number of points. Okay?
+
+1117
+00:54:04,559 --> 00:54:08,160
+And basically what they said is that
+
+1118
+00:54:06,880 --> 00:54:11,520
+we're going to pass all of these through
+
+1119
+00:54:08,160 --> 00:54:13,760
+a convolution. And the convolution
+
+1120
+00:54:11,520 --> 00:54:17,119
+essentially is going to choose a stride
+
+1121
+00:54:13,760 --> 00:54:20,319
+to map us to 32 by 32 tokens.
+
+1122
+00:54:17,119 --> 00:54:22,240
+Okay, nothing complicated here. It's
+
+1123
+00:54:20,319 --> 00:54:24,800
+actually the same idea from vision. So
+
+1124
+00:54:22,240 --> 00:54:26,240
+they they'll do something similar. And
+
+1125
+00:54:24,800 --> 00:54:28,079
+okay, how you choose these strides
+
+1126
+00:54:26,240 --> 00:54:30,400
+depends on what your input was, but
+
+1127
+00:54:28,079 --> 00:54:33,280
+essentially they designed an encoder for
+
+1128
+00:54:30,400 --> 00:54:35,040
+all of their input data. Okay, so that
+
+1129
+00:54:33,280 --> 00:54:37,680
+they all get to this same
+
+1130
+00:54:35,040 --> 00:54:39,359
+representation.
+
+1131
+00:54:37,680 --> 00:54:40,480
+So what is this problem solving that the
+
+1132
+00:54:39,359 --> 00:54:42,960
+other one didn't? Well, the other one
+
+1133
+00:54:40,480 --> 00:54:45,960
+always considered let's say 256 x 256
+
+1134
+00:54:42,960 --> 00:54:45,960
+grits.
+
+1135
+00:54:46,240 --> 00:54:52,079
+All right. And so the idea is okay, this
+
+1136
+00:54:49,440 --> 00:54:54,559
+does this work? Well, we'll see in a
+
+1137
+00:54:52,079 --> 00:54:56,160
+minute. The second thing that they did,
+
+1138
+00:54:54,559 --> 00:54:57,920
+okay, so now we can handle
+
+1139
+00:54:56,160 --> 00:54:59,839
+multi-resolutions.
+
+1140
+00:54:57,920 --> 00:55:03,040
+The second thing that they did is they
+
+1141
+00:54:59,839 --> 00:55:04,960
+said we actually have some invariance
+
+1142
+00:55:03,040 --> 00:55:06,960
+for physics.
+
+1143
+00:55:04,960 --> 00:55:11,200
+So for example, if we consider a 2D
+
+1144
+00:55:06,960 --> 00:55:14,400
+physical system, okay, I can rotate that
+
+1145
+00:55:11,200 --> 00:55:16,720
+physical system four times, let's say
+
+1146
+00:55:14,400 --> 00:55:18,319
+for example, over my square. And
+
+1147
+00:55:16,720 --> 00:55:20,319
+actually the physics should be the same
+
+1148
+00:55:18,319 --> 00:55:24,480
+as long as I rotate the output
+
+1149
+00:55:20,319 --> 00:55:26,559
+accordingly. Okay. Okay. So now I have a
+
+1150
+00:55:24,480 --> 00:55:28,720
+lot more data right because I have these
+
+1151
+00:55:26,559 --> 00:55:30,720
+k snapshots. I can get k square data out
+
+1152
+00:55:28,720 --> 00:55:34,960
+of that. And then for each k square data
+
+1153
+00:55:30,720 --> 00:55:36,640
+I can do four rotations matching this.
+
+1154
+00:55:34,960 --> 00:55:38,480
+And this is actually an idea that comes
+
+1155
+00:55:36,640 --> 00:55:39,760
+from these sort of equivariant neural
+
+1156
+00:55:38,480 --> 00:55:41,839
+networks if you guys have ever heard of
+
+1157
+00:55:39,760 --> 00:55:43,920
+them.
+
+1158
+00:55:41,839 --> 00:55:45,359
+All right. And of course you need to do
+
+1159
+00:55:43,920 --> 00:55:47,359
+this in the right way. So you need to
+
+1160
+00:55:45,359 --> 00:55:49,040
+think about your PTE to actually do this
+
+1161
+00:55:47,359 --> 00:55:51,040
+properly. Say you need some background
+
+1162
+00:55:49,040 --> 00:55:53,119
+knowledge. So for example, how you
+
+1163
+00:55:51,040 --> 00:55:54,079
+rotate adction diffusion might be a
+
+1164
+00:55:53,119 --> 00:55:55,760
+little bit different than how you're
+
+1165
+00:55:54,079 --> 00:55:58,240
+going to rotate a couple Navier Stokes
+
+1166
+00:55:55,760 --> 00:56:01,599
+equations.
+
+1167
+00:55:58,240 --> 00:56:04,319
+Okay. Another little trick that they do
+
+1168
+00:56:01,599 --> 00:56:08,000
+is everything is inputed into their
+
+1169
+00:56:04,319 --> 00:56:10,960
+neural network in a 3D domain, but they
+
+1170
+00:56:08,000 --> 00:56:13,680
+have plenty of 2D snapshots.
+
+1171
+00:56:10,960 --> 00:56:15,839
+So what they do is they add this fake
+
+1172
+00:56:13,680 --> 00:56:19,359
+Z-axis where they just repeat the
+
+1173
+00:56:15,839 --> 00:56:21,839
+snapshots Z times.
+
+1174
+00:56:19,359 --> 00:56:24,319
+So for example, if I have a 2D image and
+
+1175
+00:56:21,839 --> 00:56:27,359
+then I repeat the 2D image, you know, K
+
+1176
+00:56:24,319 --> 00:56:29,040
+times, I'll have a 2D by K vector. Make
+
+1177
+00:56:27,359 --> 00:56:32,799
+sense?
+
+1178
+00:56:29,040 --> 00:56:36,319
+And then they do rotations on 3D.
+
+1179
+00:56:32,799 --> 00:56:38,480
+So you actually get eight permutations.
+
+1180
+00:56:36,319 --> 00:56:41,040
+So this is all to just build more data
+
+1181
+00:56:38,480 --> 00:56:44,319
+from what you have essentially.
+
+1182
+00:56:41,040 --> 00:56:47,440
+All right. And here's what happened. So
+
+1183
+00:56:44,319 --> 00:56:49,920
+basically what you can see is that up
+
+1184
+00:56:47,440 --> 00:56:52,240
+here is our ground truth on an invection
+
+1185
+00:56:49,920 --> 00:56:54,559
+diffusion example. Okay. All they did
+
+1186
+00:56:52,240 --> 00:56:56,319
+was scale our data and added
+
+1187
+00:56:54,559 --> 00:56:59,359
+multi-resolution. Those are the two
+
+1188
+00:56:56,319 --> 00:57:02,880
+initial ads compared to Walrus. And we
+
+1189
+00:56:59,359 --> 00:57:05,520
+see that Walrus actually starts to
+
+1190
+00:57:02,880 --> 00:57:07,200
+introduce some weird error or sorry not
+
+1191
+00:57:05,520 --> 00:57:10,160
+Walrus Poseidon starts to introduce some
+
+1192
+00:57:07,200 --> 00:57:12,240
+weird errors. So for example here at the
+
+1193
+00:57:10,160 --> 00:57:14,720
+end we see that it doesn't even capture
+
+1194
+00:57:12,240 --> 00:57:16,880
+the dynamics correctly at all. Okay just
+
+1195
+00:57:14,720 --> 00:57:19,680
+sort of rotated and here you can see
+
+1196
+00:57:16,880 --> 00:57:22,000
+okay what the actual error looks like.
+
+1197
+00:57:19,680 --> 00:57:23,680
+So basically what this company did is
+
+1198
+00:57:22,000 --> 00:57:25,280
+they took Walrus and they did two
+
+1199
+00:57:23,680 --> 00:57:27,200
+things. We we they found a new trick to
+
+1200
+00:57:25,280 --> 00:57:30,240
+add more data and they scaled the
+
+1201
+00:57:27,200 --> 00:57:33,680
+parameter size. All right. And it turns
+
+1202
+00:57:30,240 --> 00:57:36,559
+out this helps a lot.
+
+1203
+00:57:33,680 --> 00:57:40,000
+What else could you do? Well,
+
+1204
+00:57:36,559 --> 00:57:42,640
+they also compared everything to
+
+1205
+00:57:40,000 --> 00:57:46,000
+essentially see if they helped over long
+
+1206
+00:57:42,640 --> 00:57:48,079
+horizons. All right. And so this is kind
+
+1207
+00:57:46,000 --> 00:57:50,319
+of an example of that. Let's just
+
+1208
+00:57:48,079 --> 00:57:53,599
+consider, okay, Poseidon is in blue and
+
+1209
+00:57:50,319 --> 00:57:55,599
+this walrus is in red. Okay. And here
+
+1210
+00:57:53,599 --> 00:57:58,480
+what they're comparing essentially is
+
+1211
+00:57:55,599 --> 00:57:59,680
+how far away your initial step is
+
+1212
+00:57:58,480 --> 00:58:02,400
+because remember they're they're
+
+1213
+00:57:59,680 --> 00:58:04,799
+actually learning the residual. Okay. So
+
+1214
+00:58:02,400 --> 00:58:07,200
+what I mean by one step is that you only
+
+1215
+00:58:04,799 --> 00:58:09,599
+move delta t units, very small time.
+
+1216
+00:58:07,200 --> 00:58:11,599
+Okay, for t= 1 to 10, you're going to
+
+1217
+00:58:09,599 --> 00:58:13,680
+move a little bit farther. And then for
+
+1218
+00:58:11,599 --> 00:58:15,839
+the last case, it's t from 10 to 30. So
+
+1219
+00:58:13,680 --> 00:58:17,839
+you move really far. Okay, from your
+
+1220
+00:58:15,839 --> 00:58:22,000
+initial condition.
+
+1221
+00:58:17,839 --> 00:58:25,839
+And it turns out that this walrus method
+
+1222
+00:58:22,000 --> 00:58:28,880
+actually does pretty well about
+
+1223
+00:58:25,839 --> 00:58:31,119
+I would say 20% improvement over the
+
+1224
+00:58:28,880 --> 00:58:32,799
+Poseidon method that we saw before.
+
+1225
+00:58:31,119 --> 00:58:35,839
+Okay, the other two examples let's
+
+1226
+00:58:32,799 --> 00:58:39,280
+ignore for now. All right,
+
+1227
+00:58:35,839 --> 00:58:40,799
+so basically this group that's you know
+
+1228
+00:58:39,280 --> 00:58:43,839
+raised quite a bit of money for their
+
+1229
+00:58:40,799 --> 00:58:46,559
+startup has put in that that if we can
+
+1230
+00:58:43,839 --> 00:58:48,400
+find a way to make more data we instead
+
+1231
+00:58:46,559 --> 00:58:50,960
+learn residuals
+
+1232
+00:58:48,400 --> 00:58:53,280
+and we consider multi-resolution cases
+
+1233
+00:58:50,960 --> 00:58:56,720
+with a really simple convolution we can
+
+1234
+00:58:53,280 --> 00:58:58,640
+get about 20% improve in performance.
+
+1235
+00:58:56,720 --> 00:59:02,480
+This paper actually came out just in
+
+1236
+00:58:58,640 --> 00:59:04,000
+December. Okay. And so it has not been
+
+1237
+00:59:02,480 --> 00:59:05,920
+peer- reviewviewed. I will I will give
+
+1238
+00:59:04,000 --> 00:59:08,319
+you a little stipulation, but that's the
+
+1239
+00:59:05,920 --> 00:59:10,640
+idea.
+
+1240
+00:59:08,319 --> 00:59:13,119
+Okay. And so what was the themes here?
+
+1241
+00:59:10,640 --> 00:59:15,040
+So the themes are pretty standard. So
+
+1242
+00:59:13,119 --> 00:59:17,839
+what I said is okay, we care about how
+
+1243
+00:59:15,040 --> 00:59:19,520
+much we can pull out of our data and we
+
+1244
+00:59:17,839 --> 00:59:21,839
+do these little tricks like repeating
+
+1245
+00:59:19,520 --> 00:59:23,680
+and stuff like that.
+
+1246
+00:59:21,839 --> 00:59:26,079
+Okay. The second theme is that
+
+1247
+00:59:23,680 --> 00:59:28,640
+transformers are going to scale but we
+
+1248
+00:59:26,079 --> 00:59:30,319
+do need to consider for example working
+
+1249
+00:59:28,640 --> 00:59:32,720
+with our data in the right way. So we
+
+1250
+00:59:30,319 --> 00:59:35,680
+needed to encode that delta t we needed
+
+1251
+00:59:32,720 --> 00:59:41,119
+to consider the multi-resolution point
+
+1252
+00:59:35,680 --> 00:59:43,680
+and we did find that this odd paradigm
+
+1253
+00:59:41,119 --> 00:59:46,000
+where we train on something unrelated to
+
+1254
+00:59:43,680 --> 00:59:47,359
+our problem is actually related. Okay,
+
+1255
+00:59:46,000 --> 00:59:50,480
+which is the same thing we actually see
+
+1256
+00:59:47,359 --> 00:59:52,160
+in NLP. All right,
+
+1257
+00:59:50,480 --> 00:59:56,000
+the last thing I want to kind of finish
+
+1258
+00:59:52,160 --> 00:59:58,240
+with guys is is some scaling laws. So in
+
+1259
+00:59:56,000 --> 01:00:00,240
+NLP when it first started, everyone was
+
+1260
+00:59:58,240 --> 01:00:02,160
+kind of trying to predict how fast is
+
+1261
+01:00:00,240 --> 01:00:04,079
+this thing going to scale? That is if I
+
+1262
+01:00:02,160 --> 01:00:06,240
+have more compute, more data, so on, how
+
+1263
+01:00:04,079 --> 01:00:08,400
+much better is my model going to be? And
+
+1264
+01:00:06,240 --> 01:00:10,960
+there's an old paper in 23 that kind of
+
+1265
+01:00:08,400 --> 01:00:13,440
+answered this. Okay, so how much do we
+
+1266
+01:00:10,960 --> 01:00:15,680
+get from each component?
+
+1267
+01:00:13,440 --> 01:00:17,280
+And when does this pre-training maybe
+
+1268
+01:00:15,680 --> 01:00:18,720
+stop working? You know, you can imagine
+
+1269
+01:00:17,280 --> 01:00:20,480
+we get some diminishing marginal
+
+1270
+01:00:18,720 --> 01:00:24,160
+returns. We actually start needing to
+
+1271
+01:00:20,480 --> 01:00:25,839
+find on our task. Okay. And so I give
+
+1272
+01:00:24,160 --> 01:00:28,480
+you the paper in the slides, but the
+
+1273
+01:00:25,839 --> 01:00:30,720
+idea is that they just defined a small
+
+1274
+01:00:28,480 --> 01:00:33,200
+FNO and they do a couple toy examples.
+
+1275
+01:00:30,720 --> 01:00:35,119
+Okay. So it's an older paper. So what
+
+1276
+01:00:33,200 --> 01:00:37,760
+did they find? So the first thing they
+
+1277
+01:00:35,119 --> 01:00:40,000
+asked is how much does fine-tuning help
+
+1278
+01:00:37,760 --> 01:00:42,400
+compared to pre-training? And in this
+
+1279
+01:00:40,000 --> 01:00:45,440
+problem, all they do is they consider
+
+1280
+01:00:42,400 --> 01:00:47,200
+parameters. Okay? So in pre-training
+
+1281
+01:00:45,440 --> 01:00:49,760
+they're considering parameters between 0
+
+1282
+01:00:47,200 --> 01:00:51,680
+2 and one. And the downstream task is
+
+1283
+01:00:49,760 --> 01:00:54,960
+from 0 2 to 0 point 4. So it's within
+
+1284
+01:00:51,680 --> 01:00:56,400
+the data set. Okay. And here's what they
+
+1285
+01:00:54,960 --> 01:00:59,359
+see. Well, they see that okay, if you
+
+1286
+01:00:56,400 --> 01:01:01,920
+train from scratch, for example, it
+
+1287
+01:00:59,359 --> 01:01:05,119
+might take you 32k samples to retrieve
+
+1288
+01:01:01,920 --> 01:01:06,400
+an error 10us 2. But if you have
+
+1289
+01:01:05,119 --> 01:01:09,599
+pre-trained, you're going to get it in
+
+1290
+01:01:06,400 --> 01:01:14,160
+one shot when the distribution matches.
+
+1291
+01:01:09,599 --> 01:01:16,160
+Exactly what you would imagine. Okay.
+
+1292
+01:01:14,160 --> 01:01:17,680
+The next thing they said is they asked
+
+1293
+01:01:16,160 --> 01:01:20,640
+how much does the size of the problem
+
+1294
+01:01:17,680 --> 01:01:23,920
+matter. Okay. And so everything dotted
+
+1295
+01:01:20,640 --> 01:01:26,240
+here, okay, is from scratch and
+
+1296
+01:01:23,920 --> 01:01:28,799
+everything lined is from pre-trained,
+
+1297
+01:01:26,240 --> 01:01:32,799
+okay, and the green to purple goes from
+
+1298
+01:01:28,799 --> 01:01:34,400
+64 really small model to a size of 256
+
+1299
+01:01:32,799 --> 01:01:38,160
+million parameters. It's just an FNL
+
+1300
+01:01:34,400 --> 01:01:41,359
+architecture, okay? And what you see is
+
+1301
+01:01:38,160 --> 01:01:43,359
+scaling. You see good scaling from each
+
+1302
+01:01:41,359 --> 01:01:46,160
+environment, but you do see a sort of a
+
+1303
+01:01:43,359 --> 01:01:49,400
+diminishing marginal returns compared to
+
+1304
+01:01:46,160 --> 01:01:49,400
+the beginning.
+
+1305
+01:01:49,839 --> 01:01:53,040
+So in other words, scaling matters.
+
+1306
+01:01:51,839 --> 01:01:54,400
+Okay? And it turns out it's really going
+
+1307
+01:01:53,040 --> 01:01:57,200
+to matter. And this actually gives us an
+
+1308
+01:01:54,400 --> 01:02:00,000
+estimate about how good scaling is. And
+
+1309
+01:01:57,200 --> 01:02:02,319
+so if you did a similar example, okay,
+
+1310
+01:02:00,000 --> 01:02:03,520
+in natural language processing, what you
+
+1311
+01:02:02,319 --> 01:02:05,520
+would see is that the scaling is
+
+1312
+01:02:03,520 --> 01:02:07,920
+actually much stronger.
+
+1313
+01:02:05,520 --> 01:02:10,880
+Meaning that as you get larger models,
+
+1314
+01:02:07,920 --> 01:02:13,880
+the gap between these guys widen. All
+
+1315
+01:02:10,880 --> 01:02:13,880
+right.
+
+1316
+01:02:13,920 --> 01:02:17,920
+And then the last thing is how well can
+
+1317
+01:02:15,760 --> 01:02:20,319
+you do out of distribution from your
+
+1318
+01:02:17,920 --> 01:02:22,480
+downstream training. Okay. And so in
+
+1319
+01:02:20,319 --> 01:02:24,480
+this case what I have on the left is
+
+1320
+01:02:22,480 --> 01:02:26,559
+actually pretty close from pre-training
+
+1321
+01:02:24,480 --> 01:02:28,559
+to down out of stream. So their
+
+1322
+01:02:26,559 --> 01:02:31,359
+parameters they trained on was from 1 to
+
+1323
+01:02:28,559 --> 01:02:33,599
+five. Okay. And downstream is from 5 to
+
+1324
+01:02:31,359 --> 01:02:35,760
+10. Okay. And these are the number of
+
+1325
+01:02:33,599 --> 01:02:37,359
+fine-tuned examples that they see. And
+
+1326
+01:02:35,760 --> 01:02:40,640
+actually, you can see that you do pretty
+
+1327
+01:02:37,359 --> 01:02:42,240
+okay. Okay, you're going to get
+
+1328
+01:02:40,640 --> 01:02:45,760
+something around the order of 10 to the
+
+1329
+01:02:42,240 --> 01:02:47,440
+minus 3 if you give 32,000 snapshots.
+
+1330
+01:02:45,760 --> 01:02:49,359
+Reasonable.
+
+1331
+01:02:47,440 --> 01:02:51,359
+But here, if you have a larger gap
+
+1332
+01:02:49,359 --> 01:02:52,799
+between your parameters, okay, so it was
+
+1333
+01:02:51,359 --> 01:02:55,520
+still trained on one to five, but now
+
+1334
+01:02:52,799 --> 01:02:57,680
+we're doing a larger gap. We see that we
+
+1335
+01:02:55,520 --> 01:03:01,760
+don't do as well. Exactly what you would
+
+1336
+01:02:57,680 --> 01:03:05,119
+imagine for the scaling law.
+
+1337
+01:03:01,760 --> 01:03:07,280
+Similarly, we also see that actually if
+
+1338
+01:03:05,119 --> 01:03:09,280
+you train from scratch, you also don't
+
+1339
+01:03:07,280 --> 01:03:11,920
+learn as well.
+
+1340
+01:03:09,280 --> 01:03:13,520
+The reason being is that twofold. First,
+
+1341
+01:03:11,920 --> 01:03:15,039
+this is a wider range of parameters than
+
+1342
+01:03:13,520 --> 01:03:18,400
+over here. So, you would imagine you
+
+1343
+01:03:15,039 --> 01:03:20,240
+need more examples. And the second is
+
+1344
+01:03:18,400 --> 01:03:24,599
+these parameters they claimed were a
+
+1345
+01:03:20,240 --> 01:03:24,599
+little bit harder quote unquote.
+
+1346
+01:03:25,280 --> 01:03:29,039
+All right. And so, what are the
+
+1347
+01:03:26,960 --> 01:03:31,680
+takeaways from the scaling laws? Well,
+
+1348
+01:03:29,039 --> 01:03:34,000
+data is scarce. So we need to reuse it.
+
+1349
+01:03:31,680 --> 01:03:35,839
+We need to do tricks. We're going to see
+
+1350
+01:03:34,000 --> 01:03:37,520
+that scaling does matter both in model
+
+1351
+01:03:35,839 --> 01:03:39,119
+size and the number of fine-tuned
+
+1352
+01:03:37,520 --> 01:03:41,920
+examples, but it's actually not as
+
+1353
+01:03:39,119 --> 01:03:43,119
+strong as NLP. And lastly, we needed to
+
+1354
+01:03:41,920 --> 01:03:47,119
+introduce some ideas into the
+
+1355
+01:03:43,119 --> 01:03:50,000
+architecture. All right. And so I think
+
+1356
+01:03:47,119 --> 01:03:52,240
+the key takeaway is obvious. You you
+
+1357
+01:03:50,000 --> 01:03:53,599
+need to consider all of these things
+
+1358
+01:03:52,240 --> 01:03:55,760
+when you're designing something for
+
+1359
+01:03:53,599 --> 01:03:57,599
+physical systems. And you do need to
+
+1360
+01:03:55,760 --> 01:04:00,000
+consider similar things for NLP, but
+
+1361
+01:03:57,599 --> 01:04:03,559
+scale doesn't necessarily shown to solve
+
+1362
+01:04:00,000 --> 01:04:03,559
+every problem yet.
+
+1363
+01:04:05,920 --> 01:04:11,799
+They talk about data diversity
+
+1364
+01:04:07,359 --> 01:04:11,799
+specifically in that analysis
+
+1365
+01:04:12,640 --> 01:04:19,480
+with the the walrus or no sorry the
+
+1366
+01:04:14,799 --> 01:04:19,480
+Poseidon. So let me pull it up for you
+
+1367
+01:04:23,359 --> 01:04:26,880
+here.
+
+1368
+01:04:24,720 --> 01:04:30,799
+So here this data sets are the same
+
+1369
+01:04:26,880 --> 01:04:33,760
+size. Okay,
+
+1370
+01:04:30,799 --> 01:04:35,680
+for the for the walrus work the walrus
+
+1371
+01:04:33,760 --> 01:04:37,920
+work they they I didn't talk about it
+
+1372
+01:04:35,680 --> 01:04:39,760
+here but but the data diversity
+
+1373
+01:04:37,920 --> 01:04:41,839
+definitely matters. For example, they
+
+1374
+01:04:39,760 --> 01:04:43,520
+consider many more PTE tasks for their
+
+1375
+01:04:41,839 --> 01:04:45,359
+pre-training. That'll just tell you
+
+1376
+01:04:43,520 --> 01:04:47,200
+they're getting more diverse, right?
+
+1377
+01:04:45,359 --> 01:04:51,599
+They consider 19 different tasks instead
+
+1378
+01:04:47,200 --> 01:04:54,480
+of six. Make sense?
+
+1379
+01:04:51,599 --> 01:04:56,240
+We could talk more at the end.
+
+1380
+01:04:54,480 --> 01:04:58,160
+All right.
+
+1381
+01:04:56,240 --> 01:05:00,240
+And so I want to give you guys a real
+
+1382
+01:04:58,160 --> 01:05:02,079
+world example to kind of end the day. So
+
+1383
+01:05:00,240 --> 01:05:04,319
+here's a weather forecast. This is kind
+
+1384
+01:05:02,079 --> 01:05:07,359
+of the first foundation model. It was
+
+1385
+01:05:04,319 --> 01:05:09,200
+accepted in nature last year. Okay. And
+
+1386
+01:05:07,359 --> 01:05:12,559
+we're interested in solving atmospheric
+
+1387
+01:05:09,200 --> 01:05:15,520
+dynamics on the grid. Okay. And what
+
+1388
+01:05:12,559 --> 01:05:17,520
+this IFS is essentially a classical
+
+1389
+01:05:15,520 --> 01:05:20,240
+solver.
+
+1390
+01:05:17,520 --> 01:05:22,319
+And so the cost of each IFS is run by
+
+1391
+01:05:20,240 --> 01:05:24,640
+these universities or not universities,
+
+1392
+01:05:22,319 --> 01:05:26,720
+these organizations. They run on a a
+
+1393
+01:05:24,640 --> 01:05:28,319
+supercomput. And of course, we're going
+
+1394
+01:05:26,720 --> 01:05:30,319
+to care about this. For example, we need
+
+1395
+01:05:28,319 --> 01:05:32,640
+to know when a hurricane's coming. It's
+
+1396
+01:05:30,319 --> 01:05:35,440
+important to know, for example, for
+
+1397
+01:05:32,640 --> 01:05:38,160
+agriculture, energy costs, turbulence,
+
+1398
+01:05:35,440 --> 01:05:40,079
+you can imagine, right? So here's our
+
+1399
+01:05:38,160 --> 01:05:42,480
+problem. And here's what this paper
+
+1400
+01:05:40,079 --> 01:05:45,200
+Aurora did for Microsoft. So it just
+
+1401
+01:05:42,480 --> 01:05:47,920
+came out last year. They designed a $1.3
+
+1402
+01:05:45,200 --> 01:05:50,480
+billion par or billion parameter model
+
+1403
+01:05:47,920 --> 01:05:52,559
+over it took them a million hours and
+
+1404
+01:05:50,480 --> 01:05:56,640
+then they fine-tuned on four tasks.
+
+1405
+01:05:52,559 --> 01:05:58,640
+Okay, so the idea here, okay, is they
+
+1406
+01:05:56,640 --> 01:06:00,480
+did pre-training and we'll look about
+
+1407
+01:05:58,640 --> 01:06:02,720
+how they did this and then they did
+
+1408
+01:06:00,480 --> 01:06:04,799
+fine-tuning on each of these tasks and
+
+1409
+01:06:02,720 --> 01:06:06,799
+the tasks are things like wind
+
+1410
+01:06:04,799 --> 01:06:09,200
+prediction, pressure prediction for
+
+1411
+01:06:06,799 --> 01:06:10,960
+example. Okay. And so how did they do
+
+1412
+01:06:09,200 --> 01:06:14,079
+their pre-training? They essentially
+
+1413
+01:06:10,960 --> 01:06:16,960
+took a ton of climate simulation data
+
+1414
+01:06:14,079 --> 01:06:20,559
+from every organization and gathered it
+
+1415
+01:06:16,960 --> 01:06:22,720
+together under one corpus. Okay, they
+
+1416
+01:06:20,559 --> 01:06:24,960
+designed this this architecture that's
+
+1417
+01:06:22,720 --> 01:06:26,720
+actually a little bit close to an idea
+
+1418
+01:06:24,960 --> 01:06:28,319
+from from computer vision. Okay, we're
+
+1419
+01:06:26,720 --> 01:06:29,920
+not going to talk about too much. And
+
+1420
+01:06:28,319 --> 01:06:31,200
+then they kind of looked at these
+
+1421
+01:06:29,920 --> 01:06:33,280
+fine-tuning targets. So they were
+
+1422
+01:06:31,200 --> 01:06:35,359
+interested in air quality, ocean,
+
+1423
+01:06:33,280 --> 01:06:37,440
+cyclones, and weather. Okay, we're just
+
+1424
+01:06:35,359 --> 01:06:40,319
+going to show you cyclones today. All
+
+1425
+01:06:37,440 --> 01:06:42,480
+right. And these pre-trainings, they
+
+1426
+01:06:40,319 --> 01:06:45,440
+were diverse. So we kind of talked about
+
+1427
+01:06:42,480 --> 01:06:47,680
+this, but it considered a bunch of
+
+1428
+01:06:45,440 --> 01:06:49,680
+different forecasts, okay? All over the
+
+1429
+01:06:47,680 --> 01:06:51,760
+the world. So not just in the US, for
+
+1430
+01:06:49,680 --> 01:06:53,920
+example, everything is in Europe and so
+
+1431
+01:06:51,760 --> 01:06:55,359
+on and so forth. Okay. Additionally,
+
+1432
+01:06:53,920 --> 01:06:59,480
+they have to be a little bit careful. So
+
+1433
+01:06:55,359 --> 01:06:59,480
+most of this pre-training was from CFD.
+
+1434
+01:06:59,760 --> 01:07:03,760
+And then for fine-tuning they have they
+
+1435
+01:07:02,319 --> 01:07:05,839
+use basically sensor measurements for
+
+1436
+01:07:03,760 --> 01:07:09,440
+each of these problems all over the grid
+
+1437
+01:07:05,839 --> 01:07:11,359
+to get real data right
+
+1438
+01:07:09,440 --> 01:07:15,200
+and what do they show? Well they show
+
+1439
+01:07:11,359 --> 01:07:18,880
+that they could beat the agencies okay
+
+1440
+01:07:15,200 --> 01:07:22,880
+on the sort of lead time over a data set
+
+1441
+01:07:18,880 --> 01:07:24,480
+from 22 to 23 on cyclones. Okay. And so
+
+1442
+01:07:22,880 --> 01:07:26,799
+what is what is lead time? Essentially
+
+1443
+01:07:24,480 --> 01:07:29,599
+it's how far out in the future you can
+
+1444
+01:07:26,799 --> 01:07:31,280
+predict. Can you do better? Okay, so can
+
+1445
+01:07:29,599 --> 01:07:34,000
+I predict a cyclone 10 days away
+
+1446
+01:07:31,280 --> 01:07:36,319
+compared to a month? So on and so forth.
+
+1447
+01:07:34,000 --> 01:07:38,160
+All right, and here's an example of what
+
+1448
+01:07:36,319 --> 01:07:40,960
+their sort of prediction looked like for
+
+1449
+01:07:38,160 --> 01:07:42,160
+this Syrian cyclone. I'm not sure if I'm
+
+1450
+01:07:40,960 --> 01:07:44,160
+pronouncing it correctly, but it was it
+
+1451
+01:07:42,160 --> 01:07:47,359
+was actually a cyclone that hit Europe.
+
+1452
+01:07:44,160 --> 01:07:49,280
+Okay. And up top here is their
+
+1453
+01:07:47,359 --> 01:07:52,160
+prediction. Okay. And this is the wind
+
+1454
+01:07:49,280 --> 01:07:55,039
+speeds. Okay. So meters per second of
+
+1455
+01:07:52,160 --> 01:07:57,599
+the cyclone. And at the bottom here is
+
+1456
+01:07:55,039 --> 01:07:59,520
+what the true data is when you stitch
+
+1457
+01:07:57,599 --> 01:08:01,680
+everything together from the sensors.
+
+1458
+01:07:59,520 --> 01:08:03,760
+And it looks pretty similar. It's not
+
+1459
+01:08:01,680 --> 01:08:05,599
+perfect. So for example, they actually
+
+1460
+01:08:03,760 --> 01:08:09,119
+underestimate the wind speeds quite a
+
+1461
+01:08:05,599 --> 01:08:12,400
+bit in the end. Okay. But this is almost
+
+1462
+01:08:09,119 --> 01:08:14,559
+a 24-hour prediction out. Actually, I
+
+1463
+01:08:12,400 --> 01:08:16,719
+think it's more than 24 hours. No, 24
+
+1464
+01:08:14,559 --> 01:08:18,880
+hours. Okay. And they show this
+
+1465
+01:08:16,719 --> 01:08:20,880
+quantitatively as well. But um this
+
+1466
+01:08:18,880 --> 01:08:23,120
+looks quite well. And so this was kind
+
+1467
+01:08:20,880 --> 01:08:24,560
+of the first first foundation model
+
+1468
+01:08:23,120 --> 01:08:27,279
+that's sort of been accepted in the
+
+1469
+01:08:24,560 --> 01:08:29,359
+weather community as a real problem.
+
+1470
+01:08:27,279 --> 01:08:30,640
+Okay. And so where does this leave us?
+
+1471
+01:08:29,359 --> 01:08:35,040
+Well, we started with this question of
+
+1472
+01:08:30,640 --> 01:08:36,880
+can we have a GPT for for PTE. And it
+
+1473
+01:08:35,040 --> 01:08:40,080
+turns out that we cared a lot about this
+
+1474
+01:08:36,880 --> 01:08:42,880
+data set diversity.
+
+1475
+01:08:40,080 --> 01:08:45,839
+Transfer learning is going to work for
+
+1476
+01:08:42,880 --> 01:08:48,159
+PDEs which is kind of surprising.
+
+1477
+01:08:45,839 --> 01:08:50,159
+We do need to consider our architecture
+
+1478
+01:08:48,159 --> 01:08:53,600
+to be aligned with our data. It needs to
+
+1479
+01:08:50,159 --> 01:08:56,159
+be done in a smart way. And we actually
+
+1480
+01:08:53,600 --> 01:08:58,480
+showed that there is an operational
+
+1481
+01:08:56,159 --> 01:09:00,319
+model used today. It's actually a
+
+1482
+01:08:58,480 --> 01:09:03,759
+foundation model for the first time.
+
+1483
+01:09:00,319 --> 01:09:06,239
+Okay. And so this is kind of a a more
+
+1484
+01:09:03,759 --> 01:09:08,880
+state-of-the-art lecture. Things here
+
+1485
+01:09:06,239 --> 01:09:12,880
+are very very new. And so I would say a
+
+1486
+01:09:08,880 --> 01:09:12,880
+lot a lot of directions are still
+
