@@ -8,7 +8,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^2.4.5"
+    "astro": "^6.4.6"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^1.4.0",
