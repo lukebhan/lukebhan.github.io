@@ -1,0 +1,18 @@
+# Dependabot config.
+# All flagged vulnerabilities are in build-time-only deps (e.g. undici via Astro's
+# dev server / telemetry); they are not present in the deployed static output.
+# The only "fix" Dependabot can offer is a breaking Astro v2 -> v7 jump, which we
+# do NOT want automatically. So we ignore major bumps for Astro and its integrations
+# and handle that as a deliberate migration instead.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@astrojs/*"
+        update-types: ["version-update:semver-major"]
