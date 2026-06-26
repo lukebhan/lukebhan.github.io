@@ -115,12 +115,19 @@ const domY = (j) => 88 + j * 72;    // 3 application domains
           <h2>Leadership &amp; service</h2>
           <ul class="ab-list wide">{a.service.map((s) => <li set:html={s}></li>)}</ul>
           <h2 class="ab-sub-h">Mentoring</h2>
+          {a.mentorIntro && <p class="mentor-intro">{a.mentorIntro}</p>}
           <ul class="mentor-list">
             {a.mentees.map((m) => (
               <li>
-                <span class="mn-year">{m.year}</span>
-                <span class="mn-name">{m.name}</span>
-                <span class="mn-path">{m.from}{m.to ? <> → now <b>{m.to}</b></> : <>, <span class="mn-cur">currently a student</span></>}</span>
+                <div class="mn-head">
+                  <span class="mn-name">{m.name}</span>
+                  <span class="mn-meta">{m.year} · {m.from}{m.to ? <> → now <b>{m.to}</b></> : <>, <span class="mn-cur">currently a student</span></>}</span>
+                </div>
+                {m.did && (
+                  <p class="mn-did">{(m.didLink || m.paper)
+                    ? <a href={m.didLink || `/publications?q=${encodeURIComponent(m.paper.title)}`} target={m.didLink ? '_blank' : undefined} rel={m.didLink ? 'noopener' : undefined}>{m.did}</a>
+                    : m.did}</p>
+                )}
               </li>
             ))}
           </ul>
@@ -195,14 +202,18 @@ const domY = (j) => 88 + j * 72;    // 3 application domains
   .ab-list li { font-size: 15px; line-height: 1.5; margin: 0 0 8px; }
   .ab-list.wide li { max-width: 60em; }
 
+  .mentor-intro { font-size: 15px; line-height: 1.55; color: var(--muted); margin: 0 0 16px; max-width: 46em; }
   .mentor-list { list-style: none; margin: 0; padding: 0; }
-  .mentor-list li { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--hair); }
-  .mentor-list li:first-child { border-top: 0; }
-  .mn-year { font-family: var(--mono); font-size: 12px; color: var(--teal); }
-  .mn-name { font-weight: 600; color: var(--ink); font-size: 15.5px; }
-  .mn-path { font-size: 14px; color: var(--muted); }
-  .mn-path b { color: var(--ink); font-weight: 600; }
+  .mentor-list li { padding: 13px 0; border-top: 1px solid var(--hair); }
+  .mentor-list li:first-child { border-top: 0; padding-top: 0; }
+  .mn-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .mn-name { font-weight: 600; color: var(--ink); font-size: 17px; }
+  .mn-meta { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .mn-meta b { color: var(--ink); font-weight: 600; }
   .mn-cur { color: var(--accent); }
+  .mn-did { font-size: 13.5px; line-height: 1.5; color: var(--muted); margin: 4px 0 0; max-width: 52em; }
+  .mn-did a { color: var(--accent); text-decoration: none; }
+  @media (hover: hover) { .mn-did a:hover { text-decoration: underline; } }
 
   .ab-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
   .ab-links a { font-family: var(--mono); font-size: 13px; border: 1px solid var(--hair); border-radius: 999px; padding: 9px 15px; color: var(--ink); background: var(--paper); transition: all .15s; }

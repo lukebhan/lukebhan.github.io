@@ -440,57 +440,84 @@
     ],
     "service": [
       "Organizer, <a href=\"https://acc-2026-ai-for-pde-workshop.vercel.app/\">PDE-AI Workshop</a> on AI for Modeling, Control, and Optimization of PDEs, ACC 2026",
-      "Co-Instructor, Physics-Informed Machine Learning, UC San Diego (<a href=\"/#teaching\">see my teaching</a>)",
+      "Co-Instructor, Physics-Informed Machine Learning, UC San Diego (<a href=\"/teaching\">see my teaching</a>)",
       "Reviewer for Automatica, IEEE Transactions on Automatic Control, Systems & Control Letters, ICLR, L4DC, CDC, ACC, and AAAI"
     ],
+    "mentorIntro": "I mentor hands-on, meeting each student in weekly one-on-ones and working alongside them from framing the problem to the final result.",
     "mentees": [
       {
         "name": "Peter Quawas",
         "year": "2026",
         "from": "UC San Diego undergraduate",
-        "to": ""
+        "to": "",
+        "did": "Ran the numerical experiments that validated the predictor.",
+        "paper": {
+          "title": "Sampling-Horizon Neural Operator Predictors for Nonlinear Control Under Delayed Inputs",
+          "venue": "IEEE L-CSS",
+          "year": "2026"
+        }
       },
       {
         "name": "Filip Bajraktari",
         "year": "2025",
         "from": "University of Belgrade undergraduate",
-        "to": "M.S. candidate, ETH Zurich"
+        "to": "M.S. candidate, ETH Zurich",
+        "did": "Led the work under my guidance, developing both the theory and the experiments.",
+        "paper": {
+          "title": "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
+          "venue": "ACC",
+          "year": "2026"
+        }
       },
       {
         "name": "Peijia Qin",
         "year": "2025",
         "from": "Southern University of Science and Technology undergraduate",
-        "to": "Ph.D. candidate, UC San Diego"
+        "to": "Ph.D. candidate, UC San Diego",
+        "did": "Built and tuned the simulation studies behind the results.",
+        "paper": {
+          "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
+          "venue": "L4DC",
+          "year": "2025",
+          "award": "Best Paper Finalist"
+        }
       },
       {
         "name": "Gabriel Bortoni",
         "year": "2024",
         "from": "UC San Diego undergraduate",
-        "to": ""
+        "to": "",
+        "did": "Contributed the neuron-model environment to PDE Control Gym.",
+        "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/neuron-1d.html"
       },
       {
         "name": "Gokul Gandhikumar",
         "year": "2024",
         "from": "UC San Diego master's student",
-        "to": ""
+        "to": "",
+        "did": "Added the traffic-flow (ARZ) environment to PDE Control Gym.",
+        "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/Trafficarz1d.html"
       },
       {
         "name": "Evan Wu",
         "year": "2024",
         "from": "UC San Diego undergraduate",
-        "to": ""
+        "to": "",
+        "did": "Built the glioblastoma tumor-growth environment for PDE Control Gym.",
+        "didLink": "https://pdecontrolgym.readthedocs.io/en/latest/environments/braintumor-1d.html"
       },
       {
         "name": "Yunhao Li",
         "year": "2023",
         "from": "UC San Diego undergraduate",
-        "to": "Ph.D. candidate, University of Wisconsin"
+        "to": "Ph.D. candidate, University of Wisconsin",
+        "did": "Investigated the dynamics of neural ODEs and presented a literature review on learning-based control to our group."
       }
     ]
   },
   "teachingPage": {
     "eyebrow": "Teaching",
-    "philosophy": "In the ChatGPT era, I think the most valuable part of a classroom is the people in it, the peers and colleagues you get to think alongside. So in the lectures I help teach, I try to lean on participation and discussion rather than one-way delivery. I've also mentored seven students, published papers with three of them, and three have gone on to graduate school!",
+    "philosophy": "In the ChatGPT era, I think the most valuable part of a classroom is the people in it, the peers and colleagues you get to think alongside. So in the lectures I help teach, I try to lean on participation and discussion rather than one-way delivery. I have mentored seven undergraduate and master's researchers. Three became publication coauthors, and three former mentees subsequently entered graduate programs at ETH Zurich, UC San Diego, and the University of Wisconsin.",
     "series": {
       "title": "Scientific machine learning: a mini lecture series",
       "intro": "I taught several lectures within Physics-Informed Machine Learning at UC San Diego, introducing the core ideas of scientific machine learning. The full lectures are on YouTube; here is a quick tour of what each one covers. These are recordings of live classes, so student questions and discussion are woven throughout. In the participation-first spirit above, they are real teaching sessions rather than polished videos.",
