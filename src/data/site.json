@@ -24,8 +24,9 @@
   ],
   "email": "lbhan@ucsd.edu",
   "location": "San Diego, CA",
-  "tagline": "I build algorithms for <span class=\"hi\">controlling physical systems</span> that harness the power of <span class=\"hm\">machine learning</span> while enforcing structure that provides <span class=\"hl\">certifiable guarantees</span>.",
+  "tagline": "I build algorithms for <span class=\"hi\">controlling</span> physical systems that combine <span class=\"hm\">machine learning</span> with structure to provide <span class=\"hl\">provable</span> guarantees.",
   "blurb": "Pure learning is fast but unaccountable; classical control is rigorous but requires domain expertise and lacks scalability. My research fuses their strengths, building ultra-fast controllers for robots, vehicles, and biological systems that act in real time and provide theoretic performance guarantees.",
+  "availability": "I am on the academic job market this year and excited to find the right fit. I'd love to connect, reach me at <a href=\"mailto:lbhan@ucsd.edu\">lbhan@ucsd.edu</a>.",
   "quickLinks": [
     {
       "label": "Google Scholar",

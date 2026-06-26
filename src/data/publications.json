@@ -820,8 +820,9 @@
         }
       ],
       "pdf": "/papers/delay_compensation_multi_input_acc.pdf",
-      "thumb": "/figures/Delay_Compensation_of_Multi_Input_Distinct_Delay_Nonlinear_Systems_via_Neural_Operators_Figure_1.png",
-      "fig": 1,
+      "video": {
+        "src": "/unicycle_delay_compensation.mp4"
+      },
       "caption": "Many vehicles and machines receive several control inputs that each arrive after a different time delay, which standard predictor feedback cannot compensate all at once. This work assigns a separate neural-operator predictor to each input so the distinct delays are compensated simultaneously with a stability guarantee. A non-holonomic unicycle, a car-like vehicle with front-wheel drive, is stabilized despite a 0.25 second delay on steering and a 0.6 second delay on acceleration.",
       "url": "https://arxiv.org/abs/2509.17131"
     },

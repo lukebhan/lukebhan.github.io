@@ -1,6 +1,6 @@
 ---
 import site from '../data/site.json';
-const { name, tagline, blurb, quickLinks, hero } = site;
+const { name, tagline, blurb, availability, quickLinks, hero } = site;
 ---
 <section class="hero" id="top">
   <div class="wrap hero-grid">
@@ -11,6 +11,7 @@ const { name, tagline, blurb, quickLinks, hero } = site;
       </div>
       <p class="tagline" set:html={tagline}></p>
       <p class="blurb">{blurb}</p>
+      {availability && <p class="avail" set:html={availability}></p>}
       <p class="hlinks">{quickLinks.map((l, i) => (
         <>{i > 0 && <span class="sep" aria-hidden="true">·</span>}<a href={l.href}>{l.label}</a></>
       ))}</p>
