@@ -254,7 +254,8 @@
           "label": "Code",
           "href": "https://github.com/lukebhan/Neural-Operator-Delay-Adaptive-Predictor-Feedback"
         }
-      ]
+      ],
+      "tag": "IEEE TC DPS Best Student Paper Prize"
     }
   ],
   "fullListNote": "These are highlights. For a full list of papers, including highlight figures, short details about their main contributions, and links, see the publications link above. For a comprehensive record, see Google Scholar.",
@@ -1001,7 +1002,8 @@
       "thumb": "/figures/Delay_Adaptive_Control_of_Nonlinear_Systems_with_Approximate_Neural_Operator_Predictors_Figure_1.png",
       "caption": "Compensating an input delay in a nonlinear system is hard when the delay is known and harder still when its length is unknown and must be learned during operation. This work pairs a neural-operator predictor with an online delay estimator so the controller compensates and identifies the delay together while guaranteeing stability. A nonlinear bacterium population with interacting proteins <em>x</em><sub>1</sub> and <em>x</em><sub>2</sub> is driven to an unstable equilibrium under an unknown input delay. The black curve is the exact numerical predictor, green and red are neural-operator predictors at varying accuracy, and blue omits the delay-adaptive design. The bottom left shows the control input, the injected <em>x</em><sub>1</sub> protein, and the bottom right shows the delay estimate adapting from an initial guess of 2 toward its true value of 1.",
       "fig": 1,
-      "url": "https://arxiv.org/abs/2508.20367"
+      "url": "https://arxiv.org/abs/2508.20367",
+      "tag": "IEEE TC DPS Best Student Paper Prize"
     },
     {
       "type": "conference",
