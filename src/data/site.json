@@ -38,7 +38,7 @@
     },
     {
       "label": "CV",
-      "href": "/cv.pdf"
+      "href": "/LB_CV.pdf"
     },
     {
       "label": "Email",
@@ -73,7 +73,7 @@
     },
     {
       "label": "CV",
-      "href": "/cv.pdf"
+      "href": "/LB_CV.pdf"
     },
     {
       "label": "Research statement",
@@ -129,6 +129,20 @@
             "title": "PDE Control Gym: A Benchmark for Data-Driven Boundary Control",
             "venue": "L4DC",
             "year": "2024"
+          }
+        ]
+      },
+      {
+        "label": "Energy systems",
+        "image": "/figures/gridsfm_figure_4.png",
+        "imageAlt": "Generation-cost percentage error versus grid size for 31 synthetic US and 23 PGLib topologies, spanning 500 to 4,000 buses.",
+        "blurb": "GridSFM is a foundation model for AC optimal power flow. It learns across 54 power-grid topologies, pairing physics-informed learning with a local guarantee for projecting predictions onto physically feasible operating points.",
+        "papers": [
+          {
+            "title": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow",
+            "venue": "IEEE Transactions on Power Systems",
+            "year": "2026",
+            "status": "submitted"
           }
         ]
       },
@@ -304,7 +318,7 @@
         "key": "applications",
         "kicker": "Scientific systems & open tools",
         "title": "Traffic, biology, and more applications of neural operator control design",
-        "idea": "The same machinery reaches well beyond the PDEs it started on. When a vehicle receives several control inputs that each arrive after a different delay, I assign one neural-operator predictor per input, compensating all the distinct delays at once with a stability guarantee. For biological populations, where the stabilizing gains depend on birth and mortality rates that are unknown and must be identified online, a neural operator learns the control-design map and re-evaluates it instantly as those estimates update, steering an age-structured colony to its target equilibrium. To let others build here, I co-created PDEControlGym, an open, documented benchmark for data-driven boundary control spanning physics, biology, and medicine, supported by an NVIDIA Academic Grant.",
+        "idea": "The same machinery reaches well beyond the PDEs it started on. When a vehicle receives several control inputs that each arrive after a different delay, I assign one neural-operator predictor per input, compensating all the distinct delays at once with a stability guarantee. For biological populations, where the stabilizing gains depend on birth and mortality rates that are unknown and must be identified online, a neural operator learns the control-design map and re-evaluates it instantly as those estimates update, steering an age-structured colony to its target equilibrium. To let others build here, I created PDEControlGym, an open, documented benchmark for data-driven boundary control spanning physics, biology, and medicine, supported by an NVIDIA Academic Grant.",
         "explain": "PDEControlGym, supported by an NVIDIA Academic Grant, gives the community a standard testbed for data-driven boundary control: the infrastructure that lets these methods spread beyond any single lab.",
         "papers": [
           {
@@ -348,6 +362,41 @@
               "label": "population dynamics",
               "caption": "Neural operators steer an age-structured population (a predator–prey colony) to its target equilibrium, with the control gains learned online from the population's vital rates (the Lotka–Sharpe model).",
               "paper": "Lotka–Sharpe Neural Operators for Control of Population PDEs"
+            }
+          ]
+        }
+      },
+      {
+        "key": "energy",
+        "kicker": "Energy systems",
+        "title": "Foundation models for power-grid optimization",
+        "idea": "I developed GridSFM to accelerate AC optimal power flow: choosing generation and voltage settings that meet demand at low cost while respecting grid constraints. A graph neural network, pretrained across 54 grid topologies, maps grid structure, parameters, and loads to approximate control settings. Physics-informed fine-tuning uses power-flow equations, generation cost, and constraint penalties to adapt the model to a specific grid. Its predictions can warm-start an AC-OPF solver or initialize a projection onto the feasible set, with a local theorem specifying when that projection is unique and remains in the same feasible component as a nearby optimum. With 100 solved fine-tuning scenarios, GridSFM adapts to grids excluded from pretraining. On a 10,000-bus benchmark, its warm starts reduce median solver iterations by 3.3× relative to a cold start.",
+        "papers": [
+          {
+            "title": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow",
+            "venue": "IEEE Transactions on Power Systems",
+            "year": "2026",
+            "href": "https://arxiv.org/abs/2609.30173",
+            "status": "submitted"
+          }
+        ],
+        "result": {
+          "aspect": "1898 / 1357",
+          "bg": "#ffffff",
+          "items": [
+            {
+              "type": "image",
+              "src": "/figures/gridsfm_figure_3.png",
+              "alt": "A blue GridSFM prediction projected onto a feasible region near a local optimum, beside a second disconnected feasible component. The orange neighborhood marks the local projection guarantee.",
+              "caption": "Figure 3: A learned prediction (blue) can lie outside the feasible set. Projection returns a physically feasible point. Under the theorem’s regularity assumptions, predictions sufficiently close to a local optimum have a unique projection in the same feasible component as that optimum.",
+              "paper": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow"
+            },
+            {
+              "type": "image",
+              "src": "/figures/gridsfm_figure_4.png",
+              "alt": "Generation-cost percentage error versus grid size for 31 synthetic US and 23 PGLib topologies, spanning 500 to 4,000 buses.",
+              "caption": "Figure 4: Each marker shows generation-cost error on held-out operating scenarios for one of 54 pretraining grid topologies. The model is evaluated without per-grid fine-tuning; error remains approximately constant as grid size grows from 500 to 4,000 buses.",
+              "paper": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow"
             }
           ]
         }
@@ -517,7 +566,7 @@
   },
   "teachingPage": {
     "eyebrow": "Teaching",
-    "philosophy": "In the ChatGPT era, I think the most valuable part of a classroom is the people in it, the peers and colleagues you get to think alongside. So in the lectures I help teach, I try to lean on participation and discussion rather than one-way delivery. I have mentored seven undergraduate and master's researchers. Three became publication coauthors, and three former mentees subsequently entered graduate programs at ETH Zurich, UC San Diego, and the University of Wisconsin.",
+    "philosophy": "In the ChatGPT era, I think the most valuable part of a classroom is the people in it, the peers and colleagues you get to think alongside. So in the lectures I help teach, I try to lean on participation and discussion rather than one-way delivery.",
     "series": {
       "title": "Scientific machine learning: a mini lecture series",
       "intro": "I taught several lectures within Physics-Informed Machine Learning at UC San Diego, introducing the core ideas of scientific machine learning. The full lectures are on YouTube; here is a quick tour of what each one covers. These are recordings of live classes, so student questions and discussion are woven throughout. In the participation-first spirit above, they are real teaching sessions rather than polished videos.",

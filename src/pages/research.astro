@@ -6,7 +6,7 @@ import CertFigure from '../components/CertFigure.astro';
 import site from '../data/site.json';
 const { researchPage: rp } = site;
 const title = 'Research · Luke Bhan';
-const description = 'Luke Bhan’s research: scientific machine learning with the structure of control theory, yielding controllers that are both deployable and certifiable, across foundations, robots, and applications.';
+const description = 'Luke Bhan’s research in scientific machine learning for control and optimization, spanning energy systems, control theory, robotics, and scientific applications.';
 ---
 <Base title={title} description={description}>
   <Nav base="/" />
@@ -36,7 +36,7 @@ const description = 'Luke Bhan’s research: scientific machine learning with th
                     ) : t.result.items[0].type === 'video' ? (
                       <video src={t.result.items[0].src} muted loop playsinline autoplay preload="metadata"></video>
                     ) : (
-                      <img src={t.result.items[0].src} alt={t.title} loading="lazy" decoding="async" />
+                      <img src={t.result.items[0].src} alt={t.result.items[0].alt || t.title} loading="lazy" decoding="async" />
                     )}
                     {t.result.items[0].label && <span class="tm-tag">{t.result.items[0].label}</span>}
                   </div>
@@ -227,7 +227,7 @@ const description = 'Luke Bhan’s research: scientific machine learning with th
       if (controls) el.controls = true;
     } else {
       el = document.createElement('img');
-      el.src = it.src; el.alt = alt || ''; el.loading = 'lazy';
+      el.src = it.src; el.alt = it.alt || alt || ''; el.loading = 'lazy';
     }
     el.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
     return el;

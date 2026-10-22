@@ -32,13 +32,14 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
                 <div class="demo-cell"><span class={`demo-tag ${c.demo.right.state}`}>{c.demo.right.label}</span><video src={c.demo.right.src} autoplay loop muted playsinline preload="metadata"></video></div>
               </div>
             ) : c.image ? (
-              <img src={c.image} alt={c.label} loading="lazy" decoding="async" />
+              <img src={c.image} alt={c.imageAlt || c.label} loading="lazy" decoding="async" />
             ) : (
               <video src={c.src} autoplay loop muted playsinline preload="metadata"></video>
             )}
-            <button class="vclip-expand" type="button"
+            <button class="vclip-expand" type="button" data-research-expand
               data-src={c.src}
               data-img={c.image ? c.image : null}
+              data-alt={c.imageAlt || c.label}
               data-demo={c.demo ? '1' : null}
               data-left={c.demo ? c.demo.left.src : null}
               data-left-label={c.demo ? c.demo.left.label : null}
@@ -46,7 +47,8 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
               data-right={c.demo ? c.demo.right.src : null}
               data-right-label={c.demo ? c.demo.right.label : null}
               data-right-state={c.demo ? c.demo.right.state : null}
-              aria-label="Expand video">⤢</button>
+              aria-label={c.image ? `Enlarge ${c.label} figure` : `Expand ${c.label} video`}
+              aria-haspopup="dialog">⤢</button>
           </div>
         </figure>
       ))}
@@ -56,7 +58,7 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
   </div>
 </section>
 
-<div class="hv-lb" id="hvlb" hidden>
+<div class="hv-lb" id="hvlb" role="dialog" aria-modal="true" aria-label="Research figure or video" hidden>
   <button class="hv-lb-close" id="hvlbClose" type="button" aria-label="Close">×</button>
   <div class="hv-lb-frame" id="hvlbFrame"></div>
 </div>
@@ -77,6 +79,7 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
   .vclip-media { position: relative; border: 1px solid var(--hair); border-radius: 10px; overflow: hidden; background: var(--paper); }
   .vclip-media video, .vclip-media img { width: 100%; height: auto; display: block; }
   .vclip-expand { position: absolute; top: 8px; right: 8px; z-index: 2; width: 28px; height: 28px; border: 0; border-radius: 7px; background: rgba(21,23,28,.5); color: #fff; cursor: pointer; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background .14s; }
+  .vclip-expand:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
 
   @media (min-width: 760px) {
     .vclip { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 32px; }
@@ -90,7 +93,7 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
   .hv-lb[hidden] { display: none; }
   .hv-lb-frame { width: min(940px, 94vw); display: flex; }
   .hv-lb-frame :global(.hv-lb-inner) { width: 100%; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 40px 100px -30px rgba(0,0,0,.5); }
-  .hv-lb-frame :global(video), .hv-lb-frame :global(img) { display: block; width: 100%; height: auto; }
+  .hv-lb-frame :global(video), .hv-lb-frame :global(img) { display: block; width: 100%; height: auto; max-height: 92vh; max-height: 92dvh; object-fit: contain; }
   .hv-lb-close { position: absolute; top: 18px; right: 20px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
 
   @media (hover: hover) {
@@ -103,6 +106,9 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
 <script>
   const lb = document.getElementById('hvlb');
   const frame = document.getElementById('hvlbFrame');
+  const closeButton = document.getElementById('hvlbClose');
+  let opener = null;
+  let previousOverflow = '';
   function mkVideo(src) {
     const v = document.createElement('video');
     v.src = src; v.autoplay = true; v.loop = true; v.muted = true;
@@ -130,20 +136,36 @@ const paperHref = (t) => '/publications?q=' + encodeURIComponent(t);
       inner.appendChild(row);
     } else if (b.dataset.img) {
       const img = document.createElement('img');
-      img.src = b.dataset.img; img.alt = '';
+      img.src = b.dataset.img; img.alt = b.dataset.alt || b.getAttribute('aria-label') || '';
       inner.appendChild(img);
     } else {
       const v = mkVideo(b.dataset.src); v.controls = true;
       inner.appendChild(v);
     }
     frame.appendChild(inner);
+    opener = b;
     lb.hidden = false;
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButton.focus();
   }
-  function closeLb() { lb.hidden = true; frame.innerHTML = ''; }
-  document.querySelectorAll('.vclip-expand').forEach((b) => {
+  function closeLb() {
+    lb.hidden = true;
+    frame.innerHTML = '';
+    document.body.style.overflow = previousOverflow;
+    opener?.focus();
+  }
+  document.querySelectorAll('[data-research-expand]').forEach((b) => {
     b.addEventListener('click', () => openLb(b));
   });
-  document.getElementById('hvlbClose').addEventListener('click', closeLb);
+  closeButton.addEventListener('click', closeLb);
   lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+  lb.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const focusable = lb.querySelectorAll('button, video[controls]');
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   document.addEventListener('keydown', (e) => { if (!lb.hidden && e.key === 'Escape') closeLb(); });
 </script>

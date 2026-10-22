@@ -271,6 +271,9 @@
     "preprint": "Preprints & under review"
   },
   "rankOrder": [
+    "GridSFM: A Foundation Model for Solving AC Optimal Power Flow",
+    "An Adaptive, Parallel, and Inexact Newton Method for Large-scale Nonlinear Optimal Control",
+    "Rapid Fredholm Stabilization of the Kuramoto–Sivashinsky Equation with Unrestricted, Spatially-Varying Anti-Diffusion",
     "Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping",
     "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
     "Generalizable Motion Planning via Operator Learning",
@@ -299,6 +302,114 @@
     "Simulation of Photo-Electron Spectrum and Electron Scattering by Dual Time Propagation"
   ],
   "all": [
+    {
+      "type": "preprint",
+      "venue": "IEEE Transactions on Power Systems",
+      "year": "2026",
+      "tag": "submitted",
+      "title": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true,
+          "star": true
+        },
+        {
+          "name": "Weiwei Yang",
+          "star": true
+        },
+        {
+          "name": "Margaret Capetz"
+        },
+        {
+          "name": "Baosen Zhang"
+        }
+      ],
+      "tags": [
+        "Power systems",
+        "Optimization"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2609.30173"
+        }
+      ],
+      "url": "https://arxiv.org/abs/2609.30173",
+      "pdf": "/papers/gridsfm_foundation_model_ac_optimal_power_flow_bhan_2026.pdf",
+      "thumb": "/figures/GridSFM_A_Foundation_Model_for_Solving_AC_Optimal_Power_Flow_Figure_1.png",
+      "fig": 1,
+      "caption": "Neural networks for AC optimal power flow are typically trained for a single grid, and the problem's disconnected feasible set blocks any continuous network from learning its solution map. This work builds GridSFM, a 15M-parameter foundation model pretrained across 54 grids on a relaxed problem with a provably connected feasible set. The figure shows the framework, with a pretrained backbone (a), optional physics-informed fine-tuning on a new grid from just 100 solved cases (b), and predictions that warm-start solvers with far fewer iterations (c)."
+    },
+    {
+      "type": "preprint",
+      "venue": "Automatica",
+      "year": "2026",
+      "tag": "submitted",
+      "title": "An Adaptive, Parallel, and Inexact Newton Method for Large-scale Nonlinear Optimal Control",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Michael W. Mahoney"
+        },
+        {
+          "name": "Sen Na"
+        }
+      ],
+      "tags": [
+        "Optimization",
+        "PDE systems",
+        "Power systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2609.33206"
+        }
+      ],
+      "url": "https://arxiv.org/abs/2609.33206",
+      "pdf": "/papers/adaptive_parallel_inexact_newton_optimal_control_bhan_2026.pdf",
+      "thumb": "/figures/An_Adaptive_Parallel_and_Inexact_Newton_Method_for_Large_scale_Nonlinear_Optimal_Control_Figure_1.png",
+      "fig": 1,
+      "caption": "Long-horizon nonlinear optimal control problems quickly grow too large to solve at once, and splitting the horizon into overlapping pieces requires hand-tuning the overlap. This work designs AOTD, a parallel SQP method that adapts the overlap size and local solve accuracy online, with provable convergence. The figure shows the decomposition, where overlapping subproblems are solved in parallel and only their exclusive pieces are kept."
+    },
+    {
+      "type": "preprint",
+      "venue": "ESAIM: COCV",
+      "year": "2026",
+      "tag": "submitted",
+      "title": "Rapid Fredholm Stabilization of the Kuramoto–Sivashinsky Equation with Unrestricted, Spatially-Varying Anti-Diffusion",
+      "authors": [
+        {
+          "name": "Luke Bhan",
+          "me": true
+        },
+        {
+          "name": "Miroslav Krstić"
+        },
+        {
+          "name": "Yuanyuan Shi"
+        }
+      ],
+      "tags": [
+        "Neural operators",
+        "PDE systems"
+      ],
+      "links": [
+        {
+          "label": "arXiv",
+          "href": "https://arxiv.org/abs/2610.08764"
+        }
+      ],
+      "url": "https://arxiv.org/abs/2610.08764",
+      "pdf": "/papers/rapid_fredholm_stabilization_kuramoto_sivashinsky_bhan_2026.pdf",
+      "thumb": "/figures/Rapid_Fredholm_Stabilization_of_the_Kuramoto_Sivashinsky_Equation_Figure_2.png",
+      "fig": 2,
+      "caption": "The Kuramoto–Sivashinsky equation loses controllability from a single boundary input whenever its unstable eigenvalues repeat. This work adds a second input that restores controllability, so a Fredholm backstepping design can stabilize the plant at any chosen decay rate, and proves the gain can be learned by a neural operator. The figure shows a spatially varying coefficient (a), its Fredholm kernel (b), the two boundary controls (c), and the nonlinear state driven to zero (d)."
+    },
     {
       "type": "journal",
       "venue": "Automatica",
@@ -947,7 +1058,7 @@
           "state": "on"
         }
       },
-      "caption": "Robots performing fast dynamic tasks often act through a communication or actuation delay that destabilizes the loop if left uncompensated. This work learns the delay-compensating predictor with a neural operator and evaluates it in a single forward pass, so the compensator runs in real time while keeping the classical stability guarantee. A manipulator stabilizes a rolling ball through a long input delay. On the left, without the predictor, the delay destabilizes the system and the task fails; on the right, with the neural-operator predictor, the same fast task is completed stably.",
+      "caption": "Robots performing fast dynamic tasks often act through a communication or actuation delay that destabilizes the loop if left uncompensated. This work learns the delay-compensating predictor with a neural operator and evaluates it in a single forward pass, so the compensator runs in real time while keeping the classical stability guarantee. A manipulator stabilizes a rolling ball through a long input delay. On the left, without the predictor, the delay destabilizes the system and the task fails. On the right, with the neural-operator predictor, the same fast task is completed stably.",
       "url": "https://proceedings.mlr.press/v283/bhan25a.html"
     },
     {
@@ -1403,7 +1514,7 @@
       "pdf": "/papers/forecast_critic_bhan_2026.pdf",
       "thumb": "/figures/forecast_critic_figure4.png",
       "fig": 4,
-      "caption": "Production demand forecasting runs at enormous scale (Amazon forecasts demand for tens of millions of products), far more than analysts can vet by hand, so the few forecasts that truly need a human are easily buried. This work asks whether a large language model can serve as a forecast critic that flags the predictions most likely to be wrong, focusing scarce human attention where it matters most. The figure shows the model given a time-series plot (left) and a prompt listing the holiday dates: reasoning over both (right), it notes that the forecast's promotional spike at t = 9.82 is far larger than the comparable historical spike at t = 1.88, and flags the forecast as unreasonable.",
+      "caption": "Production demand forecasting runs at enormous scale (Amazon forecasts demand for tens of millions of products), far more than analysts can vet by hand, so the few forecasts that truly need a human are easily buried. This work asks whether a large language model can serve as a forecast critic that flags the predictions most likely to be wrong, focusing scarce human attention where it matters most. The figure shows the model given a time-series plot (left) and a prompt listing the holiday dates. Reasoning over both (right), it notes that the forecast's promotional spike at t = 9.82 is far larger than the comparable historical spike at t = 1.88, and flags the forecast as unreasonable.",
       "url": "https://arxiv.org/abs/2512.12059"
     }
   ]
