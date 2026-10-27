@@ -25,7 +25,7 @@
   "email": "lbhan@ucsd.edu",
   "location": "San Diego, CA",
   "tagline": "I build algorithms for <span class=\"hi\">controlling</span> physical systems that combine <span class=\"hm\">machine learning</span> with structure to provide <span class=\"hl\">provable</span> guarantees.",
-  "blurb": "Pure learning is fast but unaccountable; classical control is rigorous but requires domain expertise and lacks scalability. My research fuses their strengths, building ultra-fast controllers for robots, vehicles, and biological systems that act in real time and provide theoretic performance guarantees.",
+  "blurb": "Pure learning is fast but unaccountable, while classical control is rigorous but requires domain expertise and lacks scalability. My research fuses their strengths, building ultra-fast controllers for robots, vehicles, and biological systems that act in real time and provide theoretic performance guarantees.",
   "availability": "I am on the academic job market this year and excited to find the right fit. I'd love to connect, reach me at <a href=\"mailto:lbhan@ucsd.edu\">lbhan@ucsd.edu</a>.",
   "quickLinks": [
     {
@@ -51,15 +51,15 @@
         "src": "/dp_no_predictor.mp4",
         "label": "no predictor",
         "state": "off",
-        "alt": "A system with input delay and no compensation: the response oscillates and fails to settle."
+        "alt": "A system with input delay and no compensation. The response oscillates and fails to settle."
       },
       "right": {
         "src": "/dp_with_predictor.mp4",
         "label": "neural-operator predictor",
         "state": "on",
-        "alt": "The same delayed system with a neural-operator predictor in the loop: the response is stabilized and settles."
+        "alt": "The same delayed system with a neural-operator predictor in the loop. The response is stabilized and settles."
       },
-      "caption": "same input delay: uncompensated (left) vs. stabilized in real time by a neural-operator predictor (right)",
+      "caption": "same input delay, uncompensated (left) vs. stabilized in real time by a neural-operator predictor (right)",
       "link": {
         "label": "L4DC ’25 · Best Paper Finalist ↗",
         "href": "https://arxiv.org/abs/2411.18964"
@@ -148,7 +148,7 @@
       },
       {
         "label": "Predictor feedback",
-        "blurb": "A manipulator performs a fast task through a long actuation delay. Without compensation the delay destabilizes the loop and the task fails; a neural-operator predictor reconstructs the future state so the same task completes, with a stability guarantee.",
+        "blurb": "A manipulator performs a fast task through a long actuation delay. Without compensation the delay destabilizes the loop and the task fails. A neural-operator predictor reconstructs the future state so the same task completes, with a stability guarantee.",
         "papers": [
           {
             "title": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems",
@@ -202,14 +202,14 @@
   "researchPage": {
     "eyebrow": "Research",
     "title": "Algorithms that capitalize on the performance of machine learning with the <span class=\"hl\">provable certificates</span> needed for deployment in real-world physical systems",
-    "lead": "The power of modern neural networks is clear, but physical systems cannot go into the real world without guarantees on performance and safety. My research makes black-box neural networks deployable for real systems: I tell the engineer exactly how accurately to train their controller and, from the loss it reaches, the closed-loop performance it will achieve, and how gracefully that degrades as the network's error grows.",
+    "lead": "The power of modern neural networks is clear, but physical systems cannot go into the real world without guarantees on performance and safety. My research makes black-box neural networks deployable for real systems. I tell the engineer exactly how accurately to train their controller and, from the loss it reaches, the closed-loop performance it will achieve, and how gracefully that degrades as the network's error grows.",
     "thrusts": [
       {
         "key": "foundations",
         "kicker": "Foundations",
         "title": "Design of deployable ML systems, with closed-loop performance guarantees",
-        "idea": "This is the engine behind everything else I do. Classical control earns its guarantees by solving heavy numerical routines, such as backstepping kernel PDEs or predictor integrals, that are provably correct but far too slow to recompute online. I showed these computations are operators a neural network can learn, and proved the learned approximation preserves the closed-loop stability guarantee. The expensive solve collapses into a single forward pass and the proof travels with it: control at machine-learning speed, on real systems, without giving up certification.",
-        "explain": "The contribution is the certificate, not the network: given your system and your data, the theory says how accurate the operator must be to remain stable, and the smaller that error, the tighter the performance you can prove.",
+        "idea": "This is the engine behind everything else I do. Classical control earns its guarantees by solving heavy numerical routines, such as backstepping kernel PDEs or predictor integrals, that are provably correct but far too slow to recompute online. I showed these computations are operators a neural network can learn, and proved the learned approximation preserves the closed-loop stability guarantee. The expensive solve collapses into a single forward pass and the proof travels with it, giving control at machine-learning speed, on real systems, without giving up certification.",
+        "explain": "The contribution is the certificate, not the network. Given your system and your data, the theory says how accurate the operator must be to remain stable, and the smaller that error, the tighter the performance you can prove.",
         "papers": [
           {
             "title": "Neural Operators for Bypassing Gain and Control Computations in PDE Backstepping",
@@ -252,7 +252,7 @@
               "type": "image",
               "src": "/figures/Adaptive_Control_of_Reaction_Diffusion_PDEs_via_Neural_Operator_Approximated_Gain_Kernels_Figure_1.png",
               "label": "adaptive control",
-              "caption": "Adaptive control of a reaction–diffusion PDE: as the unknown reaction parameters are identified online, the neural operator re-evaluates the stabilizing gain kernel instantly at each step, keeping the closed loop provably stable as it learns.",
+              "caption": "Adaptive control of a reaction–diffusion PDE. As the unknown reaction parameters are identified online, the neural operator re-evaluates the stabilizing gain kernel instantly at each step, keeping the closed loop provably stable as it learns.",
               "paper": "Adaptive Control of Reaction–Diffusion PDEs via Neural Operator-Approximated Gain Kernels"
             }
           ]
@@ -262,8 +262,8 @@
         "key": "robots",
         "kicker": "Robotics & autonomy",
         "title": "Autonomy that generalizes, with guarantees via operator learning",
-        "idea": "Robots break the clean assumptions controllers are designed under: they act through real communication and actuation delays, and they have to work in environments they never saw in training. I address both with operator learning. A planning neural operator learns the cost-to-go for navigation and generalizes to maps far finer than the ones it trained on, while a learned predictor reconstructs the delayed state in a single forward pass so the controller acts on time, carrying the same stability guarantee as the classical predictor it replaces. Both results rest on the same scientific-machine-learning principle: I encode the problem's structure into the network itself (e.g. the triangle inequality explicitly enforced in the neural net design), so performance and certifiable deployment come built in.",
-        "explain": "Real manipulators act on commands that arrive late; a learned predictor reconstructs the future state so the controller acts on time, with a proof that the closed loop stays stable.",
+        "idea": "Robots break the clean assumptions controllers are designed under. They act through real communication and actuation delays, and they have to work in environments they never saw in training. I address both with operator learning. A planning neural operator learns the cost-to-go for navigation and generalizes to maps far finer than the ones it trained on, while a learned predictor reconstructs the delayed state in a single forward pass so the controller acts on time, carrying the same stability guarantee as the classical predictor it replaces. Both results rest on the same scientific-machine-learning principle. I encode the problem's structure into the network itself (e.g. the triangle inequality explicitly enforced in the neural net design), so performance and certifiable deployment come built in.",
+        "explain": "Real manipulators act on commands that arrive late, and a learned predictor reconstructs the future state so the controller acts on time, with a proof that the closed loop stays stable.",
         "papers": [
           {
             "title": "Generalizable Motion Planning via Operator Learning",
@@ -314,7 +314,7 @@
                 "label": "neural-operator predictor",
                 "state": "on"
               },
-              "caption": "Same input delay: uncompensated (left) vs. stabilized in real time by a neural-operator predictor (right).",
+              "caption": "Same input delay, uncompensated (left) vs. stabilized in real time by a neural-operator predictor (right).",
               "paper": "Neural Operators for Predictor Feedback Control of Nonlinear Delay Systems"
             },
             {
@@ -332,7 +332,7 @@
         "kicker": "Scientific systems & open tools",
         "title": "Traffic, biology, and more applications of neural operator control design",
         "idea": "The same machinery reaches well beyond the PDEs it started on. When a vehicle receives several control inputs that each arrive after a different delay, I assign one neural-operator predictor per input, compensating all the distinct delays at once with a stability guarantee. For biological populations, where the stabilizing gains depend on birth and mortality rates that are unknown and must be identified online, a neural operator learns the control-design map and re-evaluates it instantly as those estimates update, steering an age-structured colony to its target equilibrium. To let others build here, I created PDEControlGym, an open, documented benchmark for data-driven boundary control spanning physics, biology, and medicine, supported by an NVIDIA Academic Grant.",
-        "explain": "PDEControlGym, supported by an NVIDIA Academic Grant, gives the community a standard testbed for data-driven boundary control: the infrastructure that lets these methods spread beyond any single lab.",
+        "explain": "PDEControlGym, supported by an NVIDIA Academic Grant, gives the community a standard testbed for data-driven boundary control, the infrastructure that lets these methods spread beyond any single lab.",
         "papers": [
           {
             "title": "Delay Compensation of Multi-Input Distinct Delay Nonlinear Systems via Neural Operators",
@@ -383,7 +383,7 @@
         "key": "energy",
         "kicker": "Energy systems",
         "title": "Foundation models for power-grid optimization",
-        "idea": "I developed GridSFM to accelerate AC optimal power flow: choosing generation and voltage settings that meet demand at low cost while respecting grid constraints. A graph neural network, pretrained across 54 grid topologies, maps grid structure, parameters, and loads to approximate control settings. Physics-informed fine-tuning uses power-flow equations, generation cost, and constraint penalties to adapt the model to a specific grid. Its predictions can warm-start an AC-OPF solver or initialize a projection onto the feasible set, with a local theorem specifying when that projection is unique and remains in the same feasible component as a nearby optimum. With 100 solved fine-tuning scenarios, GridSFM adapts to grids excluded from pretraining. On a 10,000-bus benchmark, its warm starts reduce median solver iterations by 3.3× relative to a cold start.",
+        "idea": "I developed GridSFM to accelerate AC optimal power flow, which means choosing generation and voltage settings that meet demand at low cost while respecting grid constraints. A graph neural network, pretrained across 54 grid topologies, maps grid structure, parameters, and loads to approximate control settings. Physics-informed fine-tuning uses power-flow equations, generation cost, and constraint penalties to adapt the model to a specific grid. Its predictions can warm-start an AC-OPF solver or initialize a projection onto the feasible set, with a local theorem specifying when that projection is unique and remains in the same feasible component as a nearby optimum. With 100 solved fine-tuning scenarios, GridSFM adapts to grids excluded from pretraining. On a 10,000-bus benchmark, its warm starts reduce median solver iterations by 3.3× relative to a cold start.",
         "papers": [
           {
             "title": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow",
@@ -401,14 +401,14 @@
               "type": "image",
               "src": "/figures/gridsfm_figure_3.png",
               "alt": "A blue GridSFM prediction projected onto a feasible region near a local optimum, beside a second disconnected feasible component. The orange neighborhood marks the local projection guarantee.",
-              "caption": "Figure 3: A learned prediction (blue) can lie outside the feasible set. Projection returns a physically feasible point. Under the theorem’s regularity assumptions, predictions sufficiently close to a local optimum have a unique projection in the same feasible component as that optimum.",
+              "caption": "Figure 3. A learned prediction (blue) can lie outside the feasible set. Projection returns a physically feasible point. Under the theorem’s regularity assumptions, predictions sufficiently close to a local optimum have a unique projection in the same feasible component as that optimum.",
               "paper": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow"
             },
             {
               "type": "image",
               "src": "/figures/gridsfm_figure_4.png",
               "alt": "Generation-cost percentage error versus grid size for 31 synthetic US and 23 PGLib topologies, spanning 500 to 4,000 buses.",
-              "caption": "Figure 4: Each marker shows generation-cost error on held-out operating scenarios for one of 54 pretraining grid topologies. The model is evaluated without per-grid fine-tuning; error remains approximately constant as grid size grows from 500 to 4,000 buses.",
+              "caption": "Figure 4. Each marker shows generation-cost error on held-out operating scenarios for one of 54 pretraining grid topologies. The model is evaluated without per-grid fine-tuning, and error remains approximately constant as grid size grows from 500 to 4,000 buses.",
               "paper": "GridSFM: A Foundation Model for Solving AC Optimal Power Flow"
             }
           ]
@@ -423,7 +423,7 @@
     "story": [
       "I build algorithms that control real-world systems by combining the speed of machine learning with the guarantees of control theory. My aim is a single, rigorous toolkit that transfers across domains instead of being rebuilt for each one, and that is trustworthy enough to run inside the feedback loop.",
       "I came to control from physics. In an accelerated bachelor's and master's at Vanderbilt University, I worked across physics, applied mathematics, and computer science, simulating ultrafast laser-driven electron dynamics with <a href=\"https://as.vanderbilt.edu/physics-astronomy/bio/kalman-varga/\">Kálmán Varga</a> and studying reinforcement learning and robotics with <a href=\"https://engineering.vanderbilt.edu/bio/gautam-biswas\">Gautam Biswas</a>.",
-      "Those two threads, rigorous physical modeling and learning for decision-making, converged into the question that drives my research today: can modern learning be made trustworthy enough to place inside a controller? My master's thesis on deep reinforcement learning for adaptive control was a first step, and my doctorate turned it into a program.",
+      "Those two threads, rigorous physical modeling and learning for decision-making, converged into the question that drives my research today. Can modern learning be made trustworthy enough to place inside a controller? My master's thesis on deep reinforcement learning for adaptive control was a first step, and my doctorate turned it into a program.",
       "At UC San Diego I am advised by <a href=\"https://yyshi.eng.ucsd.edu/\">Yuanyuan Shi</a> and <a href=\"http://flyingv.ucsd.edu/\">Miroslav Krstić</a> and supported by the <a href=\"https://www.krellinst.org/csgf/\">DOE Computational Science Graduate Fellowship</a>. I develop neural operators with provable control-theoretic guarantees, fast enough to run in real time, for systems ranging from PDEs and robots to biological systems. Alongside the research I help organize the community's first workshop on AI for PDE control, and I care about teaching and broadening participation in the field."
     ],
     "roots": [
@@ -582,8 +582,8 @@
     "eyebrow": "Teaching",
     "philosophy": "In the ChatGPT era, I think the most valuable part of a classroom is the people in it, the peers and colleagues you get to think alongside. So in the lectures I help teach, I try to lean on participation and discussion rather than one-way delivery.",
     "series": {
-      "title": "Scientific machine learning: a mini lecture series",
-      "intro": "I taught several lectures within Physics-Informed Machine Learning at UC San Diego, introducing the core ideas of scientific machine learning. The full lectures are on YouTube; here is a quick tour of what each one covers. These are recordings of live classes, so student questions and discussion are woven throughout. In the participation-first spirit above, they are real teaching sessions rather than polished videos.",
+      "title": "Scientific machine learning, a mini lecture series",
+      "intro": "I taught several lectures within Physics-Informed Machine Learning at UC San Diego, introducing the core ideas of scientific machine learning. The full lectures are on YouTube, and here is a quick tour of what each one covers. These are recordings of live classes, so student questions and discussion are woven throughout. In the participation-first spirit above, they are real teaching sessions rather than polished videos.",
       "playlist": "https://www.youtube.com/playlist?list=PLB2bDSiS7tGw",
       "lectures": [
         {
@@ -638,7 +638,7 @@
                   "end": 1112
                 },
                 {
-                  "label": "DeepONet: branch and trunk nets",
+                  "label": "DeepONet, branch and trunk nets",
                   "youtube": "vM3T_3dfHOc",
                   "start": 3548,
                   "end": 3605
@@ -683,7 +683,7 @@
               "thumb": "/lectures/pinns.png",
               "clips": [
                 {
-                  "label": "Spectral bias: smooth comes first",
+                  "label": "Spectral bias, smooth comes first",
                   "youtube": "HY3nPAf_XRg",
                   "start": 2270,
                   "end": 2321
